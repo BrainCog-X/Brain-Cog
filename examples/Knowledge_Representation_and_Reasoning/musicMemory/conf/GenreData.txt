@@ -1,0 +1,3 @@
+Baroque:Bach
+Classical:Haydn,Mozart,Beethoven,Schubert,Clementi
+Romantic:Mendelssohn,Liszt,Chopin,Schumann,Brahms,Burgmueller,Debussy,Godowsky,Moszkowski,Mussorgsky,Rachmaninov,Ravel,Tchaikovsky,Albéniz,Balakirew,Borodin,Granados,Grieg,Sinding

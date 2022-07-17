@@ -1,0 +1,129 @@
+-1:rest
+0:C3
+1:C sharp3/D flat3
+2:D3
+3:D sharp3/E flat3
+4:E3
+5:F3
+6:F sharp3/G flat3
+7:G3
+8:G sharp3/A flat3
+9:A3
+10:A sharp3/B flat3
+11:B3
+12:C2
+13:C sharp2/D flat2
+14:D2
+15:D sharp2/E flat2
+16:E2
+17:F2
+18:F sharp2/G flat2
+19:G2
+20:G sharp2/A flat2
+21:A2
+22:A sharp2/B flat2
+23:B2
+24:C1
+25:C sharp1/D flat1
+26:D1
+27:D sharp1/E flat1
+28:E1
+29:F1
+30:F sharp1/G flat1
+31:G1
+32:G sharp1/A flat1
+33:A1
+34:A sharp1/B flat1
+35:B1
+36:C
+37:C sharp/D flat
+38:D
+39:D sharp/E flat
+40:E
+41:F
+42:F sharp/G flat
+43:G
+44:G sharp/A flat
+45:A
+46:A sharp/B flat
+47:B
+48:c
+49:c sharp/d flat
+50:d
+51:d sharp/e flat
+52:e
+53:f
+54:f sharp/g flat
+55:g
+56:g sharp/a flat
+57:a
+58:a sharp/b flat
+59:b
+60:c1
+61:c sharp1/d flat1
+62:d1
+63:d sharp1/e flat1
+64:e1
+65:f1
+66:f sharp1/g flat1
+67:g1
+68:g sharp1/a flat1
+69:a1
+70:a sharp1/b flat1
+71:b1
+72:c2
+73:c sharp2/d flat2
+74:d2
+75:d sharp2/e flat2
+76:e2
+77:f2
+78:f sharp2/g flat2
+79:g2
+80:g sharp2/a flat2
+81:a2
+82:a sharp2/b flat2
+83:b2
+84:c3
+85:c sharp3/d flat3
+86:d3
+87:d sharp3/e flat3
+88:e3
+89:f3
+90:f sharp3/g flat3
+91:f3
+92:g sharp3/a flat3
+93:a3
+94:a sharp3/b flat3
+95:b3
+96:c4
+97:c sharp4/d flat4
+98:d4
+99:d sharp4/e flat4
+100:e4
+101:f4
+102:f sharp4/g flat4
+103:g4
+104:g sharp4/a flat4
+105:a4
+106:a sharp4/b flat4
+107:b4
+108:c5
+109:c sharp5/d flat5
+110:d5
+111:d sharp5/e flat5
+112:e5
+113:f5
+114:f sharp5/g flat5
+115:g5
+116:g sharp5/a flat5
+117:a5
+118:a sharp5/b flat5
+119:b5
+120:c6
+121:c sharp6/d flat6
+122:d6
+123:d sharp6/e flat6
+124:e6
+125:f6
+126:f sharp6/g flat6
+127:g6

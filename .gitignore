@@ -1,0 +1,33 @@
+.idea
+*.egg-info/
+eggs/
+.eggs/
+*.exe
+*.pyc
+/.vscode/
+*.code-workspace
+__pycache__
+# Sphinx documentation
+docs/_build/
+docs/build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# event data
+*.bin
+*.dat
+*.pt
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
