@@ -1,0 +1,4 @@
+gym
+atari-py
+opencv-python
+tianshou

@@ -1,0 +1,16 @@
+numpy
+scipy
+h5py
+torch
+torchvision
+torchaudio
+timm
+einops
+thop
+pyyaml
+loris
+tonic
+matplotlib
+seaborn
+pygame
+dv
