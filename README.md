@@ -1,3 +1,30 @@
+# BrainCog
+
+BrainCog is an open source spiking neural network based brain-inspired 
+cognitive intelligence engine for brain-inspired AI and brain simulation. 
+
+![image](./figures/logo.png)
+
+BrainCog provides essential and fundamental components to model biological and artificial intelligence.
+
+![image](./figures/braincog.jpg)
+
+## Brain-Inspired AI
+BrainCog currently provides cognitive functions components that can be classified 
+into five categories: 
+* Perception and Learning
+* Decision Making
+* Motor Control
+* Knowledge Representation and Reasoning
+* Social Cognition
+
+## Brain Simulation
+BrainCog currently include two parts for brain simulation:
+* Brain Cognitive Function Simulation
+* Multi-scale Brain Structure Simulation
+
+The anatomical and imaging data is used to support our simulation from various aspects. 
+
 ## Requirements:
 * CUDA toolkit == 11.
 * numpy >= 1.21.2
@@ -16,47 +43,36 @@
 * tonic (special)
 * pandas >= 1.4.2  
 * xlrd == 1.2.0
+
+
 ## Install
 
 ```
 # optional, if use datasets 
-git clone http://172.18.116.130:3000/floyed/tonic.git
+git clone https://github.com/FloyedShen/tonic.git
 cd tonic 
 pip install -e .
 
 pip install -r requirements.txt
 
-git clone http://172.18.116.130:3000/floyed/BrainCog.git
+git clone https://github.com/BrainCog-X/Brain-Cog.git
 cd BrainCog
 pip install -e .
 ```
 
-## Example:
+## Example 
 
-```python
-cd ./examples 
-python main.py --model cifar_convnet --dataset cifar10 --node-type PLIFNode --step 8 --device 1
+1. Examples for Image Classification
+```shell 
+cd ./examples/Perception_and_Learning/img_cls/bp 
+python main.py --model cifar_convnet --dataset cifar10 --node-type LIFNode --step 8 --device 0
 ```
 
-## Result
+2. Examples for Event Classification 
 
-|    Dataset    |      Accuracy       |                                                        Script                                                         |
-|:-------------:|:-------------------:|:---------------------------------------------------------------------------------------------------------------------:|
-|    CIFAR10    |  94.89 (epoch 535)  |                  ```python main.py --model cifar_convnet --node-type PLIFNode --step 8 --device 5```                  |
-|  DVS-CIFAR10  |  80.85 (epoch 343)  |  ```python main.py --device 0 --dataset dvsc10 --node-type PLIFNode --step 10 --model dvs_convnet --batch-size 32```  |
+```shell
+cd ./examples/Perception_and_Learning/img_cls/bp 
+python main.py --model dvs_convnet --node-type LIFNode --dataset dvsc10 --step 10 --batch-size 128 --act-fun QGateGrad --device 0 
+```
 
-## Log:
-
-### 2022.4.10
-
-* 修改名称为```BrainCog```;
-* 添加了文档系统;
-* 为```node.py```编写了文档;
-* 重新整理了```base```, 分成了五个模块;
-* 在130服务器上建立了git仓库;
-
-### 2020.4.29 
-* 添加地简化版本的图像分类训练脚本 ```train_simplified.py```.
-* 添加了 SNN ```layer wise``` 的前向传播方法.
-* 添加了针对事件数据的 ```EventMix``` 方法.
-* 修复了一些已知的BUG.
+Other BrainCog features and tutorials can be found at https://brain-cog.readthedocs.io
