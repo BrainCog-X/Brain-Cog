@@ -1,7 +1,7 @@
 # BrainCog
 
 BrainCog is an open source spiking neural network based brain-inspired 
-cognitive intelligence engine for brain-inspired AI and brain simulation. 
+cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. 
 
 ![image](./figures/logo.png)
 
