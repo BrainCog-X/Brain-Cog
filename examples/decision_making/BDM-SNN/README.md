@@ -5,7 +5,7 @@
 
 "BDM-SNN.py"，"BDM-SNN-hh.py"：pygame
 
- "BDM-SNN-UAV.py"：robomaster
+"BDM-SNN-UAV.py"：robomaster
 
 
 ## Run
