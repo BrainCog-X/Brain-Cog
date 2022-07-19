@@ -18,7 +18,8 @@ into five categories:
 * Knowledge Representation and Reasoning
 * Social Cognition
 
-![image](./figures/mirror-test.gif)
+
+<img src="./figures/mirror-test.gif" alt="mt" width="70%" />
 
 ## Brain Simulation
 BrainCog currently include two parts for brain simulation:
@@ -28,7 +29,7 @@ BrainCog currently include two parts for brain simulation:
 
 <img src="./figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="70%" />
 <img src="./figures/braincog-macaque-10s.gif" alt="bm10s" width="70%" />
-<img src="(./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="70%" />
+<img src="./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="70%" />
 
 
 The anatomical and imaging data is used to support our simulation from various aspects. 
