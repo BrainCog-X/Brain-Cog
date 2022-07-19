@@ -5,3 +5,4 @@ python codef.py
 
 # Result
 We train the model on Mnist and FashionMNIST, and the best accuracy for MNIST is 97.9%, for FashionMNIST is 87.0%.
+ 
