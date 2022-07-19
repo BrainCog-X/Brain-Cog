@@ -19,7 +19,7 @@ This repository contains code from our paper [**Brain-inspired Graph Spiking Neu
 
 ## Dataset
 
-ConceptNet: https://github.com/commonsense/conceptnet5
+ConceptNet: https://github.com/commonsense/conceptnet5 
 
 
 ## Run
