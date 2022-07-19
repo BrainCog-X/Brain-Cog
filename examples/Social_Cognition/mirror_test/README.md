@@ -1,4 +1,4 @@
-# Mirror Test
+# Mirror Test 
 
 The mirror_test.py implements the core code of the Multi-Robots Mirror Self-Recognition Test in "Toward Robot Self-Consciousness (II): Brain-Inspired Robot Bodily Self Model for Self-Recognition".
 
