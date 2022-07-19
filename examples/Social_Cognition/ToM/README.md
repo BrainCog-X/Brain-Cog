@@ -1,5 +1,4 @@
 # Requirments
-
 * numpy
 * scipy
 * pytorch >= 1.7.0
