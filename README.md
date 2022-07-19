@@ -19,7 +19,7 @@ into five categories:
 * Social Cognition
 
 
-<img src="./figures/mirror-test.gif" alt="mt" width="50%" /><img src="./figures/joy.gif" alt="mt" width="50%" />
+<img src="./figures/mirror-test.gif" alt="mt" width="70%" /><img src="./figures/joy.gif" alt="mt" width="70%" />
 
 ## Brain Simulation
 BrainCog currently include two parts for brain simulation:
@@ -27,7 +27,7 @@ BrainCog currently include two parts for brain simulation:
 * Multi-scale Brain Structure Simulation
 
 
-<img src="./figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="33%" /> <img src="./figures/braincog-macaque-10s.gif" alt="bm10s" width="33%" /><img src="./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="33%" />
+<img src="./figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="40%" /> <img src="./figures/braincog-macaque-10s.gif" alt="bm10s" width="40%" /><img src="./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="40%" />
 
 
 The anatomical and imaging data is used to support our simulation from various aspects. 
