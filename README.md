@@ -18,6 +18,8 @@ into five categories:
 * Knowledge Representation and Reasoning
 * Social Cognition
 
+![image](./figures/mirror-test.gif)
+
 ## Brain Simulation
 BrainCog currently include two parts for brain simulation:
 * Brain Cognitive Function Simulation
