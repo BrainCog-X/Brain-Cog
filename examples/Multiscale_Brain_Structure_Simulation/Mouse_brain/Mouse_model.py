@@ -9,14 +9,14 @@ from BrainCog.base.node.node import aEIF
 
 class Mouse_brain():
     """
-    鼠脑模型
-    :param tau_ad: 抑制适应变量的时间常数 [ms]
-    :param tau_I: 过滤突触输入的时间常数 [ms]
-    :param GammaII:  I to I 连通性
-    :param GammaIE: I to E 连通性
-    :param GammaEE: E to E 连通性
-    :param GammaEI: E to I 连通性
-    :param TEmean: 兴奋性神经元的平均电流
+    Rat brain model
+    :param tau_ad: Suppress the time constant of the adaptive variable [ms]
+    :param tau_I: Time constant for filtering synaptic input [ms]
+    :param GammaII:  I to I Connectivity
+    :param GammaIE: I to E Connectivity
+    :param GammaEE: E to E Connectivity
+    :param GammaEI: E to I Connectivity
+    :param TEmean: Average current of excitatory neurons
     """
 
     def __init__(self):
@@ -46,7 +46,7 @@ class Mouse_brain():
 
     def Mouse_model(self, sheet):
         """
-        鼠脑模型计算
+        Calculation of rat brain model
         """
         w = []
         for i in range(sheet.nrows):
