@@ -3,7 +3,7 @@
 BrainCog is an open source spiking neural network based brain-inspired 
 cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on BrainCog can be found on its homepage http://www.brain-cog.network/
 
-<img src="./figures/logo.png" alt="./figures/logo.png" width="60%" />
+<img src="./figures/logo.png" alt="./figures/logo.png" width="70%" />
 
 BrainCog provides essential and fundamental components to model biological and artificial intelligence.
 
@@ -25,9 +25,11 @@ BrainCog currently include two parts for brain simulation:
 * Brain Cognitive Function Simulation
 * Multi-scale Brain Structure Simulation
 
-![image](./figures/braincog-mouse-brain-model-10s.gif)
-![image](./figures/braincog-macaque-10s.gif)
-![image](./figures/braincog-humanbrain-10s.gif)
+
+<img src="./figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="70%" />
+<img src="./figures/braincog-macaque-10s.gif" alt="bm10s" width="70%" />
+<img src="(./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="70%" />
+
 
 The anatomical and imaging data is used to support our simulation from various aspects. 
 
