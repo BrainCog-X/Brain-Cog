@@ -9,9 +9,9 @@ from BrainCog.base.learningrule.STP import short_time
 
 class six_layer_pfc(): 
     """
-    定义全局参数
-    :param SizeHistOutput: 设置考虑修改 EPSP 的数量峰值
-    :param SizeHistInput: 设置输入神经元中可能的尖峰数
+    Define global parameters
+    :param SizeHistOutput: Set the peak value of the number of EPSP considered to be modified
+    :param SizeHistInput: Set the number of possible spikes in the input neuron
     """
     def __init__(self):
         self.pi = 3.14159265418
@@ -28,9 +28,9 @@ class six_layer_pfc():
 
     def mex_function(self, path=None):
         """
-        创建与神经元组突触保存相关的数组和参数
-        :param CtrPar: 存储神经元电生理参数
-        :param NumViewGroups: 创建与神经元组突触保存相关的数组和参数
+        Create arrays and parameters related to synaptic preservation of neuronal groups
+        :param CtrPar: Store electrophysiological parameters of neurons
+        :param NumViewGroups: Create arrays and parameters related to synaptic preservation of neuronal groups
         """
         data = scio.loadmat(path) 
         pi = self.pi
@@ -605,7 +605,7 @@ class six_layer_pfc():
 class SynType:
     def __init__(self):
         """
-        短期突触可塑性模型的参数
+        Parameters of short-term synaptic plasticity model
         """
         self.No = 0
         self.gmax = 0
@@ -622,7 +622,7 @@ class SynType:
 
 class Neuron:
     """
-    神经元的参数
+    Parameters of neurons
     """
     gfONsyn = None
     gfOFFsyn = None
@@ -666,7 +666,7 @@ class Neuron:
 
 class InpNeuron:
     """
-    输入神经元的参数
+    Input parameters of neurons
     """
     SPtrain = None
     SpikeTimes = None
@@ -684,7 +684,7 @@ class InpNeuron:
 
 class Synapse:
     """
-    突触的参数
+    Synaptic parameters
     """
     def __init__(self):
         self.STPtr = SynType()
@@ -696,7 +696,7 @@ class Synapse:
 
 class SynDepr:
     """
-    突触电流模型的参数
+    Parameters of synaptic current model
     """
     Adepr = None
     uprev = None
@@ -714,7 +714,7 @@ class SynDepr:
 
 class SynList:
     """
-    突触列表的参数
+    Parameters of synapse list
     """
     def __init__(self):
         self.NumSyn = 0
@@ -723,7 +723,7 @@ class SynList:
 
 if __name__ == '__main__':
      """
-        在网盘上下载好数据文件后，将文件路径修改为下载后的放置路径
+        After downloading the data file on the network disk, modify the file path to the downloaded placement path
      """
      test = six_layer_pfc()
      path = '/home/duchengcheng/braincog/examples/six_layer_pfc/data100.mat'
