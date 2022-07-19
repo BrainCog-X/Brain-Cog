@@ -22,7 +22,7 @@ Macaque Brain Simulation is a large scale brain modeling framework depending on 
 
 ## Example:
 
-```shell
+```shell 
 cd ~/examples/Multi-scale Brain Structure Simulation/MacaqueBrain/
 python brainSimMaq.py
 ```
