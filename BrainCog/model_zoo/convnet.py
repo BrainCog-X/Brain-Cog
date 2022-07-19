@@ -10,18 +10,6 @@ from BrainCog.model_zoo.base_module import BaseModule, BaseConvModule, BaseLinea
 
 
 class BaseConvNet(BaseModule, abc.ABC):
-    """
-    :param step: 仿真步长
-    :param input_channels: 输入通道数量
-    :param num_classes: 输出类别数量
-    :param encode_type: 编码方式
-    :param spike_output: 是否输出spike, 默认 ``False``
-    :param out_channels: 输出通道数量
-    :param block_depth: 每个block的深度
-    :param node_list: 神经元的类型, List [node_1, ... node_n]
-    :param args:
-    :param kwargs:
-    """
     def __init__(self,
                  step,
                  input_channels,
@@ -112,9 +100,6 @@ class BaseConvNet(BaseModule, abc.ABC):
 
 
 class MNISTConvNet(BaseConvNet):
-    """
-    MNISTConvNet 针对于 MNIST 基础的卷积SNN模型
-    """
     def __init__(self,
                  step,
                  input_channels,
@@ -178,9 +163,6 @@ class MNISTConvNet(BaseConvNet):
 
 
 class CifarConvNet(BaseConvNet):
-    """
-    针对于CIFAR10 / CIFAR100 基本的卷积模型
-    """
     def __init__(self,
                  step,
                  input_channels,
@@ -229,7 +211,7 @@ class CifarConvNet(BaseConvNet):
         if self.block_depth[feature_depth - 1] != 1:
             feature.extend(
                 [BaseConvModule(self.out_channels[-2], self.out_channels[-2], node=self.node_list[-2], groups=self.groups)] * (
-                    self.block_depth[-2] - 1),
+                    self.block_depth[feature_depth - 1] - 1),
             )
         feature.append(nn.AdaptiveAvgPool2d((1, 1)))
 
