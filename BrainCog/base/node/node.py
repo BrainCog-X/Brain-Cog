@@ -974,20 +974,20 @@ class CTIzhNode(IzhNode):
 
 class aEIF(BaseNode):
     """
-        自适应阈值的神经元模型
-        :param args: 其他的参数
-        :param kwargs: 其他的参数
+        The adaptive Exponential Integrate-and-Fire model (aEIF)
+        :param args: Other parameters
+        :param kwargs: Other parameters
     """
     def __init__(self,*args,**kwargs):
         super().__init__(requires_fp=False, *args, **kwargs)
 
     def aEIFNode(self,v,dt,c_m,g_m,alpha_w,ad,Ieff,Ichem,Igap,tau_ad,beta_ad,vt,vm1):
         """
-                计算由当前达到阈值后放电的神经元
-                :param v: 当前神经元的电压
-                :param dt: 时间步长
-                :param ad:适应变量
-                :param vv:尖峰，如果电压从下方超过阈值
+                Calculate the neurons that discharge after the current threshold is reached
+                :param v: Current neuron voltage
+                :param dt: time step
+                :param ad:Adaptive variable
+                :param vv:Spike, if the voltage exceeds the threshold from below
         """
         v = v + dt / c_m * (-g_m * v + alpha_w * ad + Ieff + Ichem + Igap)
         ad = ad + dt / tau_ad * (-ad + beta_ad * v)
