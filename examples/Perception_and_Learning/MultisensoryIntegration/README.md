@@ -1,4 +1,4 @@
-# Multisensory Integration DEMO
+# Multisensory Integration
 
 In `MultisensoryIntegrationDEMO_AM.py` and `MultisensoryIntegrationDEMO_AM.py`, we implement the SNNs based multisensory integration framework. To load the dataset, preprocess it and get the weights with the function `get_concept_datase_dic_and_initial_weights_lst()`​. We use `IMNet`​ or ​`AMNet`​ to describe the structure of the IM/AM model. For presynaptic neuron, we use the function `convert_vec_into_spike_trains()​` to generate the spike trains.
 
@@ -41,6 +41,9 @@ To measure and analysis the vectors:
 cd examples/MultisensoryIntegration/code
 python measure_and_visualization.py
 ```
+
+
+
 
 
 
