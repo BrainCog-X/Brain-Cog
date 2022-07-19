@@ -116,16 +116,16 @@ However, in the final version of BrainCog, we remove this pooling layer.
 If you find this package helpful, please consider citing it:
 
 ```BibTex
-@software{name,
-  author       = {xxx},
-  title        = {BrainCog: xxx},
-  month        = jul,
-  year         = 2022,
-  note         = {{Documentation available under 
-                   https://xxx.readthedocs.io}},
-  publisher    = {Zenodo},
-  version      = {xxx},
-  doi          = {xxx},
-  url          = {xxx}
-}
+@misc{zengBrainCogSpikingNeural2022,
+  title = {{{BrainCog}}: {{A Spiking Neural Network}} Based {{Brain-inspired Cognitive Intelligence Engine}} for {{Brain-inspired AI}} and {{Brain Simulation}}},
+  shorttitle = {{{BrainCog}}},
+  author = {Zeng, Yi and Zhao, Dongcheng and Zhao, Feifei and Shen, Guobin and Dong, Yiting and Lu, Enmeng and Zhang, Qian and Sun, Yinqian and Liang, Qian and Zhao, Yuxuan and Zhao, Zhuoya and Fang, Hongjian and Wang, Yuwei and Li, Yang and Liu, Xin and Du, Chengcheng and Kong, Qingqun and Ruan, Zizhe and Bi, Weida},
+  year = {2022},
+  month = jul,
+  number = {arXiv:2207.08533},
+  eprint = {2207.08533},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.2207.08533}
 ```
