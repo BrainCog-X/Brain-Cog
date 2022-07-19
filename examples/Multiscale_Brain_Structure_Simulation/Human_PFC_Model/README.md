@@ -2,7 +2,7 @@
 
 * The program inputs electrophysiological data from six cortical columns, and the number in the data file name indicates the number of neurons. The program has background current input by default. The data+number named is the file with random input stimuli, and the input picture stimulus files are for human parameters and mouse parameters, respectively. Both support four shapes of picture files, circle, square, triangle and star, respectively.
 
-链接：https://drive.google.com/drive/folders/1AVc2aNTxkcsGAPlq1SuWtatGzyQRPCmp?usp=sharing
+Link：https://drive.google.com/drive/folders/1AVc2aNTxkcsGAPlq1SuWtatGzyQRPCmp?usp=sharing
 
 
 
