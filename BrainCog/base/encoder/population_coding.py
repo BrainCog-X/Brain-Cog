@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torchvision.utils
 
-
 class PEncoder(nn.Module):
     """
     Population coding
