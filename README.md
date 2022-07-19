@@ -75,4 +75,4 @@ cd ./examples/Perception_and_Learning/img_cls/bp
 python main.py --model dvs_convnet --node-type LIFNode --dataset dvsc10 --step 10 --batch-size 128 --act-fun QGateGrad --device 0 
 ```
 
-Other BrainCog features and tutorials can be found at https://brain-cog.readthedocs.io
+Other BrainCog features and tutorials can be found at http://www.brain-cog.network/docs/
