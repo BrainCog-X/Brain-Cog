@@ -19,7 +19,7 @@ into five categories:
 * Social Cognition
 
 
-<img src="./figures/mirror-test.gif" alt="mt" width="40%" /><img src="./figures/joy.gif" alt="mt" width="40%" />
+<img src="./figures/mirror-test.gif" alt="mt" width="45%" /><img src="./figures/joy.gif" alt="mt" width="45%" />
 
 ## Brain Simulation
 BrainCog currently include two parts for brain simulation:
