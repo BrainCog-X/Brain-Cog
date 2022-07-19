@@ -41,7 +41,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'recommonmark',
-    'sphinx_markdown_tables',
+#     'sphinx_markdown_tables',
 ]
 
 
