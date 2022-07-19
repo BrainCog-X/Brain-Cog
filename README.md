@@ -23,6 +23,10 @@ BrainCog currently include two parts for brain simulation:
 * Brain Cognitive Function Simulation
 * Multi-scale Brain Structure Simulation
 
+![image](./figures/braincog-mouse brain model-10s.jpg)
+![image](./figures/braincog-macaque-10s.jpg)
+![image](./figures/braincog-humanbrain-10s.jpg)
+
 The anatomical and imaging data is used to support our simulation from various aspects. 
 
 ## Requirements:
