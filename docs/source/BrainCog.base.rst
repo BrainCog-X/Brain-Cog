@@ -1,4 +1,4 @@
-BrainCog.base package
+braincog.base package
 =====================
 
 Subpackages
@@ -7,18 +7,18 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   BrainCog.base.brainarea
-   BrainCog.base.connection
-   BrainCog.base.encoder
-   BrainCog.base.learningrule
-   BrainCog.base.node
-   BrainCog.base.strategy
-   BrainCog.base.utils
+   braincog.base.brainarea
+   braincog.base.connection
+   braincog.base.encoder
+   braincog.base.learningrule
+   braincog.base.node
+   braincog.base.strategy
+   braincog.base.utils
 
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base
+.. automodule:: braincog.base
    :members:
    :undoc-members:
    :show-inheritance:

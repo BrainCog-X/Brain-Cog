@@ -11,9 +11,9 @@ import torch
 from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
-from BrainCog.base.node.node import *
-from BrainCog.base.learningrule.STDP import *
-from BrainCog.base.connection.CustomLinear import *
+from braincog.base.node.node import *
+from braincog.base.learningrule.STDP import *
+from braincog.base.connection.CustomLinear import *
 
 
 class BrainArea(nn.Module, abc.ABC):

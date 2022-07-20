@@ -13,12 +13,12 @@ from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-from BrainCog.base.strategy.surrogate import *
-from BrainCog.base.node.node import IFNode
-from BrainCog.base.learningrule.STDP import STDP,MutliInputSTDP
-from BrainCog.base.connection.CustomLinear import CustomLinear
-from BrainCog.model_zoo.nonlinearNet import droDMTestNet
-from BrainCog.model_zoo.linearNet import droDMTrainNet
+from braincog.base.strategy.surrogate import *
+from braincog.base.node.node import IFNode
+from braincog.base.learningrule.STDP import STDP,MutliInputSTDP
+from braincog.base.connection.CustomLinear import CustomLinear
+from braincog.model_zoo.nonlinearNet import droDMTestNet
+from braincog.model_zoo.linearNet import droDMTrainNet
 
 if __name__=="__main__":
     """

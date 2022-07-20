@@ -4,9 +4,9 @@ import tqdm
 import numpy as np
 import torch
 import torch.nn.functional as F
-from BrainCog.datasets.datasets import get_mnist_data
-from BrainCog.datasets.gen_input_signal import lambda_max
-from BrainCog.model_zoo.qsnn import Net
+from braincog.datasets.datasets import get_mnist_data
+from braincog.datasets.gen_input_signal import lambda_max
+from braincog.model_zoo.qsnn import Net
 
 
 LOG_DIR = os.path.expanduser('./results.txt')

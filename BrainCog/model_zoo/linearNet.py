@@ -1,8 +1,8 @@
 import torch.nn.functional as F
 
-from BrainCog.base.strategy.surrogate import *
-from BrainCog.base.node.node import IFNode
-from BrainCog.base.learningrule.STDP import STDP, MutliInputSTDP
+from braincog.base.strategy.surrogate import *
+from braincog.base.node.node import IFNode
+from braincog.base.learningrule.STDP import STDP, MutliInputSTDP
 
 
 class droDMTrainNet(nn.Module):

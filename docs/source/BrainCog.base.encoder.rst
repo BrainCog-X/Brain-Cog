@@ -1,21 +1,21 @@
-BrainCog.base.encoder package
+braincog.base.encoder package
 =============================
 
 Submodules
 ----------
 
-BrainCog.base.encoder.encoder module
+braincog.base.encoder.encoder module
 ------------------------------------
 
-.. automodule:: BrainCog.base.encoder.encoder
+.. automodule:: braincog.base.encoder.encoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.encoder.population\_coding module
+braincog.base.encoder.population\_coding module
 -----------------------------------------------
 
-.. automodule:: BrainCog.base.encoder.population_coding
+.. automodule:: braincog.base.encoder.population_coding
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ BrainCog.base.encoder.population\_coding module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base.encoder
+.. automodule:: braincog.base.encoder
    :members:
    :undoc-members:
    :show-inheritance:

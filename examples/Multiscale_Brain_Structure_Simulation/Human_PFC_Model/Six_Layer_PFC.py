@@ -4,7 +4,7 @@ import random as rand
 import copy
 import os
 import pandas as pd
-from BrainCog.base.learningrule.STP import short_time
+from braincog.base.learningrule.STP import short_time
 
 
 class six_layer_pfc(): 

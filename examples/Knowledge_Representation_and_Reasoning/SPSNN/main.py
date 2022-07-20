@@ -5,9 +5,9 @@ import warnings
 import math
 from matplotlib import pyplot as plt
 import torch
-from BrainCog.base.node.node import *
-from BrainCog.base.brainarea.BrainArea import *
-from BrainCog.utils import *
+from braincog.base.node.node import *
+from braincog.base.brainarea.BrainArea import *
+from braincog.utils import *
 
 
 warnings.filterwarnings('ignore')

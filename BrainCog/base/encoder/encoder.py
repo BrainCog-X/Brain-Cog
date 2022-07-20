@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from einops import rearrange, repeat
-from BrainCog.base.strategy.surrogate import GateGrad
+from braincog.base.strategy.surrogate import GateGrad
 
 
 class Encoder(nn.Module):

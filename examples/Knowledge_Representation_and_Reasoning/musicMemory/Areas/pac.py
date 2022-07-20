@@ -2,7 +2,7 @@
 Primary Auditory Area
 '''
 
-from BrainCog.base.brainarea.BrainArea import BrainArea
+from braincog.base.brainarea.BrainArea import BrainArea
 
 from Modal.sequencememory import SequenceMemory
 from Modal.notesequencelayer import NoteSequenceLayer

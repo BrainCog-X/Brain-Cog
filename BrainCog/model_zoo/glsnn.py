@@ -1,11 +1,11 @@
 import abc
 from functools import partial
 from timm.models import register_model
-from BrainCog.base.node.node import *
-from BrainCog.base.connection.layer import *
-from BrainCog.base.encoder.encoder import *
-from BrainCog.model_zoo.base_module import BaseModule, BaseLinearModule, BaseConvModule
-from BrainCog.utils import rand_ortho, mse
+from braincog.base.node.node import *
+from braincog.base.connection.layer import *
+from braincog.base.encoder.encoder import *
+from braincog.model_zoo.base_module import BaseModule, BaseLinearModule, BaseConvModule
+from braincog.utils import rand_ortho, mse
 from torch import autograd
 
 

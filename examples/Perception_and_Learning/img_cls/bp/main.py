@@ -9,14 +9,14 @@ from collections import OrderedDict
 from contextlib import suppress
 from datetime import datetime
 
-from BrainCog.base.node.node import *
-from BrainCog.utils import *
-from BrainCog.base.utils.criterions import *
-from BrainCog.datasets.datasets import *
-from BrainCog.model_zoo.resnet import *
-from BrainCog.model_zoo.convnet import *
-from BrainCog.utils import save_feature_map, setup_seed
-from BrainCog.base.utils.visualization import plot_tsne_3d, plot_tsne, plot_confusion_matrix
+from braincog.base.node.node import *
+from braincog.utils import *
+from braincog.base.utils.criterions import *
+from braincog.datasets.datasets import *
+from braincog.model_zoo.resnet import *
+from braincog.model_zoo.convnet import *
+from braincog.utils import save_feature_map, setup_seed
+from braincog.base.utils.visualization import plot_tsne_3d, plot_tsne, plot_confusion_matrix
 
 import torch
 import torch.nn as nn
@@ -239,7 +239,7 @@ parser.add_argument('--pin-mem', action='store_true', default=False,
                     help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
 parser.add_argument('--no-prefetcher', action='store_true', default=False,
                     help='disable fast prefetcher')
-parser.add_argument('--output', default='/data/floyed/BrainCog', type=str, metavar='PATH',
+parser.add_argument('--output', default='/data/floyed/braincog', type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',
                     help='Best metric (default: "top1"')

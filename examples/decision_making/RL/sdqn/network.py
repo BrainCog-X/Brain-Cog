@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from BrainCog.base.node.node import LIFNode
+from braincog.base.node.node import LIFNode
 from normalization import PopNorm
 
 

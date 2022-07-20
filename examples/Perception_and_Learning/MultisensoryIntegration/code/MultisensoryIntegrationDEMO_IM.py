@@ -4,7 +4,7 @@ __author__ = 'Yuwei Wang'
 import torch
 import pandas as pd
 from torch import nn
-from BrainCog.base.node.node import LIFNode, IzhNode
+from braincog.base.node.node import LIFNode, IzhNode
 from torch.nn.parameter import Parameter
 
 

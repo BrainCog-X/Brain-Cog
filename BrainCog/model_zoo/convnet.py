@@ -3,10 +3,10 @@ from functools import partial
 from torch.nn import functional as F
 import torchvision
 from timm.models import register_model
-from BrainCog.base.node.node import *
-from BrainCog.base.connection.layer import *
-from BrainCog.base.encoder.encoder import *
-from BrainCog.model_zoo.base_module import BaseModule, BaseConvModule, BaseLinearModule
+from braincog.base.node.node import *
+from braincog.base.connection.layer import *
+from braincog.base.encoder.encoder import *
+from braincog.model_zoo.base_module import BaseModule, BaseConvModule, BaseLinearModule
 
 
 class BaseConvNet(BaseModule, abc.ABC):

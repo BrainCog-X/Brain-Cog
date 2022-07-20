@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-from BrainCog.datasets.NOmniglot.utils import *
+from braincog.datasets.NOmniglot.utils import *
 
 
 class NOmniglot(Dataset):

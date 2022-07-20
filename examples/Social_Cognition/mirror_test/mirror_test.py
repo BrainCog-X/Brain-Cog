@@ -1,8 +1,8 @@
-from BrainCog.base.brainarea.Insula import *
-from BrainCog.base.brainarea.IPL import *
-from BrainCog.base.learningrule.STDP import *
-from BrainCog.base.node.node import *
-from BrainCog.base.connection.CustomLinear import *
+from braincog.base.brainarea.Insula import *
+from braincog.base.brainarea.IPL import *
+from braincog.base.learningrule.STDP import *
+from braincog.base.node.node import *
+from braincog.base.connection.CustomLinear import *
 import random
 import numpy as np
 import torch
@@ -21,7 +21,7 @@ from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-from BrainCog.base.strategy.surrogate import *
+from braincog.base.strategy.surrogate import *
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"

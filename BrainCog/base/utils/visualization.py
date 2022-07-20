@@ -3,7 +3,7 @@
 # Datetime  : 2022/7/1 11:10
 # User      : Floyed
 # Product   : PyCharm
-# Project   : BrainCog
+# Project   : braincog
 # File      : visualization.py
 # explain   : add t-SNE
 

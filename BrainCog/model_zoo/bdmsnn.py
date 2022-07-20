@@ -2,10 +2,10 @@
 import torch
 from torch import nn
 
-from BrainCog.base.node.node import IFNode, SimHHNode
-from BrainCog.base.learningrule.STDP import STDP, MutliInputSTDP
-from BrainCog.base.connection.CustomLinear import CustomLinear
-from BrainCog.base.brainarea.basalganglia import basalganglia
+from braincog.base.node.node import IFNode, SimHHNode
+from braincog.base.learningrule.STDP import STDP, MutliInputSTDP
+from braincog.base.connection.CustomLinear import CustomLinear
+from braincog.base.brainarea.basalganglia import basalganglia
 
 import pygame
 from pygame.locals import *

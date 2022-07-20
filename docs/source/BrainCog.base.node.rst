@@ -1,13 +1,13 @@
-BrainCog.base.node package
+braincog.base.node package
 ==========================
 
 Submodules
 ----------
 
-BrainCog.base.node.node module
+braincog.base.node.node module
 ------------------------------
 
-.. automodule:: BrainCog.base.node.node
+.. automodule:: braincog.base.node.node
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ BrainCog.base.node.node module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base.node
+.. automodule:: braincog.base.node
    :members:
    :undoc-members:
    :show-inheritance:

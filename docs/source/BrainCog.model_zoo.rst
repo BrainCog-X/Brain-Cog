@@ -1,93 +1,93 @@
-BrainCog.model\_zoo package
+braincog.model\_zoo package
 ===========================
 
 Submodules
 ----------
 
-BrainCog.model\_zoo.base\_module module
+braincog.model\_zoo.base\_module module
 ---------------------------------------
 
-.. automodule:: BrainCog.model_zoo.base_module
+.. automodule:: braincog.model_zoo.base_module
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.bdmsnn module
+braincog.model\_zoo.bdmsnn module
 ---------------------------------
 
-.. automodule:: BrainCog.model_zoo.bdmsnn
+.. automodule:: braincog.model_zoo.bdmsnn
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.convnet module
+braincog.model\_zoo.convnet module
 ----------------------------------
 
-.. automodule:: BrainCog.model_zoo.convnet
+.. automodule:: braincog.model_zoo.convnet
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.convxnet module
+braincog.model\_zoo.convxnet module
 -----------------------------------
 
-.. automodule:: BrainCog.model_zoo.convxnet
+.. automodule:: braincog.model_zoo.convxnet
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.glsnn module
+braincog.model\_zoo.glsnn module
 --------------------------------
 
-.. automodule:: BrainCog.model_zoo.glsnn
+.. automodule:: braincog.model_zoo.glsnn
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.linearNet module
+braincog.model\_zoo.linearNet module
 ------------------------------------
 
-.. automodule:: BrainCog.model_zoo.linearNet
+.. automodule:: braincog.model_zoo.linearNet
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.nonlinearNet module
+braincog.model\_zoo.nonlinearNet module
 ---------------------------------------
 
-.. automodule:: BrainCog.model_zoo.nonlinearNet
+.. automodule:: braincog.model_zoo.nonlinearNet
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.parnet module
+braincog.model\_zoo.parnet module
 ---------------------------------
 
-.. automodule:: BrainCog.model_zoo.parnet
+.. automodule:: braincog.model_zoo.parnet
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.qsnn module
+braincog.model\_zoo.qsnn module
 -------------------------------
 
-.. automodule:: BrainCog.model_zoo.qsnn
+.. automodule:: braincog.model_zoo.qsnn
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.reactnet module
+braincog.model\_zoo.reactnet module
 -----------------------------------
 
-.. automodule:: BrainCog.model_zoo.reactnet
+.. automodule:: braincog.model_zoo.reactnet
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.model\_zoo.resnet module
+braincog.model\_zoo.resnet module
 ---------------------------------
 
-.. automodule:: BrainCog.model_zoo.resnet
+.. automodule:: braincog.model_zoo.resnet
    :members:
    :undoc-members:
    :show-inheritance:
@@ -95,7 +95,7 @@ BrainCog.model\_zoo.resnet module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.model_zoo
+.. automodule:: braincog.model_zoo
    :members:
    :undoc-members:
    :show-inheritance:

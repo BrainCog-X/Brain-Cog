@@ -1,29 +1,29 @@
-BrainCog.base.utils package
+braincog.base.utils package
 ===========================
 
 Submodules
 ----------
 
-BrainCog.base.utils.criterions module
+braincog.base.utils.criterions module
 -------------------------------------
 
-.. automodule:: BrainCog.base.utils.criterions
+.. automodule:: braincog.base.utils.criterions
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.utils.gen\_input\_signal module
+braincog.base.utils.gen\_input\_signal module
 ---------------------------------------------
 
-.. automodule:: BrainCog.base.utils.gen_input_signal
+.. automodule:: braincog.base.utils.gen_input_signal
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.utils.visualization module
+braincog.base.utils.visualization module
 ----------------------------------------
 
-.. automodule:: BrainCog.base.utils.visualization
+.. automodule:: braincog.base.utils.visualization
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ BrainCog.base.utils.visualization module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base.utils
+.. automodule:: braincog.base.utils
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,6 +1,6 @@
 import torch
 import os
-from BrainCog.model_zoo.bdmsnn import BDMSNN
+from braincog.model_zoo.bdmsnn import BDMSNN
 import pygame
 from pygame.locals import *
 from collections import deque
