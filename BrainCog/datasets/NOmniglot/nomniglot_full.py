@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
-from BrainCog.datasets.NOmniglot.NOmniglot import NOmniglot
+from braincog.datasets.NOmniglot.NOmniglot import NOmniglot
 
 
 class NOmniglotfull(Dataset):

@@ -5,7 +5,7 @@ from scipy.signal import fftconvolve
 import torch
 from torch.nn import Parameter
 import torch.nn as nn
-from BrainCog.datasets.gen_input_signal import img2spikes, lambda_max, dt
+from braincog.datasets.gen_input_signal import img2spikes, lambda_max, dt
 
 gamma = 0.1
 beta = 1.0

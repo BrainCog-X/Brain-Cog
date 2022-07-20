@@ -1,8 +1,8 @@
 from functools import partial
 from torchvision.ops import DeformConv2d
-from BrainCog.base.node.node import *
-from BrainCog.base.connection.layer import *
-from BrainCog.base.encoder.encoder import *
+from braincog.base.node.node import *
+from braincog.base.connection.layer import *
+from braincog.base.encoder.encoder import *
 
 
 class BaseLinearModule(nn.Module):

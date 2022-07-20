@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 import time
 import os
 from CIFAR10_VGG16 import VGG16
-from BrainCog.utils import setup_seed
-from BrainCog.datasets.datasets import get_cifar10_data
-from BrainCog.base.conversion import Convertor
+from braincog.utils import setup_seed
+from braincog.datasets.datasets import get_cifar10_data
+from braincog.base.conversion import Convertor
 import argparse
 
 

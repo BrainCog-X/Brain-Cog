@@ -3,8 +3,8 @@ import torch,os
 from random import randint
 import torch
 from torch import nn
-from BrainCog.base.strategy.surrogate import *
-from BrainCog.model_zoo.bdmsnn import BDMSNN
+from braincog.base.strategy.surrogate import *
+from braincog.model_zoo.bdmsnn import BDMSNN
 import pygame
 from pygame.locals import *
 from collections import deque

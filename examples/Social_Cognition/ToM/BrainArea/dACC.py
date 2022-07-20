@@ -8,9 +8,9 @@ import time
 import sys
 from tqdm import tqdm
 
-from BrainCog.base.encoder.population_coding import *
-from BrainCog.model_zoo.base_module import BaseLinearModule, BaseModule
-from BrainCog.base.learningrule.STDP import *
+from braincog.base.encoder.population_coding import *
+from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
+from braincog.base.learningrule.STDP import *
 import sys
 sys.path.append("..")
 
@@ -96,7 +96,7 @@ class dACC(BaseModule):
 #     num_popneurons = 2
 #     safety = 2
 #     epoch = 50
-#     file_name = "/home/zhaozhuoya/BrainCog/examples/ToM/data/injury_value.txt"
+#     file_name = "/home/zhaozhuoya/braincog/examples/ToM/data/injury_value.txt"
 #     state = []
 #     with open(file_name) as f:
 #         data = []
@@ -108,7 +108,7 @@ class dACC(BaseModule):
 #     train_y = output
 #     test_y = output[79:82]#output[12].reshape(1,2)
 #
-#     file_name = "/home/zhaozhuoya/BrainCog/examples/ToM/data/injury_memory.txt"
+#     file_name = "/home/zhaozhuoya/braincog/examples/ToM/data/injury_memory.txt"
 #     state = []
 #     with open(file_name) as f:
 #         data_split = f.readlines()

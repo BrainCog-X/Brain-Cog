@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from BrainCog.base.connection.layer import SMaxPool, LIPool
+from braincog.base.connection.layer import SMaxPool, LIPool
 from .merge import mergeConvBN
 import types
 

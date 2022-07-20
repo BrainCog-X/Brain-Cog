@@ -7,8 +7,8 @@ import sys
 from functools import partial
 from timm.models import register_model
 from timm.models.layers import trunc_normal_, DropPath
-from BrainCog.model_zoo.base_module import *
-from BrainCog.base.node.node import *
+from braincog.model_zoo.base_module import *
+from braincog.base.node.node import *
 
 __all__ = [
     'ResNet',

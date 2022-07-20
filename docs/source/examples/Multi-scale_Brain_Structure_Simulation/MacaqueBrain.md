@@ -1,7 +1,7 @@
 # Macaque Brain Simulation
 
 ## Description
-Macaque Brain Simulation is a large scale brain modeling framework depending on BrainCog framework.
+Macaque Brain Simulation is a large scale brain modeling framework depending on braincog framework.
 
 ## Requirements:
 * numpy >= 1.21.2

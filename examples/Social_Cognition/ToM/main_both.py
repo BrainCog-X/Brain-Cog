@@ -25,10 +25,10 @@ from BrainArea.PFC_ToM import PFC_ToM
 from rulebasedpolicy.Find_a_way import *
 from env.env3_train_env00 import FalseBelief_env0   #3
 from env.env3_train_env01 import FalseBelief_env1   #2
-from BrainCog.base.connection import layer
-from BrainCog.base.encoder.encoder import *
-from BrainCog.base.node import node
-from BrainCog.model_zoo.base_module import BaseLinearModule, BaseModule
+from braincog.base.connection import layer
+from braincog.base.encoder.encoder import *
+from braincog.base.node import node
+from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
 torch.manual_seed(1)
 #NPC2
 #state

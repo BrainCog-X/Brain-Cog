@@ -9,12 +9,12 @@ from abc import ABC
 
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-#from BrainCog.base.strategy.surrogate import *
-from BrainCog.base.node.node import IFNode
-from BrainCog.base.learningrule.STDP import STDP,MutliInputSTDP
-from BrainCog.base.connection.CustomLinear import CustomLinear
-from BrainCog.base.brainarea.basalganglia import basalganglia
-from BrainCog.model_zoo.bdmsnn import BDMSNN
+#from braincog.base.strategy.surrogate import *
+from braincog.base.node.node import IFNode
+from braincog.base.learningrule.STDP import STDP,MutliInputSTDP
+from braincog.base.connection.CustomLinear import CustomLinear
+from braincog.base.brainarea.basalganglia import basalganglia
+from braincog.model_zoo.bdmsnn import BDMSNN
 
 from robomaster import robot
 import time

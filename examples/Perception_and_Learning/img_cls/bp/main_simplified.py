@@ -3,7 +3,7 @@
 # Datetime  : 2022/4/28 14:56
 # User      : Floyed
 # Product   : PyCharm
-# Project   : BrainCog
+# Project   : braincog
 # File      : main_simplified.py
 # explain   : Simplified training script. Remove support for DDP, IMAGENET, Augment, etc.
 
@@ -18,13 +18,13 @@ from collections import OrderedDict
 from contextlib import suppress
 from datetime import datetime
 
-from BrainCog.base.node.node import *
-from BrainCog.utils import *
-from BrainCog.base.utils.criterions import *
-from BrainCog.datasets.datasets import *
-from BrainCog.model_zoo.resnet import *
-from BrainCog.model_zoo.convnet import *
-from BrainCog.utils import save_feature_map
+from braincog.base.node.node import *
+from braincog.utils import *
+from braincog.base.utils.criterions import *
+from braincog.datasets.datasets import *
+from braincog.model_zoo.resnet import *
+from braincog.model_zoo.convnet import *
+from braincog.utils import save_feature_map
 
 import torch
 import torch.nn as nn
@@ -125,7 +125,7 @@ parser.add_argument('--recovery-interval', type=int, default=0, metavar='N',
 parser.add_argument('-j', '--workers', type=int, default=8, metavar='N',
                     help='how many training processes to use (default: 1)')
 parser.add_argument('--device', type=int, default=0)
-parser.add_argument('--output', default='/data/floyed/BrainCog', type=str, metavar='PATH',
+parser.add_argument('--output', default='/data/floyed/braincog', type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',
                     help='Best metric (default: "top1"')

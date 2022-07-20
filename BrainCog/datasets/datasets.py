@@ -13,9 +13,9 @@ from timm.data import create_transform
 
 from torchvision import transforms
 from typing import Any, Dict, Optional, Sequence, Tuple, Union
-from BrainCog.datasets.NOmniglot.nomniglot_full import NOmniglotfull
-from BrainCog.datasets.NOmniglot.nomniglot_nw_ks import NOmniglotNWayKShot
-from BrainCog.datasets.NOmniglot.nomniglot_pair import NOmniglotTrainSet, NOmniglotTestSet
+from braincog.datasets.NOmniglot.nomniglot_full import NOmniglotfull
+from braincog.datasets.NOmniglot.nomniglot_nw_ks import NOmniglotNWayKShot
+from braincog.datasets.NOmniglot.nomniglot_pair import NOmniglotTrainSet, NOmniglotTestSet
 
 from .utils import dvs_channel_check_expend, rescale
 

@@ -16,7 +16,7 @@ setup(
         "License :: Other/Proprietary License",
         "Operating System :: OS Independent",
     ],
-    name='BrainCog',
+    name='braincog',
     version='0.2.1',
     author='',
     python_requires='>=3.6'

@@ -1,4 +1,4 @@
-BrainCog.datasets package
+braincog.datasets package
 =========================
 
 Subpackages
@@ -7,39 +7,39 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   BrainCog.datasets.NOmniglot
+   braincog.datasets.NOmniglot
 
 Submodules
 ----------
 
-BrainCog.datasets.cut\_mix module
+braincog.datasets.cut\_mix module
 ---------------------------------
 
-.. automodule:: BrainCog.datasets.cut_mix
+.. automodule:: braincog.datasets.cut_mix
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.datasets.datasets module
+braincog.datasets.datasets module
 ---------------------------------
 
-.. automodule:: BrainCog.datasets.datasets
+.. automodule:: braincog.datasets.datasets
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.datasets.rand\_aug module
+braincog.datasets.rand\_aug module
 ----------------------------------
 
-.. automodule:: BrainCog.datasets.rand_aug
+.. automodule:: braincog.datasets.rand_aug
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.datasets.utils module
+braincog.datasets.utils module
 ------------------------------
 
-.. automodule:: BrainCog.datasets.utils
+.. automodule:: braincog.datasets.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ BrainCog.datasets.utils module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.datasets
+.. automodule:: braincog.datasets
    :members:
    :undoc-members:
    :show-inheritance:

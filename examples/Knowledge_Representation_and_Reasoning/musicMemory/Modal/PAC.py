@@ -2,10 +2,10 @@
 Primary Auditory Cortex
 '''
 import torch
-from BrainCog.base.node.node import *
-from BrainCog.base.brainarea.BrainArea import *
-from BrainCog.base.connection import CustomLinear
-from BrainCog.base.learningrule.STDP import *
+from braincog.base.node.node import *
+from braincog.base.brainarea.BrainArea import *
+from braincog.base.connection import CustomLinear
+from braincog.base.learningrule.STDP import *
 
 class PAC(BrainArea):
 

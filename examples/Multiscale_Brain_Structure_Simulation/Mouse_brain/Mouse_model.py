@@ -4,7 +4,7 @@ import numpy as np
 import random
 import math
 import scipy.io as sci
-from BrainCog.base.node.node import aEIF
+from braincog.base.node.node import aEIF
 
 
 class Mouse_brain():

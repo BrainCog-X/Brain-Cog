@@ -2,7 +2,7 @@ import torch
 from torchvision import transforms
 import torchvision.datasets as datasets
 from torch.utils.data import DataLoader
-from BrainCog.model_zoo.glsnn import BaseGLSNN
+from braincog.model_zoo.glsnn import BaseGLSNN
 import argparse
 import time
 import os

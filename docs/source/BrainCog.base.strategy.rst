@@ -1,21 +1,21 @@
-BrainCog.base.strategy package
+braincog.base.strategy package
 ==============================
 
 Submodules
 ----------
 
-BrainCog.base.strategy.LateralInhibition module
+braincog.base.strategy.LateralInhibition module
 -----------------------------------------------
 
-.. automodule:: BrainCog.base.strategy.LateralInhibition
+.. automodule:: braincog.base.strategy.LateralInhibition
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.strategy.surrogate module
+braincog.base.strategy.surrogate module
 ---------------------------------------
 
-.. automodule:: BrainCog.base.strategy.surrogate
+.. automodule:: braincog.base.strategy.surrogate
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ BrainCog.base.strategy.surrogate module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base.strategy
+.. automodule:: braincog.base.strategy
    :members:
    :undoc-members:
    :show-inheritance:

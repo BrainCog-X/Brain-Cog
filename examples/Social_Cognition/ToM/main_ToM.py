@@ -34,10 +34,10 @@ from rulebasedpolicy.Find_a_way import *
 from env.env import FalseBelief_env
 import  sys
 
-from BrainCog.base.connection import layer
-from BrainCog.base.encoder.encoder import *
-from BrainCog.base.node import node
-from BrainCog.model_zoo.base_module import BaseLinearModule, BaseModule
+from braincog.base.connection import layer
+from braincog.base.encoder.encoder import *
+from braincog.base.node import node
+from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
 
 #NPC2
 #state

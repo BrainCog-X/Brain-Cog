@@ -1,45 +1,45 @@
-BrainCog.base.learningrule package
+braincog.base.learningrule package
 ==================================
 
 Submodules
 ----------
 
-BrainCog.base.learningrule.BCM module
+braincog.base.learningrule.BCM module
 -------------------------------------
 
-.. automodule:: BrainCog.base.learningrule.BCM
+.. automodule:: braincog.base.learningrule.BCM
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.learningrule.Hebb module
+braincog.base.learningrule.Hebb module
 --------------------------------------
 
-.. automodule:: BrainCog.base.learningrule.Hebb
+.. automodule:: braincog.base.learningrule.Hebb
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.learningrule.RSTDP module
+braincog.base.learningrule.RSTDP module
 ---------------------------------------
 
-.. automodule:: BrainCog.base.learningrule.RSTDP
+.. automodule:: braincog.base.learningrule.RSTDP
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.learningrule.STDP module
+braincog.base.learningrule.STDP module
 --------------------------------------
 
-.. automodule:: BrainCog.base.learningrule.STDP
+.. automodule:: braincog.base.learningrule.STDP
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.learningrule.STP module
+braincog.base.learningrule.STP module
 -------------------------------------
 
-.. automodule:: BrainCog.base.learningrule.STP
+.. automodule:: braincog.base.learningrule.STP
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ BrainCog.base.learningrule.STP module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base.learningrule
+.. automodule:: braincog.base.learningrule
    :members:
    :undoc-members:
    :show-inheritance:

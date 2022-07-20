@@ -8,7 +8,7 @@ In `measure_and_visualization.py​`, we will measure and visualize the results.
 
 ## Multisensory Dataset 
 
-When implement the model in BrainCog, we use the famous multisensory dataset--BBSR.
+When implement the model in braincog, we use the famous multisensory dataset--BBSR.
 
 Some examples are as follows:
 

@@ -1,12 +1,12 @@
 # Script for training high-performance SNNs based on back propagation 
-This is an example of training high-performance SNNs using the BrainCog.
+This is an example of training high-performance SNNs using the braincog.
 It is able to train high performance SNNs on CIFAR10, DVS-CIFAR10, ImageNet and other datasets, and reach the advanced level. 
 
-## Install BrainCog  
+## Install braincog  
 
 ```shell
 git clone https://github.com/xxx/Brain-Cog.git
-cd BrainCog 
+cd braincog 
 python setup install --user 
 ```
 
@@ -19,7 +19,7 @@ python main.py --model dvs_convnet --node-type LIFNode --dataset dvsc10 --step 1
 
 ## Benchmark 
 
-We provide a benchmark of SNNs trained with BrainCog and the corresponding scripts. 
+We provide a benchmark of SNNs trained with braincog and the corresponding scripts. 
 This provides an open, fair platform for comparison of subsequent SNNs on classification tasks. 
 
 **Note**: The results may vary due to random seeding and software version issues. 
@@ -109,7 +109,7 @@ This provides an open, fair platform for comparison of subsequent SNNs on classi
 
 Note: 
 1. resnet18 is used here by adding a maximum pooling after the initial convolution layer.
-However, in the final version of BrainCog, we remove this pooling layer.
+However, in the final version of braincog, we remove this pooling layer.
 2. mix refers to the use of EventMix as a data augmentation method.
 3. We will continue to add other results.
 
@@ -120,7 +120,7 @@ If you find this package helpful, please consider citing it:
 ```BibTex
 @software{name,
   author       = {xxx},
-  title        = {BrainCog: xxx},
+  title        = {braincog: xxx},
   month        = jul,
   year         = 2022,
   note         = {{Documentation available under 
