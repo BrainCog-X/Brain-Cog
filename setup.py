@@ -17,7 +17,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     name='BrainCog',
-    version='0.2',
+    version='0.2.1',
     author='',
     python_requires='>=3.6'
 )
