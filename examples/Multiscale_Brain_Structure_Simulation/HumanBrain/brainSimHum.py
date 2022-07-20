@@ -12,10 +12,10 @@ import torch
 from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
-from BrainCog.base.strategy.surrogate import *
-from BrainCog.base.node.node import BaseNode,IFNode
-from BrainCog.base.learningrule.STDP import STDP,MutliInputSTDP
-from BrainCog.base.connection.CustomLinear import CustomLinear
+from braincog.base.strategy.surrogate import *
+from braincog.base.node.node import BaseNode,IFNode
+from braincog.base.learningrule.STDP import STDP,MutliInputSTDP
+from braincog.base.connection.CustomLinear import CustomLinear
 
 class HumanBrain(nn.Module):
     """

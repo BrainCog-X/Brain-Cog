@@ -1,7 +1,7 @@
 import torch
 from torch import nn
-from BrainCog.base.brainarea import BrainArea
-from BrainCog.model_zoo.base_module import BaseLinearModule, BaseModule
+from braincog.base.brainarea import BrainArea
+from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
 
 
 class PFC:

@@ -1,5 +1,5 @@
 import torch
-from BrainCog.base.brainarea.Insula import *
+from braincog.base.brainarea.Insula import *
 from rulebasedpolicy.world_model import *
 from BrainArea.dACC import *
 from BrainArea.PFC_ToM import *

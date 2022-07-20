@@ -14,12 +14,12 @@ import os
 import sys
 import warnings
 warnings.filterwarnings("ignore")
-sys.path.insert(0, os.path.abspath('../../BrainCog'))
+sys.path.insert(0, os.path.abspath('../../braincog'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'BrainCog'
+project = 'braincog'
 copyright = '2022, Brain-Inspired-Cognitive-Engine'
 author = 'Brain-Inspired-Cognitive-Engine'
 

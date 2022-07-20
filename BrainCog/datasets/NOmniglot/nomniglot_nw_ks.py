@@ -2,7 +2,7 @@ import torch
 import torchvision
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-from BrainCog.datasets.NOmniglot.NOmniglot import NOmniglot
+from braincog.datasets.NOmniglot.NOmniglot import NOmniglot
 
 
 class NOmniglotNWayKShot(Dataset):

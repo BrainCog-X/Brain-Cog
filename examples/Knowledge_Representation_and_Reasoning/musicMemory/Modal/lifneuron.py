@@ -1,6 +1,6 @@
 import torch
 import random
-from BrainCog.base.node import node
+from braincog.base.node import node
 import numpy as np
 import pylab as pl
 class LIFNeuron(node.LIFNode):

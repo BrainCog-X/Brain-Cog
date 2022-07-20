@@ -8,8 +8,8 @@ import torchvision.datasets as datasets
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-from BrainCog.utils import setup_seed
-from BrainCog.datasets.datasets import get_cifar10_data
+from braincog.utils import setup_seed
+from braincog.datasets.datasets import get_cifar10_data
 device = torch.device('cuda:5' if torch.cuda.is_available() else 'cpu')
 DATA_DIR = '/data/datasets'
 

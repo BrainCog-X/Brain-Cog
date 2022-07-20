@@ -1,4 +1,4 @@
-BrainCog package
+braincog package
 ================
 
 Subpackages
@@ -7,17 +7,17 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   BrainCog.base
-   BrainCog.datasets
-   BrainCog.model_zoo
+   braincog.base
+   braincog.datasets
+   braincog.model_zoo
 
 Submodules
 ----------
 
-BrainCog.utils module
+braincog.utils module
 ---------------------
 
-.. automodule:: BrainCog.utils
+.. automodule:: braincog.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -25,7 +25,7 @@ BrainCog.utils module
 Module contents
 ---------------
 
-.. automodule:: BrainCog
+.. automodule:: braincog
    :members:
    :undoc-members:
    :show-inheritance:

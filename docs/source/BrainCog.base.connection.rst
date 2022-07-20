@@ -1,21 +1,21 @@
-BrainCog.base.connection package
+braincog.base.connection package
 ================================
 
 Submodules
 ----------
 
-BrainCog.base.connection.CustomLinear module
+braincog.base.connection.CustomLinear module
 --------------------------------------------
 
-.. automodule:: BrainCog.base.connection.CustomLinear
+.. automodule:: braincog.base.connection.CustomLinear
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.connection.layer module
+braincog.base.connection.layer module
 -------------------------------------
 
-.. automodule:: BrainCog.base.connection.layer
+.. automodule:: braincog.base.connection.layer
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ BrainCog.base.connection.layer module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base.connection
+.. automodule:: braincog.base.connection
    :members:
    :undoc-members:
    :show-inheritance:

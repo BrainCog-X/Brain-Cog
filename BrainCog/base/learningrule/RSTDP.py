@@ -14,7 +14,7 @@ import torch
 from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
-from BrainCog.base.node import *
+from braincog.base.node import *
 
 
 class RSTDP(nn.Module):

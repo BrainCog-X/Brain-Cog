@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from BrainCog.base.brainarea.PFC import PFC
+from braincog.base.brainarea.PFC import PFC
 from Modal.synapse import Synapse
 from Modal.titlelayer import TitleLayer
 from Modal.composerlayer import ComposerLayer

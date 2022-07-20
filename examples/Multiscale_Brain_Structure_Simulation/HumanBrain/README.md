@@ -1,7 +1,7 @@
 # Human Brain Simulation
 
 ## Description
-Human Brain Simulation is a large scale brain modeling framework depending on BrainCog framework.
+Human Brain Simulation is a large scale brain modeling framework depending on braincog framework.
 
 ## Requirements:
 * numpy >= 1.21.2

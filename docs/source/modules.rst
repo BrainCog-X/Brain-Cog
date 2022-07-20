@@ -1,7 +1,7 @@
-BrainCog
+braincog
 ========
 
 .. toctree::
    :maxdepth: 4
 
-   BrainCog
+   braincog

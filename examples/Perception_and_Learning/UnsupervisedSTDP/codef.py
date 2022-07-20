@@ -10,9 +10,9 @@ import cv2
 import numpy as np
 from copy import deepcopy
 import os, time, math,random
-from  BrainCog.base.node.node import * 
-from BrainCog.base.connection .layer import *
-from BrainCog.base.strategy.LateralInhibition import *
+from  braincog.base.node.node import *
+from braincog.base.connection .layer import *
+from braincog.base.strategy.LateralInhibition import *
 from sklearn.metrics import confusion_matrix
 
 seed = 0

@@ -4,7 +4,7 @@ import numpy as np
 from numpy.random import choice as npc
 import random
 import torch.nn.functional as F
-from BrainCog.datasets.NOmniglot import NOmniglot
+from braincog.datasets.NOmniglot import NOmniglot
 
 
 class NOmniglotTrainSet(Dataset):

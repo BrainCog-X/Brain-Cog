@@ -3,7 +3,7 @@
 # Datetime  : 2022/4/10 18:46
 # User      : Floyed
 # Product   : PyCharm
-# Project   : BrainCog
+# Project   : braincog
 # File      : node.py
 # explain   : 神经元节点类型
 
@@ -18,7 +18,7 @@ from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 from einops import rearrange, repeat
-from BrainCog.base.strategy.surrogate import *
+from braincog.base.strategy.surrogate import *
 
 
 class BaseNode(nn.Module, abc.ABC):

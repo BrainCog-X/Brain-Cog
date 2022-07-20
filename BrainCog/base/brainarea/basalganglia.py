@@ -12,10 +12,10 @@ from abc import ABC
 import numpy as np
 import torch
 import torch.nn.functional as F
-from BrainCog.base.strategy.surrogate import *
-from BrainCog.base.node.node import IFNode, SimHHNode
-from BrainCog.base.learningrule.STDP import STDP, MutliInputSTDP
-from BrainCog.base.connection.CustomLinear import CustomLinear
+from braincog.base.strategy.surrogate import *
+from braincog.base.node.node import IFNode, SimHHNode
+from braincog.base.learningrule.STDP import STDP, MutliInputSTDP
+from braincog.base.connection.CustomLinear import CustomLinear
 
 
 class basalganglia(nn.Module):

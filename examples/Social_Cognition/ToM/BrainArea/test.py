@@ -1,9 +1,9 @@
 import torch
-from BrainCog.base.connection.CustomLinear import *
-from BrainCog.base.node.node import *
-from BrainCog.base.learningrule.STDP import *
-from BrainCog.base.brainarea.IPL import *
-from BrainCog.base.brainarea.Insula import *
+from braincog.base.connection.CustomLinear import *
+from braincog.base.node.node import *
+from braincog.base.learningrule.STDP import *
+from braincog.base.brainarea.IPL import *
+from braincog.base.brainarea.Insula import *
 
 if __name__ == "__main__":
     num_neuron = 4

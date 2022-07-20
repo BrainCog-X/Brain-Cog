@@ -13,7 +13,7 @@ from .thalamus import Thalamus
 from .cortex import Cortex
 from .layer import Layer
 from .synapse import Synapse
-from BrainCog.base.node.node import *
+from braincog.base.node.node import *
 class Cortex_Thalamus():
     '''
     cortex class is used to build human brain cortex

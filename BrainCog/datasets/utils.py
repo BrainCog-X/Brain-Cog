@@ -1,6 +1,6 @@
 import torch
 from einops import repeat
-from BrainCog.datasets.gen_input_signal import lambda_max
+from braincog.datasets.gen_input_signal import lambda_max
 
 
 def rescale(x, factor=None):

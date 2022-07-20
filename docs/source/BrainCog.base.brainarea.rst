@@ -1,45 +1,45 @@
-BrainCog.base.brainarea package
+braincog.base.brainarea package
 ===============================
 
 Submodules
 ----------
 
-BrainCog.base.brainarea.BrainArea module
+braincog.base.brainarea.BrainArea module
 ----------------------------------------
 
-.. automodule:: BrainCog.base.brainarea.BrainArea
+.. automodule:: braincog.base.brainarea.BrainArea
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.brainarea.IPL module
+braincog.base.brainarea.IPL module
 ----------------------------------
 
-.. automodule:: BrainCog.base.brainarea.IPL
+.. automodule:: braincog.base.brainarea.IPL
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.brainarea.Insula module
+braincog.base.brainarea.Insula module
 -------------------------------------
 
-.. automodule:: BrainCog.base.brainarea.Insula
+.. automodule:: braincog.base.brainarea.Insula
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.brainarea.PFC module
+braincog.base.brainarea.PFC module
 ----------------------------------
 
-.. automodule:: BrainCog.base.brainarea.PFC
+.. automodule:: braincog.base.brainarea.PFC
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.base.brainarea.basalganglia module
+braincog.base.brainarea.basalganglia module
 -------------------------------------------
 
-.. automodule:: BrainCog.base.brainarea.basalganglia
+.. automodule:: braincog.base.brainarea.basalganglia
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ BrainCog.base.brainarea.basalganglia module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.base.brainarea
+.. automodule:: braincog.base.brainarea
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,45 +1,45 @@
-BrainCog.datasets.NOmniglot package
+braincog.datasets.NOmniglot package
 ===================================
 
 Submodules
 ----------
 
-BrainCog.datasets.NOmniglot.NOmniglot module
+braincog.datasets.NOmniglot.NOmniglot module
 --------------------------------------------
 
-.. automodule:: BrainCog.datasets.NOmniglot.NOmniglot
+.. automodule:: braincog.datasets.NOmniglot.NOmniglot
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.datasets.NOmniglot.nomniglot\_full module
+braincog.datasets.NOmniglot.nomniglot\_full module
 --------------------------------------------------
 
-.. automodule:: BrainCog.datasets.NOmniglot.nomniglot_full
+.. automodule:: braincog.datasets.NOmniglot.nomniglot_full
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.datasets.NOmniglot.nomniglot\_nw\_ks module
+braincog.datasets.NOmniglot.nomniglot\_nw\_ks module
 ----------------------------------------------------
 
-.. automodule:: BrainCog.datasets.NOmniglot.nomniglot_nw_ks
+.. automodule:: braincog.datasets.NOmniglot.nomniglot_nw_ks
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.datasets.NOmniglot.nomniglot\_pair module
+braincog.datasets.NOmniglot.nomniglot\_pair module
 --------------------------------------------------
 
-.. automodule:: BrainCog.datasets.NOmniglot.nomniglot_pair
+.. automodule:: braincog.datasets.NOmniglot.nomniglot_pair
    :members:
    :undoc-members:
    :show-inheritance:
 
-BrainCog.datasets.NOmniglot.utils module
+braincog.datasets.NOmniglot.utils module
 ----------------------------------------
 
-.. automodule:: BrainCog.datasets.NOmniglot.utils
+.. automodule:: braincog.datasets.NOmniglot.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ BrainCog.datasets.NOmniglot.utils module
 Module contents
 ---------------
 
-.. automodule:: BrainCog.datasets.NOmniglot
+.. automodule:: braincog.datasets.NOmniglot
    :members:
    :undoc-members:
    :show-inheritance:

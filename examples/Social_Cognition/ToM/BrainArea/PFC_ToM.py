@@ -10,9 +10,9 @@ from pygame.locals import *
 import pandas as pd
 import time
 
-from BrainCog.model_zoo.base_module import BaseLinearModule, BaseModule
-from BrainCog.base.learningrule.STDP import *
-from BrainCog.base.brainarea.PFC import dlPFC
+from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
+from braincog.base.learningrule.STDP import *
+from braincog.base.brainarea.PFC import dlPFC
 from utils.Encoder import *
 
 #exploit or explore
