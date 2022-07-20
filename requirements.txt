@@ -9,7 +9,6 @@ einops
 thop
 pyyaml
 loris
-tonic
 matplotlib
 seaborn
 pygame
