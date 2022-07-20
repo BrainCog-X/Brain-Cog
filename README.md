@@ -65,11 +65,23 @@ git clone https://github.com/FloyedShen/tonic.git
 cd tonic 
 pip install -e .
 
-pip install -r requirements.txt
+or
+
+pip install git+https://github.com/FloyedShen/tonic.git
+
+# To install BrainCog
+pip install BrainCog
+
+or
 
 git clone https://github.com/BrainCog-X/Brain-Cog.git
 cd BrainCog
 pip install -e .
+
+or
+
+pip install git+https://github.com/BrainCog-X/Brain-Cog.git
+
 ```
 
 ## Example 
