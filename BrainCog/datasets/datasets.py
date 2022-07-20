@@ -1,13 +1,16 @@
-import os
-
-import tonic
+import os,warnings
+try:
+    import tonic
+    from tonic import DiskCachedDataset
+except:
+    warnings.warn("tonic should be installed, 'pip install git+https://github.com/FloyedShen/tonic.git'")
 import torch
 import torch.nn.functional as F
 import torch.utils
 import torchvision.datasets as datasets
 from timm.data import ImageDataset, create_loader, Mixup, FastCollateMixup, AugMixDataset
 from timm.data import create_transform
-from tonic import DiskCachedDataset
+
 from torchvision import transforms
 from typing import Any, Dict, Optional, Sequence, Tuple, Union
 from BrainCog.datasets.NOmniglot.nomniglot_full import NOmniglotfull
