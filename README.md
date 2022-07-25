@@ -1,5 +1,5 @@
 # braincog
-
+English | [中文](./README_CN.md)
 braincog is an open source spiking neural network based brain-inspired 
 cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on braincog can be found on its homepage http://www.brain-cog.network/
 
