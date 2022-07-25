@@ -14,3 +14,26 @@ Link：https://drive.google.com/drive/folders/1AVc2aNTxkcsGAPlq1SuWtatGzyQRPCmp?
 
 * The program can be modified for each PFC model discharge environment.
 
+### Citation 
+If you find this package helpful, please consider citing the following papers:
+
+```BibTex
+@article{zhangqian2021comparison,
+    title     = {Comparison between Human and rodent neurons for persistent activity performance: A biologically plausible computational investigation},
+    author    = {Zhang, Qian and Zeng, Yi and Zhang, Tielin and Yang, Taoyi},
+    journal   = {Frontiers in systems neuroscience},
+    pages     = {98},
+    year      = {2021},
+    publisher = {Frontiers}
+}
+
+@misc{https://doi.org/10.48550/arxiv.2207.08533,
+  doi = {10.48550/ARXIV.2207.08533},
+  url = {https://arxiv.org/abs/2207.08533},
+  author = {Zeng, Yi and Zhao, Dongcheng and Zhao, Feifei and Shen, Guobin and Dong, Yiting and Lu, Enmeng and Zhang, Qian and Sun, Yinqian and Liang, Qian and Zhao, Yuxuan and Zhao, Zhuoya and Fang, Hongjian and Wang, Yuwei and Li, Yang and Liu, Xin and Du, Chengcheng and Kong, Qingqun and Ruan, Zizhe and Bi, Weida},
+  title = {BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation},
+  publisher = {arXiv},
+  year = {2022},
+}
+
+```
