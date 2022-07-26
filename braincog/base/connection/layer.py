@@ -110,6 +110,7 @@ class ThresholdDependentBatchNorm2d(_BatchNorm):
     def forward(self, input):
         # input = rearrange(input, '(t b) c w h -> b (t c) w h', t=self.step)
         output = super().forward(input)
+        return output
         # return rearrange(output, 'b (t c) w h -> (t b) c w h', t=self.step)
 
 
