@@ -95,8 +95,6 @@ class ThresholdDependentBatchNorm2d(_BatchNorm):
         kwargs.pop('step')
         kwargs.pop('layer_by_layer')
 
-        kwargs['num_features'] = kwargs['num_features'] * self.step
-
         super().__init__(*args, **kwargs)
 
         assert self.layer_by_layer, \
@@ -110,9 +108,9 @@ class ThresholdDependentBatchNorm2d(_BatchNorm):
             raise ValueError("expected 4D input (got {}D input)".format(input.dim()))
 
     def forward(self, input):
-        input = rearrange(input, '(t b) c w h -> b (t c) w h', t=self.step)
+        # input = rearrange(input, '(t b) c w h -> b (t c) w h', t=self.step)
         output = super().forward(input)
-        return rearrange(output, 'b (t c) w h -> (t b) c w h', t=self.step)
+        # return rearrange(output, 'b (t c) w h -> (t b) c w h', t=self.step)
 
 
 class LayerNorm(nn.Module):
