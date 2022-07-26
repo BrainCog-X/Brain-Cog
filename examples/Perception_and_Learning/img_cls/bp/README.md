@@ -26,20 +26,20 @@ This provides an open, fair platform for comparison of subsequent SNNs on classi
 
 ### CIFAR10 
 
-| ID  | Dataset | Node-type  | Config |    Model    | Batch Size |   Accuracy   | Script                                                                                                                                     |
-|:----|:-------:|:----------:|:------:|:-----------:|:----------:|:------------:|:-------------------------------------------------------------------------------------------------------------------------------------------|
-| 1   | CIFAR10 |  IF+Atan   |   -    |   convnet   |    128     |    95.54     | ```python main.py --model cifar_convnet --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```    |
-| 1   | CIFAR10 |  LIF+Atan  |   -    |   convnet   |    128     |    91.92     | ```python main.py --model cifar_convnet --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```   |
-| 1   | CIFAR10 | PLIF+Atan  |   -    |   convert   |    128     |    93.32     | ```python main.py --model cifar_convnet --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```  |
-| 1   | CIFAR10 |  IF+Atan   |   -    |  resnet18   |    128     | 89.76/89.80  | ```python main.py --model resnet18 --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```         |
-| 1   | CIFAR10 |  LIF+Atan  |   -    |  resnet18   |    128     | 89.93/89.88  | ```python main.py --model resnet18 --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```        |
-| 1   | CIFAR10 | PLIF+Atan  |   -    |  resnet18   |    128     | 92.64/ 90.65 | ```python main.py --model resnet18 --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```       |
-| 1   | CIFAR10 |  IF+QGate  |   -    | dvs_convnet |    128     |    95.73     | ```python main.py --model cifar_convnet --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```   |
-| 1   | CIFAR10 | LIF+QGate  |   -    | dvs_convnet |    128     |    96.04     | ```python main.py --model cifar_convnet --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```  |
-| 1   | CIFAR10 | PLIF+QGate |   -    | dvs_convnet |    128     | 96.04/95.84  | ```python main.py --model cifar_convnet --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0``` |
-| 1   | CIFAR10 |  IF+QGate  |   -    |  resnet18   |    128     |    89.19     | ```python main.py --model resnet18 --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```        |
-| 1   | CIFAR10 | LIF+QGate  |   -    |  resnet18   |    128     | 90.95/90.68  | ```python main.py --model resnet18 --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```       |
-| 1   | CIFAR10 | PLIF+QGate |   -    |  resnet18   |    128     | 90.97/91.02  | ```python main.py --model resnet18 --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```      |
+| ID  | Dataset | Node-type  | Config |     Model     | Batch Size |   Accuracy   | Script                                                                                                                                     |
+|:----|:-------:|:----------:|:------:|:-------------:|:----------:|:------------:|:-------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | CIFAR10 |  IF+Atan   |   -    |    convnet    |    128     |    95.54     | ```python main.py --model cifar_convnet --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```    |
+| 1   | CIFAR10 |  LIF+Atan  |   -    |    convnet    |    128     |    91.92     | ```python main.py --model cifar_convnet --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```   |
+| 1   | CIFAR10 | PLIF+Atan  |   -    |    convnet    |    128     |    93.32     | ```python main.py --model cifar_convnet --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```  |
+| 1   | CIFAR10 |  IF+Atan   |   -    |   resnet18    |    128     | 89.76/89.80  | ```python main.py --model resnet18 --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```         |
+| 1   | CIFAR10 |  LIF+Atan  |   -    |   resnet18    |    128     | 89.93/89.88  | ```python main.py --model resnet18 --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```        |
+| 1   | CIFAR10 | PLIF+Atan  |   -    |   resnet18    |    128     | 92.64/ 90.65 | ```python main.py --model resnet18 --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun AtanGrad --device 0```       |
+| 1   | CIFAR10 |  IF+QGate  |   -    | cifar_convnet |    128     |    95.73     | ```python main.py --model cifar_convnet --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```   |
+| 1   | CIFAR10 | LIF+QGate  |   -    | cifar_convnet |    128     |    96.04     | ```python main.py --model cifar_convnet --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```  |
+| 1   | CIFAR10 | PLIF+QGate |   -    | cifar_convnet |    128     | 96.04/95.84  | ```python main.py --model cifar_convnet --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0``` |
+| 1   | CIFAR10 |  IF+QGate  |   -    |   resnet18    |    128     |    89.19     | ```python main.py --model resnet18 --node-type IFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```        |
+| 1   | CIFAR10 | LIF+QGate  |   -    |   resnet18    |    128     | 90.95/90.68  | ```python main.py --model resnet18 --node-type LIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```       |
+| 1   | CIFAR10 | PLIF+QGate |   -    |   resnet18    |    128     | 90.97/91.02  | ```python main.py --model resnet18 --node-type PLIFNode --dataset cifar10 --step 4 --batch-size 128 --act-fun QGateGrad --device 0```      |
 
 
 ### CIFAR100 
