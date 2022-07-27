@@ -283,7 +283,7 @@ def main():
 
     _logger.info('Scheduled epochs: {}'.format(num_epochs))
 
-    # now config only for imnet
+    # now config only for imnet fcvawefdadw
     loader_train, loader_eval, mixup_active, mixup_fn = eval('get_%s_data' % args.dataset)(
             batch_size=args.batch_size,
             step=args.step,
