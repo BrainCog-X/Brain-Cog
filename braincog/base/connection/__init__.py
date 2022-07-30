@@ -1,6 +1,8 @@
-__all__ = ['CustomLinear', 'layer']
+from .CustomLinear import CustomLinear
+from .layer import VotingLayer, WTALayer, NDropout, ThresholdDependentBatchNorm2d, LayerNorm, SMaxPool, LIPool
 
-from . import (
-    CustomLinear,
-    layer
-)
+
+__all__ = [
+    'CustomLinear',
+    'VotingLayer', 'WTALayer', 'NDropout', 'ThresholdDependentBatchNorm2d', 'LayerNorm', 'SMaxPool', 'LIPool'
+]
