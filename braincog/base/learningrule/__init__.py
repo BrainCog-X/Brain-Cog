@@ -1,8 +1,8 @@
 from .BCM import BCM
-from Hebb import Hebb
-from RSTDP import RSTDP
-from STDP import STDP, MutliInputSTDP, LTP, LTD, FullSTDP
-from STP import short_time
+from .Hebb import Hebb
+from .RSTDP import RSTDP
+from .STDP import STDP, MutliInputSTDP, LTP, LTD, FullSTDP
+from .STP import short_time
 
 
 __all__ = [
