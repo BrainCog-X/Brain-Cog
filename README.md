@@ -37,6 +37,7 @@ braincog currently include two parts for brain simulation:
 The anatomical and imaging data is used to support our simulation from various aspects. 
 
 ## Requirements:
+* python == 3.8
 * CUDA toolkit == 11.
 * numpy >= 1.21.2
 * scipy >= 1.8.0
