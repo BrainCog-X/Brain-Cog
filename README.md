@@ -13,7 +13,7 @@ https://arxiv.org/abs/2207.08533
 
 braincog provides essential and fundamental components to model biological and artificial intelligence.
 
-![image](http://www.brain-cog.network/static/image/github_readme/braincog.jpg)
+![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
 
 ## Brain-Inspired AI
 braincog currently provides cognitive functions components that can be classified 
