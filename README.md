@@ -9,11 +9,11 @@ If you use braincog in your research, the following paper can be cited as the so
 Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian Zhang, Yinqian Sun, Qian Liang, Yuxuan Zhao, Zhuoya Zhao, Hongjian Fang, Yuwei Wang, Yang Li, Xin Liu, Chengcheng Du, Qingqun Kong, Zizhe Ruan, Weida Bi. braincog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation. arXiv:2207.08533, 2022.
 https://arxiv.org/abs/2207.08533
 
-<img src="./figures/logo.png" alt="./figures/logo.png" width="70%" />
+<img src="http://www.brain-cog.network/static/image/github_readme/logo.png" alt="./figures/logo.png" width="70%" />
 
 braincog provides essential and fundamental components to model biological and artificial intelligence.
 
-![image](./figures/braincog.jpg)
+![image](http://www.brain-cog.network/static/image/github_readme/braincog.jpg)
 
 ## Brain-Inspired AI
 braincog currently provides cognitive functions components that can be classified 
@@ -25,7 +25,7 @@ into five categories:
 * Social Cognition
 
 
-<img src="./figures/mirror-test.gif" alt="mt" width="55%" /><img src="./figures/joy.gif" alt="mt" width="55%" />
+<img src="http://www.brain-cog.network/static/image/github_readme/mirror-test.gif" alt="mt" width="55%" /><img src="http://www.brain-cog.network/static/image/github_readme/joy.gif" alt="mt" width="55%" />
 
 ## Brain Simulation
 braincog currently include two parts for brain simulation:
@@ -33,7 +33,7 @@ braincog currently include two parts for brain simulation:
 * Multi-scale Brain Structure Simulation
 
 
-<img src="./figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> <img src="./figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" /><img src="./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
+<img src="http://www.brain-cog.network/static/image/github_readme/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> <img src="http://www.brain-cog.network/static/image/github_readme/braincog-macaque-10s.gif" alt="bm10s" width="55%" /><img src="http://www.brain-cog.network/static/image/github_readme/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
 
 
 The anatomical and imaging data is used to support our simulation from various aspects. 
