@@ -79,7 +79,7 @@ or
 pip install git+https://github.com/braincog-X/Brain-Cog.git
 
 
-# optional, if use datasets 
+# optional, to use datasets 
 git clone https://github.com/BrainCog-X/tonic_braincog.git
 cd tonic 
 pip install -e .
