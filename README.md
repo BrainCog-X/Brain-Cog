@@ -64,14 +64,6 @@ The anatomical and imaging data is used to support our simulation from various a
 ## Install
 
 ```
-# optional, if use datasets 
-git clone https://github.com/FloyedShen/tonic.git
-cd tonic 
-pip install -e .
-
-or
-
-pip install git+https://github.com/FloyedShen/tonic.git
 
 # To install braincog
 pip install braincog
@@ -85,6 +77,16 @@ pip install -e .
 or
 
 pip install git+https://github.com/braincog-X/Brain-Cog.git
+
+
+# optional, if use datasets 
+git clone https://github.com/FloyedShen/tonic.git
+cd tonic 
+pip install -e .
+
+or
+
+pip install git+https://github.com/FloyedShen/tonic.git
 
 ```
 
