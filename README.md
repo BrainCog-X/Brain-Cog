@@ -1,17 +1,19 @@
 # braincog
-braincog is an open source spiking neural network based brain-inspired 
+BrainCog is an open source spiking neural network based brain-inspired 
 cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on braincog can be found on its homepage http://www.brain-cog.network/
+
+The current version of BrainCog contains at least 16 functional spiking neural network algorithms (including but not limited to perception and learning, decision making, knowledge representation and reasoning, motor control, social cognition, etc.) built based on BrainCog infrastructures, and BrainCog also provide brain simulations to drosophila, rodent, monkey, and human brains at multiple scales based on spiking neural networks at multiple scales. 
 
 If you use braincog in your research, the following paper can be cited as the source for braincog.
 
-Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian Zhang, Yinqian Sun, Qian Liang, Yuxuan Zhao, Zhuoya Zhao, Hongjian Fang, Yuwei Wang, Yang Li, Xin Liu, Chengcheng Du, Qingqun Kong, Zizhe Ruan, Weida Bi. braincog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation. arXiv:2207.08533, 2022.
+Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian Zhang, Yinqian Sun, Qian Liang, Yuxuan Zhao, Zhuoya Zhao, Hongjian Fang, Yuwei Wang, Yang Li, Xin Liu, Chengcheng Du, Qingqun Kong, Zizhe Ruan, Weida Bi. BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation. arXiv:2207.08533, 2022.
 https://arxiv.org/abs/2207.08533
 
-<img src="./figures/logo.png" alt="./figures/logo.png" width="70%" />
+<img src="http://www.brain-cog.network/static/image/github_readme/logo.jpg" alt="./figures/logo.jpg" width="70%" />
 
 braincog provides essential and fundamental components to model biological and artificial intelligence.
 
-![image](./figures/braincog.jpg)
+![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
 
 ## Brain-Inspired AI
 braincog currently provides cognitive functions components that can be classified 
@@ -31,12 +33,15 @@ braincog currently include two parts for brain simulation:
 * Multi-scale Brain Structure Simulation
 
 
-<img src="./figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> <img src="./figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" /><img src="./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
+<img src="./figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
+<img src="./figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
+<img src="./figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
 
 
 The anatomical and imaging data is used to support our simulation from various aspects. 
 
 ## Requirements:
+* python == 3.8
 * CUDA toolkit == 11.
 * numpy >= 1.21.2
 * scipy >= 1.8.0
@@ -59,14 +64,6 @@ The anatomical and imaging data is used to support our simulation from various a
 ## Install
 
 ```
-# optional, if use datasets 
-git clone https://github.com/FloyedShen/tonic.git
-cd tonic 
-pip install -e .
-
-or
-
-pip install git+https://github.com/FloyedShen/tonic.git
 
 # To install braincog
 pip install braincog
@@ -80,6 +77,16 @@ pip install -e .
 or
 
 pip install git+https://github.com/braincog-X/Brain-Cog.git
+
+
+# optional, to use datasets 
+git clone https://github.com/BrainCog-X/tonic_braincog.git
+cd tonic 
+pip install -e .
+
+or
+
+pip install git+https://github.com/BrainCog-X/tonic_braincog.git
 
 ```
 
