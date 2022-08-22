@@ -674,6 +674,7 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
     if data_mode == "full":
         train_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=True, frames_num=frames_num, data_type=data_type,
                                        transform=train_transform)
+
         test_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=False, frames_num=frames_num, data_type=data_type,
                                       transform=test_transform)
 
