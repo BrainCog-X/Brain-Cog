@@ -368,19 +368,70 @@ class LIFNode(BaseNode):
     :param kwargs: 其他的参数
     """
 
-    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
+    def __init__(self, threshold=0.5, tau=2., act_fun=QGateGrad, *args, **kwargs):
         super().__init__(threshold, *args, **kwargs)
         self.tau = tau
         if isinstance(act_fun, str):
             act_fun = eval(act_fun)
         self.act_fun = act_fun(alpha=2., requires_grad=False)
+        # self.threshold = threshold
+        # print(threshold)
+        # print(tau)
 
     def integral(self, inputs):
-        self.mem = self.mem + ((inputs - self.mem) / self.tau) * self.dt
+        self.mem = self.mem + (inputs - self.mem) / self.tau
 
     def calc_spike(self):
-        self.spike = self.act_fun(self.mem - self.get_thres())
+        self.spike = self.act_fun(self.mem - self.threshold)
         self.mem = self.mem * (1 - self.spike.detach())
+
+
+class BackEINode(BaseNode):
+    def __init__(self, threshold=0.5, decay=0.2, act_fun=BackEIGateGrad, th_fun=EIGrad, channel=40, if_back=True,
+                 if_ei=True, cfg_backei=2, *args, **kwargs):
+        super().__init__(threshold, *args, **kwargs)
+        self.decay = decay
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        if isinstance(th_fun, str):
+            th_fun = eval(th_fun)
+        self.act_fun = act_fun()
+        self.th_fun = th_fun()
+        self.channel = channel
+        self.if_back = if_back
+
+        if self.if_back:
+            self.back = nn.Conv2d(channel, channel, kernel_size=2 * cfg_backei+1, stride=1, padding=cfg_backei)
+        self.if_ei = if_ei
+        if self.if_ei:
+            self.ei = nn.Conv2d(channel, channel, kernel_size=2 * cfg_backei+1, stride=1, padding=cfg_backei)
+
+    def integral(self, inputs):
+        if self.mem is None:
+            self.mem = torch.zeros_like(inputs)
+            self.spike = torch.zeros_like(inputs)
+        self.mem = self.decay * self.mem
+        if self.if_back:
+            self.mem += F.sigmoid(self.back(self.spike)) * inputs
+        else:
+            self.mem += inputs
+
+    def calc_spike(self):
+        if self.if_ei:
+            ei_gate = self.th_fun(self.ei(self.mem))
+            self.spike = self.act_fun(self.mem)
+            self.mem = self.mem * (1 - self.spike)
+            self.spike = ei_gate * self.spike
+        else:
+            self.spike = self.act_fun(self.mem)
+            self.mem = self.mem * (1 - self.spike)
+
+    def n_reset(self):
+        self.mem = None
+        self.spike = None
+        self.feature_map = []
+
+
 
 
 class NoiseLIFNode(LIFNode):
@@ -403,6 +454,7 @@ class NoiseLIFNode(LIFNode):
     :param args: 其他的参数
     :param kwargs: 其他的参数
     """
+
     def __init__(self,
                  threshold=1,
                  tau=2.,
@@ -411,7 +463,6 @@ class NoiseLIFNode(LIFNode):
                  log_beta=np.log(6),
                  *args,
                  **kwargs):
-
         super().__init__(threshold=threshold, tau=tau, act_fun=act_fun, *args, **kwargs)
         self.log_alpha = Parameter(torch.as_tensor(log_alpha), requires_grad=True)
         self.log_beta = Parameter(torch.as_tensor(log_beta), requires_grad=True)
@@ -486,9 +537,8 @@ class LIFSTDPNode(BaseNode):
         self.mem = self.mem * self.tau + inputs
 
     def calc_spike(self):
-
         self.spike = self.act_fun(self.mem - self.threshold)
-        #print(( self.threshold).max())
+        # print(( self.threshold).max())
         self.mem = self.mem * (1 - self.spike.detach())
 
     def requires_activation(self):
@@ -547,6 +597,7 @@ class NoisePLIFNode(PLIFNode):
     :param args: 其他的参数
     :param kwargs: 其他的参数
     """
+
     def __init__(self,
                  threshold=1,
                  tau=2.,
@@ -647,61 +698,6 @@ class DoubleSidePLIFNode(LIFNode):
     # print(self.get_thres(), self.decay)
 
 
-class RLIFNode(BaseNode):
-    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, a=None, b=None, tau_w=None, *args, **kwargs):
-        super().__init__(threshold, *args, **kwargs)
-        self.tau = tau
-        if isinstance(act_fun, str):
-            act_fun = eval(act_fun)
-        self.act_fun = act_fun(alpha=2., requires_grad=False)
-        self.w = 0.  #
-        self.tau_w = 0.5
-        self.a = 0.2
-        self.b = 0.2
-
-    def integral(self, inputs):
-        self.mem = self.mem + ((inputs - self.mem - self.w) / self.tau) * self.dt
-        self.w = self.w + (self.a * self.mem - self.w) * self.tau_w
-
-    def calc_spike(self):
-        self.spike = self.act_fun(self.mem - self.get_thres(),
-                                  nn.Parameter(torch.tensor(2.), requires_grad=False))
-        spike = self.spike.detach()
-        self.mem = self.mem * (1 - spike)
-        self.w = self.w + spike * self.b
-
-    def n_reset(self):
-        self.mem = 0.
-        self.spike = 0.
-        self.w = 0.
-
-
-class PRLIFNode(BaseNode):
-    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
-        super().__init__(threshold, *args, **kwargs)
-        self.tau = tau
-        if isinstance(act_fun, str):
-            act_fun = eval(act_fun)
-        self.act_fun = act_fun(alpha=2., requires_grad=True)
-        self.w = 0.  #
-        self.tau_w = nn.Parameter(torch.as_tensor(0.), requires_grad=False)
-        self.a = nn.Parameter(torch.tensor(-1.5, dtype=torch.float), requires_grad=False)
-        self.b = nn.Parameter(torch.tensor(-1.5, dtype=torch.float), requires_grad=False)
-
-    def integral(self, inputs):
-        self.mem = self.mem + ((inputs - self.mem - self.w) / self.tau) * self.dt
-        self.w = self.w + (self.a.sigmoid() * self.mem - self.w) * self.tau_w.sigmoid()
-
-    def calc_spike(self):
-        self.spike = self.act_fun(self.mem - self.get_thres(), torch.tensor(2.))
-        spike = self.spike.detach()
-        self.mem = self.mem * (1 - spike)
-        self.w = self.w + spike * self.b.sigmoid()
-
-    def n_reset(self):
-        self.mem = 0.
-        self.spike = 0.
-        self.w = 0.
 
 
 class IzhNode(BaseNode):
@@ -753,7 +749,7 @@ class IzhNode(BaseNode):
         self.mem = 0.
         self.u = 0.
         self.spike = 0.
-        
+
 
 class IzhNodeMU(BaseNode):
     """
@@ -767,6 +763,7 @@ class IzhNodeMU(BaseNode):
     :param args: 其他的参数
     :param kwargs: 其他的参数
     """
+
     def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
         super().__init__(threshold, *args, **kwargs)
         self.tau = tau
@@ -775,10 +772,10 @@ class IzhNodeMU(BaseNode):
         self.act_fun = act_fun(alpha=2., requires_grad=False)
         self.a = kwargs['a'] if 'a' in kwargs else 0.02
         self.b = kwargs['b'] if 'b' in kwargs else 0.2
-        self.c = kwargs['c'] if 'c' in kwargs else -55. 
-        self.d = kwargs['d'] if 'd' in kwargs else -2. 
-        self.mem = kwargs['mem'] if 'mem' in kwargs else 0. 
-        self.u = kwargs['u'] if 'u' in kwargs else 0. 
+        self.c = kwargs['c'] if 'c' in kwargs else -55.
+        self.d = kwargs['d'] if 'd' in kwargs else -2.
+        self.mem = kwargs['mem'] if 'mem' in kwargs else 0.
+        self.u = kwargs['u'] if 'u' in kwargs else 0.
         self.dt = kwargs['dt'] if 'dt' in kwargs else 1.
 
     def integral(self, inputs):
@@ -786,15 +783,15 @@ class IzhNodeMU(BaseNode):
         self.u = self.u + self.dt * (self.a * self.b * self.mem - self.a * self.u)
 
     def calc_spike(self):
-        self.spike = self.act_fun(self.mem - self.threshold) 
+        self.spike = self.act_fun(self.mem - self.threshold)
         self.mem = self.mem * (1 - self.spike.detach()) + self.spike.detach() * self.c
         self.u = self.u + self.spike.detach() * self.d
 
-    def n_reset(self):      
+    def n_reset(self):
         self.mem = -70.
         self.u = 0.
         self.spike = 0.
-        
+
     def requires_activation(self):
         return False
 
@@ -955,7 +952,8 @@ class CTIzhNode(IzhNode):
         self.dc = 0
 
     def integral(self, inputs):
-        self.mem += self.dt * (self.k * (self.mem - self.Vr) * (self.mem - self.Vt) - self.u + inputs)/self.capicitance
+        self.mem += self.dt * (
+                self.k * (self.mem - self.Vr) * (self.mem - self.Vt) - self.u + inputs) / self.capicitance
         self.u += self.dt * (self.a * (self.b * (self.mem - self.Vr) - self.u))
 
     def calc_spike(self):
@@ -972,16 +970,18 @@ class CTIzhNode(IzhNode):
             else:
                 post.dc = random.randint(-160, -140)
 
+
 class aEIF(BaseNode):
     """
         The adaptive Exponential Integrate-and-Fire model (aEIF)
         :param args: Other parameters
         :param kwargs: Other parameters
     """
-    def __init__(self,*args,**kwargs):
+
+    def __init__(self, *args, **kwargs):
         super().__init__(requires_fp=False, *args, **kwargs)
 
-    def aEIFNode(self,v,dt,c_m,g_m,alpha_w,ad,Ieff,Ichem,Igap,tau_ad,beta_ad,vt,vm1):
+    def aEIFNode(self, v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1):
         """
                 Calculate the neurons that discharge after the current threshold is reached
                 :param v: Current neuron voltage
@@ -992,4 +992,4 @@ class aEIF(BaseNode):
         v = v + dt / c_m * (-g_m * v + alpha_w * ad + Ieff + Ichem + Igap)
         ad = ad + dt / tau_ad * (-ad + beta_ad * v)
         vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
-        return v,ad,vv
+        return v, ad, vv
