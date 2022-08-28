@@ -15,6 +15,7 @@ class SurrogateFunctionBase(nn.Module):
     :param alpha: 为一些能够调控函数形状的代理函数提供参数.
     :param requires_grad: 参数 ``alpha`` 是否需要计算梯度, 默认为 ``False``
     """
+
     def __init__(self, alpha, requires_grad=True):
         super().__init__()
         self.alpha = nn.Parameter(
@@ -56,6 +57,7 @@ class sigmoid(torch.autograd.Function):
             g'(x) = \\alpha * (1 - \\mathrm{sigmoid} (\\alpha x)) \\mathrm{sigmoid} (\\alpha x)
 
     """
+
     @staticmethod
     def forward(ctx, x, alpha):
         if x.requires_grad:
@@ -99,6 +101,7 @@ class atan(torch.autograd.Function):
             g'(x) = \\frac{\\alpha}{2(1 + (\\frac{\\pi}{2}\\alpha x)^2)}
 
     """
+
     @staticmethod
     def forward(ctx, inputs, alpha):
         ctx.save_for_backward(inputs, alpha)
@@ -147,6 +150,7 @@ class gate(torch.autograd.Function):
             g'(x) = \\frac{\\alpha}{1 + |\\alpha x|} = \\frac{1}{\\frac{1}{\\alpha} + |x|}
 
     """
+
     @staticmethod
     def forward(ctx, x, alpha):
         if x.requires_grad:
@@ -199,6 +203,7 @@ class quadratic_gate(torch.autograd.Function):
         \\end{cases}
 
     """
+
     @staticmethod
     def forward(ctx, x, alpha):
         if x.requires_grad:
@@ -247,6 +252,7 @@ class ReLUGrad(SurrogateFunctionBase):
     """
     使用ReLU作为代替梯度函数, 主要用为相同结构的ANN的测试
     """
+
     def __init__(self, alpha=2., requires_grad=False):
         super().__init__(alpha, requires_grad)
 
@@ -265,6 +271,7 @@ class straight_through_estimator(torch.autograd.Function):
     使用直通估计器作为代理梯度函数
     http://arxiv.org/abs/1308.3432
     """
+
     @staticmethod
     def forward(ctx, inputs):
         outputs = heaviside(inputs)
@@ -299,4 +306,50 @@ class STDPGrad(SurrogateFunctionBase):
     @staticmethod
     def act_fun(x, alpha):
         return stdp.apply(x)
+
+class backeigate(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, input):
+        ctx.save_for_backward(input)
+        return input.gt(0.5).float()
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        input, = ctx.saved_tensors
+        grad_input = grad_output.clone()
+        temp = abs(input-0.5) < 0.5
+        return grad_input * temp.float()
+
+
+class BackEIGateGrad(SurrogateFunctionBase):
+    def __init__(self, alpha=2., requires_grad=False):
+        super().__init__(alpha, requires_grad)
+
+    @staticmethod
+    def act_fun(x, alpha):
+        return backeigate.apply(x)
+
+class ei(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, input):
+        ctx.save_for_backward(input)
+        return torch.sign(input).float()
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        input, = ctx.saved_tensors
+        grad_input = grad_output.clone()
+        temp = abs(input) < 0.5
+        return grad_input * temp.float()
+
+
+class EIGrad(SurrogateFunctionBase):
+    def __init__(self, alpha=2., requires_grad=False):
+        super().__init__(alpha, requires_grad)
+
+    @staticmethod
+    def act_fun(x, alpha):
+        return ei.apply(x)
+
+
 
