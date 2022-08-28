@@ -387,6 +387,15 @@ class LIFNode(BaseNode):
 
 
 class BackEINode(BaseNode):
+    """
+    BackEINode with self feedback connection and excitatory and inhibitory neurons
+    Reference：https://www.sciencedirect.com/science/article/pii/S0893608022002520
+    :param threshold: 神经元发放脉冲需要达到的阈值
+    :param if_back whether to use self feedback
+    :param if_ei whether to use excitotory and inhibitory neurons
+    :param args: 其他的参数
+    :param kwargs: 其他的参数
+    """
     def __init__(self, threshold=0.5, decay=0.2, act_fun=BackEIGateGrad, th_fun=EIGrad, channel=40, if_back=True,
                  if_ei=True, cfg_backei=2, *args, **kwargs):
         super().__init__(threshold, *args, **kwargs)
@@ -419,11 +428,11 @@ class BackEINode(BaseNode):
     def calc_spike(self):
         if self.if_ei:
             ei_gate = self.th_fun(self.ei(self.mem))
-            self.spike = self.act_fun(self.mem)
+            self.spike = self.act_fun(self.mem-self.threshold)
             self.mem = self.mem * (1 - self.spike)
             self.spike = ei_gate * self.spike
         else:
-            self.spike = self.act_fun(self.mem)
+            self.spike = self.act_fun(self.mem-self.threshold)
             self.mem = self.mem * (1 - self.spike)
 
     def n_reset(self):
