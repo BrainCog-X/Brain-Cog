@@ -698,61 +698,6 @@ class DoubleSidePLIFNode(LIFNode):
     # print(self.get_thres(), self.decay)
 
 
-class RLIFNode(BaseNode):
-    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, a=None, b=None, tau_w=None, *args, **kwargs):
-        super().__init__(threshold, *args, **kwargs)
-        self.tau = tau
-        if isinstance(act_fun, str):
-            act_fun = eval(act_fun)
-        self.act_fun = act_fun(alpha=2., requires_grad=False)
-        self.w = 0.  #
-        self.tau_w = 0.5
-        self.a = 0.2
-        self.b = 0.2
-
-    def integral(self, inputs):
-        self.mem = self.mem + ((inputs - self.mem - self.w) / self.tau) * self.dt
-        self.w = self.w + (self.a * self.mem - self.w) * self.tau_w
-
-    def calc_spike(self):
-        self.spike = self.act_fun(self.mem - self.get_thres(),
-                                  nn.Parameter(torch.tensor(2.), requires_grad=False))
-        spike = self.spike.detach()
-        self.mem = self.mem * (1 - spike)
-        self.w = self.w + spike * self.b
-
-    def n_reset(self):
-        self.mem = 0.
-        self.spike = 0.
-        self.w = 0.
-
-
-class PRLIFNode(BaseNode):
-    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
-        super().__init__(threshold, *args, **kwargs)
-        self.tau = tau
-        if isinstance(act_fun, str):
-            act_fun = eval(act_fun)
-        self.act_fun = act_fun(alpha=2., requires_grad=True)
-        self.w = 0.  #
-        self.tau_w = nn.Parameter(torch.as_tensor(0.), requires_grad=False)
-        self.a = nn.Parameter(torch.tensor(-1.5, dtype=torch.float), requires_grad=False)
-        self.b = nn.Parameter(torch.tensor(-1.5, dtype=torch.float), requires_grad=False)
-
-    def integral(self, inputs):
-        self.mem = self.mem + ((inputs - self.mem - self.w) / self.tau) * self.dt
-        self.w = self.w + (self.a.sigmoid() * self.mem - self.w) * self.tau_w.sigmoid()
-
-    def calc_spike(self):
-        self.spike = self.act_fun(self.mem - self.get_thres(), torch.tensor(2.))
-        spike = self.spike.detach()
-        self.mem = self.mem * (1 - spike)
-        self.w = self.w + spike * self.b.sigmoid()
-
-    def n_reset(self):
-        self.mem = 0.
-        self.spike = 0.
-        self.w = 0.
 
 
 class IzhNode(BaseNode):
