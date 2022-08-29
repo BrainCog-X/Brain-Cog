@@ -4,6 +4,44 @@ from einops import rearrange, repeat
 from braincog.base.strategy.surrogate import GateGrad
 
 
+class AutoEncoder(nn.Module):
+    def __init__(self, step, spike_output=True):
+        super(AutoEncoder, self).__init__()
+        self.step = step
+        self.spike_output = spike_output
+
+        # self.gru = nn.GRU(input_size=1, hidden_size=1, num_layers=3)
+        self.sigmoid = nn.Sigmoid()
+        self.fc1 = nn.Linear(1, self.step)
+        self.fc2 = nn.Linear(self.step, self.step)
+        self.relu = nn.ReLU()
+        #
+        self.act_fun = GateGrad()
+
+    def forward(self, x):
+        shape = x.shape
+
+        x = self.fc1(x.view(-1, 1))
+        x = self.relu(x)
+        x = self.fc2(x).transpose_(1, 0)
+
+        # x = x.view(1, -1, 1).repeat(self.step, 1, 1)
+        # x, _ = self.gru(x)
+
+        x = self.sigmoid(x)
+        if not self.spike_output:
+            return x.view(self.step, *shape)
+        else:
+            return self.act_fun(x).view(self.step, *shape)
+
+
+# class TransEncoder(nn.Module):
+#     def __init__(self, step):
+#         super(TransEncoder, self).__init__()
+#         self.step = step
+#         self.trans = Transformer(dim=128, depth=3, heads=8, dim_head=, mlp_dim, dropout=0.)
+
+
 class Encoder(nn.Module):
     '''
     将static image编码
@@ -22,6 +60,8 @@ class Encoder(nn.Module):
         self.encode_type = encode_type
         self.temporal_flatten = kwargs['temporal_flatten'] if 'temporal_flatten' in kwargs else False
         self.layer_by_layer = kwargs['layer_by_layer'] if 'layer_by_layer' in kwargs else False
+        self.no_encode = kwargs['adaptive_node'] if 'adaptive_node' in kwargs else False
+        self.groups = kwargs['n_groups'] if 'n_groups' in kwargs else 1
         # if encode_type == 'auto':
         #     self.fun = AutoEncoder(self.step, spike_output=False)
 
@@ -30,6 +70,9 @@ class Encoder(nn.Module):
             outputs = inputs.permute(1, 0, 2, 3, 4).contiguous()  # t, b, c, w, h
 
         else:
+            if self.encode_type == 'auto':
+                if self.fun.device != inputs.device:
+                    self.fun.to(inputs.device)
             outputs = self.fun(inputs)
 
         if deletion_prob:
@@ -37,7 +80,11 @@ class Encoder(nn.Module):
         if shift_var:
             outputs = self.shift(outputs, shift_var)
 
-        if self.layer_by_layer:
+        if self.temporal_flatten or self.no_encode:
+            outputs = rearrange(outputs, 't b c w h -> 1 b (t c) w h')
+        elif self.groups != 1:
+            outputs = rearrange(outputs, 't b c w h -> b (c t) w h')
+        elif self.layer_by_layer:
             outputs = rearrange(outputs, 't b c w h -> (t b) c w h')
 
         return outputs
@@ -50,6 +97,14 @@ class Encoder(nn.Module):
         :return: (t, b, c, w, h)
         """
         outputs = repeat(inputs, 'b c w h -> t b c w h', t=self.step)
+        # outputs = inputs.unsqueeze(0).repeat(self.step, *([1] * len(shape)))
+        return outputs
+
+    def auto(self, inputs):
+        # TODO: Calc loss for firing-rate
+        shape = inputs.shape
+        outputs = self.fun(inputs)
+        print(outputs.shape)
         return outputs
 
     @torch.no_grad()
@@ -76,7 +131,7 @@ class Encoder(nn.Module):
         :return:
         """
         shape = (self.step,) + inputs.shape
-        return (inputs > torch.rand(shape, device=self.device)).float()
+        return (inputs > torch.rand_like(shape)).float()
 
     @torch.no_grad()
     def phase(self, inputs):
@@ -120,6 +175,7 @@ class Encoder(nn.Module):
         :param var: 随机平移的方差
         :return: shifted data
         """
+        # TODO: Real-time shift
         outputs = torch.zeros_like(inputs)
         for step in range(self.step):
             shift = (var * torch.randn(1)).round_() + step
