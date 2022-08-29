@@ -14,7 +14,7 @@ from sklearn.manifold import TSNE
 from sklearn.metrics import confusion_matrix
 import torch
 import torch.nn.functional as F
-
+from einops import rearrange
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as PathEffects
 import matplotlib
@@ -23,19 +23,93 @@ from mpl_toolkits.mplot3d import proj3d
 
 import seaborn as sns
 
-
 # Random state.
 RS = 20150101
 
 
+def spike_rate_vis_1d(data, output_dir=''):
+    assert len(data.shape) == 2, 'Shape should be (t, c).'
+
+    data = rearrange(data, 'i j -> j i')
+    if isinstance(data, torch.Tensor):
+        data = data.to('cpu').numpy()
+
+    plt.figure(figsize=(8, 8))
+    sns.heatmap(data, annot=None, cmap='YlGnBu')
+    # plt.ylim(0, _max + 1)
+    plt.xlabel('Predicted labels')
+    plt.ylabel('True labels')
+    plt.show()
+
+
+def spike_rate_vis(data, output_dir=''):
+    assert len(data.shape) == 3, 'Shape should be (t, r, c).'
+    data = data.mean(axis=0)
+
+    if isinstance(data, torch.Tensor):
+        data = data.to('cpu').numpy()
+
+    plt.figure(figsize=(8, 8))
+    sns.heatmap(data, annot=None, cmap='YlGnBu')
+    # plt.ylim(0, _max + 1)
+    plt.xlabel('Predicted labels')
+    plt.ylabel('True labels')
+    plt.show()
+
+
+def plot_mem_distribution(data,
+                          output_dir='',
+                          legend='',
+                          xlabel='Membrane Potential',
+                          ylabel='Density',
+                          **kwargs):
+    # print(type(data), len(data))
+    if isinstance(data, torch.Tensor):
+        data = data.reshape(-1).to('cpu').numpy()
+
+    mean = data.mean()
+    std = data.std()
+    idx = np.argwhere(data < mean - 3 * std)
+    data = np.delete(data, idx)
+    idx = np.argwhere(data > mean + 3 * std)
+    data = np.delete(data, idx)
+
+    sns.set_style('darkgrid')
+    # sns.set_palette('deep', desat=.6)
+    sns.set_context("notebook", font_scale=1.5,
+                    rc={"lines.linewidth": 2.5})
+
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, aspect='equal')
+
+    # sns.distplot(data, bins=int(np.sqrt(data.shape[0])),
+    #              hist=True, kde=False, hist_kws={'histtype': 'stepfilled'}, **kwargs)
+
+    # print('hist begin')
+    print(len(data))
+    n, bins, patches = plt.hist(data,
+                                density=True,
+                                histtype='stepfilled',
+                                alpha=0.618,
+                                bins=int(np.sqrt(data.shape[0])),
+                                **kwargs)
+    # print('hist finished')
+    # sns.kdeplot(data, color='#5294c3')
+    # print('kde finished')
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    # if legend != '':
+    #     plt.legend(legend)
+    ax.axis('tight')
+
+    if output_dir != '':
+        plt.savefig(output_dir, facecolor=fig.get_facecolor(), bbox_inches='tight')
+        print('{} saved'.format(output_dir))
+    plt.show()
+
+
 def plot_tsne(x, colors, output_dir):
-    """
-    绘制t-SNE聚类图, 直接将图片保存到输出路径
-    :param x: 输入的feature map / spike
-    :param colors: predicted labels 作为不同类别的颜色
-    :param output_dir: 图片输出的路径(包括图片名及后缀)
-    :return: None
-    """
     if isinstance(x, torch.Tensor):
         x = x.to('cpu').numpy()
     if isinstance(colors, torch.Tensor):
@@ -136,6 +210,11 @@ if __name__ == '__main__':
     # plot_tsne_3d(x, y, output_dir='./t-sne.eps')
 
     # Test for confusion matrix
-    x = torch.rand(5012, 100)
-    y = torch.randint(0, 100, (5012, ))
-    plot_confusion_matrix(x, y, '')
+    # x = torch.rand(5012, 100)
+    # y = torch.randint(0, 100, (5012,))
+    # plot_confusion_matrix(x, y, '')
+
+    # Test for Mem Distribution
+    x = torch.randn(100000)
+    plot_mem_distribution(x, legend=['test'])
+

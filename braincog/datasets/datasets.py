@@ -1,4 +1,4 @@
-import os,warnings
+import os, warnings
 try:
     import tonic
     from tonic import DiskCachedDataset
@@ -10,13 +10,15 @@ import torch.utils
 import torchvision.datasets as datasets
 from timm.data import ImageDataset, create_loader, Mixup, FastCollateMixup, AugMixDataset
 from timm.data import create_transform
-
+from tonic import DiskCachedDataset
 from torchvision import transforms
 from typing import Any, Dict, Optional, Sequence, Tuple, Union
 from braincog.datasets.NOmniglot.nomniglot_full import NOmniglotfull
 from braincog.datasets.NOmniglot.nomniglot_nw_ks import NOmniglotNWayKShot
 from braincog.datasets.NOmniglot.nomniglot_pair import NOmniglotTrainSet, NOmniglotTestSet
 
+from .cut_mix import CutMix, EventMix, MixUp
+from .rand_aug import *
 from .utils import dvs_channel_check_expend, rescale
 
 DVSCIFAR10_MEAN_16 = [0.3290, 0.4507]
@@ -31,6 +33,19 @@ IMAGENET_INCEPTION_MEAN = (0.5, 0.5, 0.5)
 IMAGENET_INCEPTION_STD = (0.5, 0.5, 0.5)
 IMAGENET_DPN_MEAN = (124 / 255, 117 / 255, 104 / 255)
 IMAGENET_DPN_STD = tuple([1 / (.0167 * 255)] * 3)
+
+
+def unpack_mix_param(args):
+    mix_up = args['mix_up'] if 'mix_up' in args else False
+    cut_mix = args['cut_mix'] if 'cut_mix' in args else False
+    event_mix = args['event_mix'] if 'event_mix' in args else False
+    beta = args['beta'] if 'beta' in args else 1.
+    prob = args['prob'] if 'prob' in args else .5
+    num = args['num'] if 'num' in args else 1
+    num_classes = args['num_classes'] if 'num_classes' in args else 10
+    noise = args['noise'] if 'noise' in args else 0.
+    gaussian_n = args['gaussian_n'] if 'gaussian_n' in args else None
+    return mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n
 
 
 def build_transform(is_train, img_size):
@@ -239,12 +254,14 @@ def get_cifar10_data(batch_size, num_workers=8, same_da=False, **kwargs):
 
     train_loader = torch.utils.data.DataLoader(
         train_datasets, batch_size=batch_size,
-        pin_memory=True, drop_last=True, shuffle=True, num_workers=num_workers
+        pin_memory=True, drop_last=True, shuffle=True,
+        num_workers=num_workers
     )
 
     test_loader = torch.utils.data.DataLoader(
         test_datasets, batch_size=batch_size,
-        pin_memory=True, drop_last=False, num_workers=num_workers
+        pin_memory=True, drop_last=False,
+        num_workers=num_workers
     )
     return train_loader, test_loader, None, None
 
@@ -404,16 +421,50 @@ def get_dvsg_data(batch_size, step, **kwargs):
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
         lambda x: dvs_channel_check_expend(x),
     ])
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
 
     # if 'temporal_flatten' in kwargs.keys():
     #     if kwargs['temporal_flatten'] is True:
     #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
     #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
 
-    train_dataset = DiskCachedDataset(train_dataset, cache_path=os.path.join(DATA_DIR, 'DVS/DVSGesture/train_cache_{}'.format(step)),
+    train_dataset = DiskCachedDataset(train_dataset,
+                                      cache_path=os.path.join(DATA_DIR, 'DVS/DVSGesture/train_cache_{}'.format(step)),
                                       transform=train_transform, num_copies=3)
-    test_dataset = DiskCachedDataset(test_dataset, cache_path=os.path.join(DATA_DIR, 'DVS/DVSGesture/test_cache_{}'.format(step)),
+    test_dataset = DiskCachedDataset(test_dataset,
+                                     cache_path=os.path.join(DATA_DIR, 'DVS/DVSGesture/test_cache_{}'.format(step)),
                                      transform=test_transform, num_copies=3)
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              noise=noise)
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=batch_size,
@@ -427,7 +478,7 @@ def get_dvsg_data(batch_size, step, **kwargs):
         shuffle=False,
     )
 
-    return train_loader, test_loader, None, None
+    return train_loader, test_loader, mixup_active, None
 
 
 def get_dvsc10_data(batch_size, step, **kwargs):
@@ -440,7 +491,6 @@ def get_dvsc10_data(batch_size, step, **kwargs):
     :return: (train loader, test loader, mixup_active, mixup_fn)
     """
     size = kwargs['size'] if 'size' in kwargs else 48
-    # print(size)
     sensor_size = tonic.datasets.CIFAR10DVS.sensor_size
     train_transform = transforms.Compose([
         # tonic.transforms.Denoise(filter_time=10000),
@@ -476,6 +526,18 @@ def get_dvsc10_data(batch_size, step, **kwargs):
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
     ])
 
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            # print('randaug', m, n)
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
+
+    # if 'temporal_flatten' in kwargs.keys():
+    #     if kwargs['temporal_flatten'] is True:
+    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+
     train_dataset = DiskCachedDataset(train_dataset,
                                       cache_path=os.path.join(DATA_DIR, 'DVS/DVS_Cifar10/train_cache_{}'.format(step)),
                                       transform=train_transform)
@@ -493,6 +555,38 @@ def get_dvsc10_data(batch_size, step, **kwargs):
         indices_test.extend(
             list(range(round(i * num_per_cls + num_per_cls * portion), (i + 1) * num_per_cls)))
 
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        # print('cut_mix', beta, prob, num, num_classes)
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               indices=indices_train,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 indices=indices_train,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              indices=indices_train,
+                              noise=noise)
+
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=batch_size,
         sampler=torch.utils.data.sampler.SubsetRandomSampler(indices_train),
@@ -505,7 +599,7 @@ def get_dvsc10_data(batch_size, step, **kwargs):
         pin_memory=True, drop_last=False, num_workers=2
     )
 
-    return train_loader, test_loader, None, None
+    return train_loader, test_loader, mixup_active, None
 
 
 def get_NCALTECH101_data(batch_size, step, **kwargs):
@@ -563,6 +657,7 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
 
     train_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
+        # lambda x: print(x.shape),
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
         transforms.RandomCrop(size, padding=size // 12),
         transforms.RandomHorizontalFlip(),
@@ -573,6 +668,16 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
         # lambda x: temporal_flatten(x),
     ])
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
+
+    # if 'temporal_flatten' in kwargs.keys():
+    #     if kwargs['temporal_flatten'] is True:
+    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
 
     train_dataset = DiskCachedDataset(train_dataset,
                                       cache_path=os.path.join(DATA_DIR, 'DVS/NCALTECH101/train_cache_{}'.format(step)),
@@ -580,6 +685,36 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
     test_dataset = DiskCachedDataset(test_dataset,
                                      cache_path=os.path.join(DATA_DIR, 'DVS/NCALTECH101/test_cache_{}'.format(step)),
                                      transform=test_transform, num_copies=3)
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               indices=train_sample_index,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 indices=train_sample_index,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              indices=train_sample_index,
+                              noise=noise)
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=batch_size,
@@ -593,7 +728,7 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
         pin_memory=True, drop_last=False, num_workers=2
     )
 
-    return train_loader, test_loader, None, None
+    return train_loader, test_loader, mixup_active, None
 
 
 def get_NCARS_data(batch_size, step, **kwargs):
@@ -634,11 +769,50 @@ def get_NCARS_data(batch_size, step, **kwargs):
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
         lambda x: dvs_channel_check_expend(x),
     ])
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
 
-    train_dataset = DiskCachedDataset(train_dataset, cache_path=os.path.join(DATA_DIR, 'DVS/NCARS/train_cache_{}'.format(step)),
+    # if 'temporal_flatten' in kwargs.keys():
+    #     if kwargs['temporal_flatten'] is True:
+    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+
+    train_dataset = DiskCachedDataset(train_dataset,
+                                      cache_path=os.path.join(DATA_DIR, 'DVS/NCARS/train_cache_{}'.format(step)),
                                       transform=train_transform, num_copies=3)
-    test_dataset = DiskCachedDataset(test_dataset, cache_path=os.path.join(DATA_DIR, 'DVS/NCARS/test_cache_{}'.format(step)),
+    test_dataset = DiskCachedDataset(test_dataset,
+                                     cache_path=os.path.join(DATA_DIR, 'DVS/NCARS/test_cache_{}'.format(step)),
                                      transform=test_transform, num_copies=3)
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              noise=noise)
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=batch_size,
@@ -652,7 +826,7 @@ def get_NCARS_data(batch_size, step, **kwargs):
         shuffle=False,
     )
 
-    return train_loader, test_loader, None, None
+    return train_loader, test_loader, mixup_active, None
 
 
 def get_nomni_data(batch_size, train_portion=1., **kwargs):
@@ -672,10 +846,11 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
     test_transform = transforms.Compose([
         transforms.Resize((28, 28))])
     if data_mode == "full":
-        train_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=True, frames_num=frames_num, data_type=data_type,
+        train_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=True, frames_num=frames_num,
+                                       data_type=data_type,
                                        transform=train_transform)
-
-        test_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=False, frames_num=frames_num, data_type=data_type,
+        test_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=False, frames_num=frames_num,
+                                      data_type=data_type,
                                       transform=test_transform)
 
     elif data_mode == "nkks":
@@ -696,9 +871,11 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
                                            data_type=data_type,
                                            transform=test_transform)
     elif data_mode == "pair":
-        train_datasets = NOmniglotTrainSet(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), use_frame=True, frames_num=frames_num, data_type=data_type,
+        train_datasets = NOmniglotTrainSet(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), use_frame=True,
+                                           frames_num=frames_num, data_type=data_type,
                                            use_npz=False, resize=105)
-        test_datasets = NOmniglotTestSet(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), time=2000, way=kwargs["n_way"], shot=kwargs["k_shot"], use_frame=True,
+        test_datasets = NOmniglotTestSet(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), time=2000, way=kwargs["n_way"],
+                                         shot=kwargs["k_shot"], use_frame=True,
                                          frames_num=frames_num, data_type=data_type, use_npz=False, resize=105)
 
     else:
