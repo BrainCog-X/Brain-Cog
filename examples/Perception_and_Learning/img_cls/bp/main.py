@@ -15,6 +15,7 @@ from braincog.base.utils.criterions import *
 from braincog.datasets.datasets import *
 from braincog.model_zoo.resnet import *
 from braincog.model_zoo.convnet import *
+from braincog.model_zoo.vgg_snn import VGG_SNN
 from braincog.utils import save_feature_map, setup_seed
 from braincog.base.utils.visualization import plot_tsne_3d, plot_tsne, plot_confusion_matrix
 
@@ -32,7 +33,7 @@ from timm.scheduler import create_scheduler
 from timm.utils import ApexScaler, NativeScaler
 
 # from ptflops import get_model_complexity_info
-from thop import profile, clever_format
+# from thop import profile, clever_format
 
 torch.backends.cudnn.benchmark = True
 _logger = logging.getLogger('train')
@@ -426,9 +427,9 @@ def main():
         args.channels = 1
     else:
         args.channels = 3
-    flops, params = profile(model, inputs=(torch.randn(1, args.channels, args.event_size, args.event_size),), verbose=False)
-    _logger.info('flops = %fM', flops / 1e6)
-    _logger.info('param size = %fM', params / 1e6)
+    # flops, params = profile(model, inputs=(torch.randn(1, args.channels, args.event_size, args.event_size),), verbose=False)
+    # _logger.info('flops = %fM', flops / 1e6)
+    # _logger.info('param size = %fM', params / 1e6)
 
     linear_scaled_lr = args.lr * args.batch_size * args.world_size / 1024.0
     args.lr = linear_scaled_lr
@@ -748,8 +749,6 @@ def train_epoch(
 
         closs = torch.tensor([0.], device=loss.device)
 
-        if args.critical_loss:
-            closs = calc_critical_loss(model)
 
         loss = loss + .1 * closs
 
@@ -970,10 +969,6 @@ def validate(epoch, model, loader, loss_fn, args, amp_autocast=suppress,
                 threshold_str = ['{:.3f}'.format(i) for i in threshold]
                 spike_rate_avg_layer_str = ['{:.3f}'.format(i) for i in spike_rate_avg_layer]
                 tot_spike = model.get_tot_spike()
-
-            if args.critical_loss:
-                closs = calc_critical_loss(model)
-            loss = loss + .1 * closs
 
             if args.distributed:
                 reduced_loss = reduce_tensor(loss.data, args.world_size)

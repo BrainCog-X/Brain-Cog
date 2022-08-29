@@ -146,7 +146,7 @@ class BaseModule(nn.Module, abc.ABC):
         else:  # origin
             self.init_channel_mul = 1
 
-        self.encoder = Encoder(encode_step, encode_type, **kwargs)
+        self.encoder = Encoder(encode_step, encode_type, layer_by_layer=self.layer_by_layer, **kwargs)
 
         self.kwargs = kwargs
         self.warm_up = False
