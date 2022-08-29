@@ -1,10 +1,12 @@
 import warnings
 import math
+import numpy as np
 import torch
 from torch import nn
 from torch import einsum
 from torch.nn.modules.batchnorm import _BatchNorm
 import torch.nn.functional as F
+from torch.nn import Parameter
 from einops import rearrange
 
 
@@ -86,18 +88,13 @@ class ThresholdDependentBatchNorm2d(_BatchNorm):
     https://ojs.aaai.org/index.php/AAAI/article/view/17320
     """
 
-    def __init__(self, alpha: float, threshold: float, *args, **kwargs):
+    def __init__(self, num_features, alpha: float, threshold: float = .5, layer_by_layer: bool = True, affine: bool = True):
         self.alpha = alpha
         self.threshold = threshold
 
-        self.step = kwargs['step'] if 'step' in kwargs else 10
-        self.layer_by_layer = kwargs['layer_by_layer'] if 'layer_by_layer' in kwargs else False
-        kwargs.pop('step')
-        kwargs.pop('layer_by_layer')
+        super().__init__(num_features=num_features, affine=affine)
 
-        super().__init__(*args, **kwargs)
-
-        assert self.layer_by_layer, \
+        assert layer_by_layer, \
             'tdBN may works in step-by-step mode, which will not take temporal dimension into batch norm'
         assert self.affine, 'ThresholdDependentBatchNorm needs to set `affine = True`!'
 
