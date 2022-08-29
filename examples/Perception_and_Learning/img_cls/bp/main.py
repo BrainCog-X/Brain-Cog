@@ -16,6 +16,7 @@ from braincog.datasets.datasets import *
 from braincog.model_zoo.resnet import *
 from braincog.model_zoo.convnet import *
 from braincog.model_zoo.vgg_snn import VGG_SNN
+from braincog.model_zoo.resnet19_snn import resnet19
 from braincog.utils import save_feature_map, setup_seed
 from braincog.base.utils.visualization import plot_tsne_3d, plot_tsne, plot_confusion_matrix
 
@@ -285,6 +286,7 @@ parser.add_argument('--cutmix_prob', type=float, default=0.5, help='cutmix_prib 
 parser.add_argument('--cutmix_num', type=int, default=1, help='cutmix_num for event data (default: 1)')
 parser.add_argument('--cutmix_noise', type=float, default=0.,
                     help='Add Pepper noise after mix, sometimes work (default: 0.)')
+parser.add_argument('--gaussian-n', type=int, default=3)
 parser.add_argument('--rand-aug', action='store_true',
                     help='Rand Augment for Event data (default: False)')
 parser.add_argument('--randaug_n', type=int, default=3,
@@ -582,16 +584,15 @@ def main():
         event_mix=args.event_mix,
         beta=args.cutmix_beta,
         prob=args.cutmix_prob,
+        gaussian_n=args.gaussian_n,
         num=args.cutmix_num,
         noise=args.cutmix_noise,
         num_classes=args.num_classes,
         rand_aug=args.rand_aug,
         randaug_n=args.randaug_n,
         randaug_m=args.randaug_m,
-        temporal_flatten=args.temporal_flatten,
         portion=args.train_portion,
         _logger=_logger,
-
     )
 
     if args.loss_fn == 'mse':
