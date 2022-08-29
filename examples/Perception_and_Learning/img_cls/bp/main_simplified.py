@@ -374,10 +374,6 @@ def train_epoch(
     top5_m = AverageMeter()
 
     model.train()
-    if epoch < args.n_warm_up and model.warm_up is False:
-        model.set_warm_up(True)
-    if epoch >= args.n_warm_up and model.warm_up is True:
-        model.set_warm_up(False)
 
     end = time.time()
     last_idx = len(loader) - 1
