@@ -71,7 +71,7 @@ pip install braincog
 or
 
 git clone https://github.com/braincog-X/Brain-Cog.git
-cd braincog
+cd Brain-Cog
 pip install -e .
 
 or
@@ -81,7 +81,7 @@ pip install git+https://github.com/braincog-X/Brain-Cog.git
 
 # optional, to use datasets 
 git clone https://github.com/BrainCog-X/tonic_braincog.git
-cd tonic 
+cd tonic_braincog
 pip install -e .
 
 or
