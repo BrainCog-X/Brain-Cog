@@ -61,34 +61,51 @@ The anatomical and imaging data is used to support our simulation from various a
 * xlrd == 1.2.0
 
 
-## Install
-
-```
-
-# To install braincog
-pip install braincog
-
-or
-
-git clone https://github.com/braincog-X/Brain-Cog.git
-cd Brain-Cog
-pip install -e .
-
-or
-
-pip install git+https://github.com/braincog-X/Brain-Cog.git
+## Install 
 
 
-# optional, to use datasets 
-git clone https://github.com/BrainCog-X/tonic_braincog.git
-cd tonic_braincog
-pip install -e .
 
-or
+### Install Online
 
-pip install git+https://github.com/BrainCog-X/tonic_braincog.git
+1. You can install braincog by running:
 
-```
+    > `pip install braincog`
+
+2. Also, install from github by running:
+
+    > `pip install git+https://github.com/braincog-X/Brain-Cog.git`
+
+
+### Install locally
+
+1.  If you are a developer, it is recommanded to download or clone
+    braincog from github.
+
+    > `git clone https://github.com/braincog-X/Brain-Cog.git`
+
+2.  Enter the folder of braincog
+
+    > `cd Brain-Cog`
+
+3.  Install braincog locally
+
+    > `pip install -e .`
+ 
+### Install datasets (optional)
+
+If you use datasets in your code, especially neuromorphic datasets, you have to install another package
+
+> `pip install git+https://github.com/BrainCog-X/tonic_braincog.git`
+
+You can download this package and install locally as well.
+
+
+
+>  ` git clone https://github.com/BrainCog-X/tonic_braincog.git` <br>
+ `cd tonic` <br>
+ `pip install -e .`
+
+
 
 ## Example 
 
