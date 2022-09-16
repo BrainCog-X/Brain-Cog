@@ -4,6 +4,8 @@ import random as rand
 import copy
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 from braincog.base.learningrule.STP import short_time
 
 
@@ -25,7 +27,24 @@ class six_layer_pfc():
         self.NumSynPar = 7
         self.TRUE = 1
         self.FALSE = 0
+    def picture(self,path=None):
+        data=scio.loadmat(path)
+        STMtx=data['STMtx']
+        neuron=[]
+        time=[]
+        n=1
+        for i in STMtx[0]:
+            for j in i[0]:
+                if j==-1:
 
+                    break
+                neuron.append(n)
+                time.append(j)
+            n=n+1
+        neuron=np.array(neuron)
+        time=np.array(time)
+        plt.scatter(time,neuron,c='k',marker='.')
+        plt.show()
     def mex_function(self, path=None):
         """
         Create arrays and parameters related to synaptic preservation of neuronal groups
@@ -725,5 +744,7 @@ if __name__ == '__main__':
         After downloading the data file on the network disk, modify the file path to the downloaded placement path
      """
      test = six_layer_pfc()
-     path = 'data100.mat'
-     test.mex_function(path)
+     inputpath = 'data100.mat'
+     test.mex_function(inputpath)
+     outputpath='PFC_99N_500ms.mat'
+     test.picture(outputpath)
