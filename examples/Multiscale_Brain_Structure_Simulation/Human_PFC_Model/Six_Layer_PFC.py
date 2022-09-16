@@ -344,7 +344,7 @@ class six_layer_pfc():
                    
                     for kk in range(InpNPtr0[i].NumPreSyn):
                         if (InpNPtr0[i].SDf[kk].use > 0.0):
-                            InpNPtr0[i].SDf[kk].Adepr[j] = short_time.short_time(
+                            InpNPtr0[i].SDf[kk].Adepr[j] = short_time(
                                 SizeHistOutput).syndepr(InpNPtr0[i].SDf[kk], ISI_inp, j)
                     
                     if (WriteST > 0):
@@ -383,13 +383,11 @@ class six_layer_pfc():
                     
                     NPtr0[i] = copy.copy(NPtr0[i])
                     try:
-                        NPtr0[i], gsyn_AN, gsyn_G, I_tot =  short_time.short_time(
+                        NPtr0[i], gsyn_AN, gsyn_G, I_tot =  short_time(
                                         SizeHistOutput).update(
                             NPtr0[i], dt, NoiseSyn, flag_dv)
                     except OverflowError:
-                        print(NPtr0[i])
-                        print(t0)
-                        print(i)
+                        pass
                     if (stop_flag > 0):
                         print("%f %d %f %f\n" % (t0_i, i, vp, wp))
                     for j in range(NPtr0[i].NumSynType):
@@ -435,7 +433,7 @@ class six_layer_pfc():
                            
                             for kk in range(NPtr0[i].NumPreSyn):
                                 if (NPtr0[i].SDf[kk].use > 0.0):
-                                    NPtr0[i].SDf[kk].Adepr[j] = short_time.short_time(
+                                    NPtr0[i].SDf[kk].Adepr[j] = short_time(
                                         SizeHistOutput).syndepr(NPtr0[i].SDf[kk], ISI, j)
                             
                             if (WriteST > 0):
@@ -455,7 +453,7 @@ class six_layer_pfc():
                             t1_i = dt + t0_i
                         
                         if (t1_i == t1):
-                            gsyn_AN, I_tot, gsyn_G = short_time.short_time(
+                            gsyn_AN, I_tot, gsyn_G = short_time(
                                 SizeHistOutput).set_gsyn(NPtr0[i], dt, vp, NoiseSyn)
                             gsyn1[i] = gsyn_AN
                             gsyn2[i] = gsyn_G
