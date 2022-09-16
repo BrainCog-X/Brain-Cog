@@ -387,7 +387,7 @@ class six_layer_pfc():
                                         SizeHistOutput).update(
                             NPtr0[i], dt, NoiseSyn, flag_dv)
                     except OverflowError:
-                       
+                        pass
                     if (stop_flag > 0):
                         print("%f %d %f %f\n" % (t0_i, i, vp, wp))
                     for j in range(NPtr0[i].NumSynType):
