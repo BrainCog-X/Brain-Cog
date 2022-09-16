@@ -383,7 +383,8 @@ class six_layer_pfc():
                     
                     NPtr0[i] = copy.copy(NPtr0[i])
                     try:
-                        NPtr0[i], gsyn_AN, gsyn_G, I_tot = update(
+                        NPtr0[i], gsyn_AN, gsyn_G, I_tot =  short_time.short_time(
+                                        SizeHistOutput).update(
                             NPtr0[i], dt, NoiseSyn, flag_dv)
                     except OverflowError:
                         print(NPtr0[i])
@@ -726,5 +727,5 @@ if __name__ == '__main__':
         After downloading the data file on the network disk, modify the file path to the downloaded placement path
      """
      test = six_layer_pfc()
-     path = '/home/duchengcheng/braincog/examples/six_layer_pfc/data100.mat'
+     path = 'data100.mat'
      test.mex_function(path)
