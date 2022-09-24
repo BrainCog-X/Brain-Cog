@@ -18,10 +18,13 @@ braincog provides essential and fundamental components to model biological and a
 ![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
 
 ## Resources
-- [【智脉说】类脑认知智能引擎BrainCog基础 第4期 构建脑区的认知脉冲神经网络模型](https://www.bilibili.com/video/BV19d4y1679Y/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
-- [【智脉说】类脑认知智能引擎BrainCog基础 第3期 高效构建脉冲神经网络](https://www.bilibili.com/video/BV1Be4y1874W/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
-- [【智脉说】类脑认知智能引擎BrainCog基础 第2期 脉冲神经元计算建模](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
-- [【智脉说】类脑认知智能引擎BrainCog基础 第1期 BrainCog系统部署](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+
+The current version of the lectures are in Chinese, and the English version will come soon. Stay tuned...
+
+- [[BrainCog Talk] Begining BrainCog Lecture 4. Creating Cognitive SNNs for Brain Areas](https://www.bilibili.com/video/BV19d4y1679Y/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 3.  Creating SNNs Easily and Quickly](https://www.bilibili.com/video/BV1Be4y1874W/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 2.  Computational Modeling of Spiking Neurons](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 1.  Installing and Deploying BrainCog platform](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 
 ## Brain-Inspired AI
 braincog currently provides cognitive functions components that can be classified 
