@@ -3,7 +3,7 @@ try:
     import tonic
     from tonic import DiskCachedDataset
 except:
-    warnings.warn("tonic should be installed, 'pip install git+https://github.com/BrainCog-X/tonic_braincog.git'")
+    warnings.warn("tonic should be installed, 'pip install git+https://github.com/FloyedShen/tonic.git'")
 import torch
 import torch.nn.functional as F
 import torch.utils
@@ -33,6 +33,9 @@ IMAGENET_INCEPTION_MEAN = (0.5, 0.5, 0.5)
 IMAGENET_INCEPTION_STD = (0.5, 0.5, 0.5)
 IMAGENET_DPN_MEAN = (124 / 255, 117 / 255, 104 / 255)
 IMAGENET_DPN_STD = tuple([1 / (.0167 * 255)] * 3)
+
+CIFAR10_DEFAULT_MEAN = (0.4914, 0.4822, 0.4465)
+CIFAR10_DEFAULT_STD = (0.2023, 0.1994, 0.2010)
 
 
 def unpack_mix_param(args):
@@ -85,7 +88,10 @@ def build_transform(is_train, img_size):
         t.append(transforms.CenterCrop(img_size))
 
     t.append(transforms.ToTensor())
-    t.append(transforms.Normalize(IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD))
+    if img_size > 32:
+        t.append(transforms.Normalize(IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD))
+    else:
+        t.append(transforms.Normalize(CIFAR10_DEFAULT_MEAN, CIFAR10_DEFAULT_STD))
     return transforms.Compose(t)
 
 
