@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.abspath('../../braincog'))
 # -- Project information -----------------------------------------------------
 
 project = 'braincog'
-copyright = '2022, Brain-Inspired-Cognitive-Engine'
-author = 'Brain-Inspired-Cognitive-Engine'
+copyright = '2022, Brain-Inspired-Cognitive-Intelligence-Engine(BrainCog)'
+author = 'Brain-Inspired-Cognitive-Intelligence-Engine'
 
 # The full version, including alpha/beta/rc tags
-release = '0.3.1'
+release = '0.2.7.11'
 
 
 # -- General configuration ---------------------------------------------------
