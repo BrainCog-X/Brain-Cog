@@ -26,6 +26,12 @@ The current version of the lectures are in Chinese, and the English version will
 - [[BrainCog Talk] Begining BrainCog Lecture 2.  Computational Modeling of Spiking Neurons](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 1.  Installing and Deploying BrainCog platform](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 ### Tutorial
+- [How to install braincog](http://www.brain-cog.network/docs/tutorial/Installation.html)
+- [Overall introduction of BrainCog](http://www.brain-cog.network/docs/tutorial/Introduction.html)
+- [Tutorial of Spiking Neuron Modeling](http://www.brain-cog.network/docs/tutorial/Spiking_Neuron_Modeling.html)
+- [Building Efficient Spiking Neural Networks with BrainCog](http://www.brain-cog.network/docs/tutorial/Building_Efficient_Spiking_Neural_Networks.html)
+- [How to build a cognitive network](http://www.brain-cog.network/docs/tutorial/How_to_build_a_cognitive_network.html)
+
 ## Brain-Inspired AI
 braincog currently provides cognitive functions components that can be classified 
 into five categories: 
