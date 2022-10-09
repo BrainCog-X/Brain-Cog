@@ -2,7 +2,7 @@
 BrainCog is an open source spiking neural network based brain-inspired 
 cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on braincog can be found on its homepage http://www.brain-cog.network/
 
-The current version of BrainCog contains at least 18 functional spiking neural network algorithms (including but not limited to perception and learning, decision making, knowledge representation and reasoning, motor control, social cognition, etc.) built based on BrainCog infrastructures, and BrainCog also provide brain simulations to drosophila, rodent, monkey, and human brains at multiple scales based on spiking neural networks at multiple scales. 
+The current version of BrainCog contains at least 18 functional spiking neural network algorithms (including but not limited to perception and learning, decision making, knowledge representation and reasoning, motor control, social cognition, etc.) built based on BrainCog infrastructures, and BrainCog also provide brain simulations to drosophila, rodent, monkey, and human brains at multiple scales based on spiking neural networks at multiple scales. More detail in http://www.brain-cog.network/docs/
 
 BrainCog is a community based effort for spiking neural network based artificial intelligence, and we welcome any forms of contributions, from contributing to the development of core components, to contributing for applications.
 
@@ -18,13 +18,19 @@ braincog provides essential and fundamental components to model biological and a
 ![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
 
 ## Resources
-
+### Lecture
 The current version of the lectures are in Chinese, and the English version will come soon. Stay tuned...
 
 - [[BrainCog Talk] Begining BrainCog Lecture 4. Creating Cognitive SNNs for Brain Areas](https://www.bilibili.com/video/BV19d4y1679Y/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 3.  Creating SNNs Easily and Quickly](https://www.bilibili.com/video/BV1Be4y1874W/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 2.  Computational Modeling of Spiking Neurons](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 1.  Installing and Deploying BrainCog platform](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+### Tutorial
+- [How to install braincog](http://www.brain-cog.network/docs/tutorial/Installation.html)
+- [Overall introduction of BrainCog](http://www.brain-cog.network/docs/tutorial/Introduction.html)
+- [Tutorial of Spiking Neuron Modeling](http://www.brain-cog.network/docs/tutorial/Spiking_Neuron_Modeling.html)
+- [Building Efficient Spiking Neural Networks with BrainCog](http://www.brain-cog.network/docs/tutorial/Building_Efficient_Spiking_Neural_Networks.html)
+- [How to build a cognitive network](http://www.brain-cog.network/docs/tutorial/How_to_build_a_cognitive_network.html)
 
 ## Brain-Inspired AI
 braincog currently provides cognitive functions components that can be classified 
