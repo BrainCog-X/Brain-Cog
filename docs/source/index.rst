@@ -12,7 +12,7 @@ Welcome to braincog's documentation!
 
    braincog
    examples/index
-
+   tutorial/index
 
 Indices and tables
 ==================
