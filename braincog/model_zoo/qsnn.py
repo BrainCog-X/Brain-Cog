@@ -5,7 +5,8 @@ from scipy.signal import fftconvolve
 import torch
 from torch.nn import Parameter
 import torch.nn as nn
-from braincog.datasets.gen_input_signal import img2spikes, lambda_max, dt
+from braincog.datasets.gen_input_signal import lambda_max, dt
+from braincog.base.encoder import QSEncoder
 
 gamma = 0.1
 beta = 1.0
@@ -66,11 +67,6 @@ kernel[mem // 2:] = -np.flipud(kappas)[:]
 W_MIN = -1.0
 W_MAX = 1.0
 
-# PID
-q1 = 1.0
-q2 = 0.1
-q3 = 0.001
-
 
 class Net(nn.Module):
     """
@@ -82,6 +78,7 @@ class Net(nn.Module):
         self.hidden_layers = nn.ModuleList([Hidden_layer(net_size[i], net_size[i + 1], net_size[-1]) for i in range(len(net_size) - 2)])
         self.out_layer = Output_layer(net_size[-2], net_size[-1])
         self.kernel = torch.from_numpy(kernel[:, np.newaxis]).cuda()
+        self.qs_code = QSEncoder
 
     def update_state(self, input_, label, test):
         if len(self.hidden_layers) > 1:
@@ -117,7 +114,8 @@ class Net(nn.Module):
         :param noise: 是否增加噪声
         :param noise_rate: 噪声比例
         """
-        input_ = img2spikes(input_, input_delta, image_ori, image_ori_delta, STEPS, SLEN, shift, noise=noise, noise_rate=noise_rate)
+        encoder = self.qs_code(lambda_max, STEPS, SLEN, shift, noise, noise_rate)
+        input_ = encoder(input_, input_delta, image_ori, image_ori_delta)
         input_ = torch.from_numpy(input_).to(self.kernel.device)
         psp = torch.mm(input_, self.kernel).abs().float()
 
