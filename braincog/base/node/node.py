@@ -274,7 +274,7 @@ class BaseMCNode(nn.Module, abc.ABC):
 
 class ThreeCompNode(BaseMCNode):
     """
-    三房室神经元模型的
+    三房室神经元模型
     :param threshold: 神经元发放脉冲需要达到的阈值
     :param v_reset: 静息电位
     :param tau: 胞体膜电位时间常数, 用于控制胞体膜电位衰减
