@@ -214,6 +214,111 @@ class BaseNode(nn.Module, abc.ABC):
             raise NotImplementedError
 
 
+class BaseMCNode(nn.Module, abc.ABC):
+    """
+    多房室神经元模型的基类
+    :param threshold: 神经元发放脉冲需要达到的阈值
+    :param v_reset: 静息电位
+    :param comps: 神经元不同房室, 例如["apical", "basal", "soma"]
+    """
+    def __init__(self,
+                 threshold=1.0,
+                 v_reset=0.,
+                 comps=[]):
+        super().__init__()
+        self.threshold = Parameter(torch.tensor(threshold), requires_grad=False)
+        # self.decay = Parameter(torch.tensor(decay), requires_grad=False)
+        self.v_reset = v_reset
+        assert len(comps) != 0
+        self.mems = dict()
+        for c in comps:
+            self.mems[c] = None 
+        self.spike = None
+        self.warm_up = False
+
+    @abc.abstractmethod
+    def calc_spike(self):
+        pass
+    @abc.abstractmethod
+    def integral(self, inputs):
+        pass        
+    
+    def forward(self, inputs: dict):
+        '''
+        Params:
+            inputs dict: Inputs for every compartments of neuron 
+        '''
+        if self.warm_up:
+            return inputs
+        else:
+            self.integral(**inputs)
+            self.calc_spike()
+            return self.spike
+
+    def n_reset(self):
+        for c in self.mems.keys():
+            self.mems[c] = self.v_reset
+        self.spike = 0.0
+
+    def get_n_fire_rate(self):
+        if self.spike is None:
+            return 0.
+        return float((self.spike.detach() >= self.threshold).sum()) / float(np.product(self.spike.shape))
+
+    def set_n_warm_up(self, flag):
+        self.warm_up = flag
+
+    def set_n_threshold(self, thresh):
+        self.threshold = Parameter(torch.tensor(thresh, dtype=torch.float), requires_grad=False)
+
+
+class ThreeCompNode(BaseMCNode):
+    """
+    三房室神经元模型的
+    :param threshold: 神经元发放脉冲需要达到的阈值
+    :param v_reset: 静息电位
+    :param tau: 胞体膜电位时间常数, 用于控制胞体膜电位衰减
+    :param tau_basal: 基底树突膜电位时间常数, 用于控制基地树突胞体膜电位衰减
+    :param tau_apical: 远端树突膜电位时间常数, 用于控制远端树突胞体膜电位衰减
+    :param comps: 神经元不同房室, 例如["apical", "basal", "soma"]
+    :param act_fun: 脉冲梯度代理函数
+    """
+    def __init__(self,
+                 threshold=1.0,
+                 tau=2.0,
+                 tau_basal=2.0,
+                 tau_apical=2.0,
+                 v_reset=0.0,
+                 comps=['basal', 'apical', 'soma'],
+                 act_fun=AtanGrad):
+        g_B = 0.6
+        g_L = 0.05
+        super().__init__(threshold, v_reset, comps)
+        self.tau = tau
+        self.tau_basal = tau_basal
+        self.tau_apical = tau_apical
+        self.act_fun = act_fun(alpha=tau, requires_grad=False)
+    
+    def integral(self, basal_inputs, apical_inputs):
+        '''
+        Params:
+            inputs torch.Tensor: Inputs for basal dendrite  
+        '''
+
+        self.mems['basal'] =  (self.mems['basal'] + basal_inputs) / self.tau_basal
+        self.mems['apical'] =  (self.mems['apical'] + apical_inputs) / self.tau_apical
+
+        self.mems['soma'] = self.mems['soma'] + (self.mems['apical'] + self.mems['basal'] - self.mems['soma']) / self.tau
+
+
+    def calc_spike(self):
+        self.spike = self.act_fun(self.mems['soma'] - self.threshold)
+        self.mems['soma'] = self.mems['soma']  * (1. - self.spike.detach())
+        self.mems['basal'] = self.mems['basal'] * (1. - self.spike.detach())
+        self.mems['apical'] = self.mems['apical']  * (1. - self.spike.detach())
+
+
+
 # for static test.
 class ReLUNode(BaseNode):
     """
