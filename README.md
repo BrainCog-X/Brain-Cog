@@ -21,6 +21,10 @@ braincog provides essential and fundamental components to model biological and a
 ### Lecture
 The current version of the lectures are in Chinese, and the English version will come soon. Stay tuned...
 
+- [[BrainCog Talk] Begining BrainCog Lecture 8. Converting Artificial Neural Network to Spiking Neural Network through BrainCog](https://www.bilibili.com/video/BV17e4y147H6/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 7. Implementing quantum superposition inspired spatio-temporal spike encoding through BrainCog](https://www.bilibili.com/video/BV1BG41177Z6/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 6. Implementing spiking deep Q network through Braincog](https://www.bilibili.com/video/BV1XN4y1c7Kn/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 5. Advanced BrainCog System Functions](https://www.bilibili.com/video/BV1tT411N7c9/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 4. Creating Cognitive SNNs for Brain Areas](https://www.bilibili.com/video/BV19d4y1679Y/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 3.  Creating SNNs Easily and Quickly](https://www.bilibili.com/video/BV1Be4y1874W/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 2.  Computational Modeling of Spiking Neurons](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
