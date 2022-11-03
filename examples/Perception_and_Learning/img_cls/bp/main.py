@@ -315,6 +315,9 @@ parser.add_argument('--conf-mat', action='store_true')
 parser.add_argument('--suffix', type=str, default='',
                     help='Add an additional suffix to the save path (default: \'\')')
 
+# for reconstructing es-imagenet
+parser.add_argument('--reconstructed', action='store_true',
+                    help='for ES-imagenet dataset')
 try:
     from apex import amp
     from apex.parallel import DistributedDataParallel as ApexDDP
@@ -421,6 +424,7 @@ def main():
         temporal_flatten=args.temporal_flatten,
         layer_by_layer=args.layer_by_layer,
         n_groups=args.n_groups,
+        reconstruct=args.reconstructed
     )
 
     if 'dvs' in args.dataset:
@@ -592,6 +596,7 @@ def main():
         randaug_n=args.randaug_n,
         randaug_m=args.randaug_m,
         portion=args.train_portion,
+        reconstruct=args.reconstructed,
         _logger=_logger,
     )
 
