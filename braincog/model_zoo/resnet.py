@@ -267,6 +267,25 @@ class ResNet(BaseModule):
                                    padding=3,
                                    bias=False)
             self.static_data = True
+        elif self.dataset == 'esimnet':
+            reconstruct = kwargs["reconstruct"] if "reconstruct" in kwargs else False
+            print(reconstruct)
+            if reconstruct:
+                self.conv1 = nn.Conv2d(1 * self.init_channel_mul,
+                                       self.inplanes,
+                                       kernel_size=7,
+                                       stride=2,
+                                       padding=3,
+                                       bias=False)
+                self.static_data = True
+            else:
+                self.conv1 = nn.Conv2d(2 * self.init_channel_mul,
+                                       self.inplanes,
+                                       kernel_size=7,
+                                       stride=2,
+                                       padding=3,
+                                       bias=False)
+                self.static_data = True
         elif self.dataset == 'cifar10' or self.dataset == 'cifar100':
             self.conv1 = nn.Conv2d(3 * self.init_channel_mul,
                                    self.inplanes,
