@@ -16,6 +16,8 @@ from typing import Any, Dict, Optional, Sequence, Tuple, Union
 from braincog.datasets.NOmniglot.nomniglot_full import NOmniglotfull
 from braincog.datasets.NOmniglot.nomniglot_nw_ks import NOmniglotNWayKShot
 from braincog.datasets.NOmniglot.nomniglot_pair import NOmniglotTrainSet, NOmniglotTestSet
+from braincog.datasets.ESimagenet.ES_imagenet import ESImagenet_Dataset
+from braincog.datasets.ESimagenet.reconstructed_ES_imagenet import ESImagenet2D_Dataset
 
 from .cut_mix import CutMix, EventMix, MixUp
 from .rand_aug import *
@@ -896,3 +898,91 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
         pin_memory=True, drop_last=False
     )
     return train_loader, test_loader, None, None
+
+
+def get_esimnet_data(batch_size, step, **kwargs):
+    """
+    获取ES imagenet数据
+    DOI: 10.3389/fnins.2021.726582
+    :param batch_size: batch size
+    :param step: 仿真步长，固定为8
+    :param reconstruct: 重构则时间步为1, 否则为8
+    :param kwargs:
+    :return: (train loader, test loader, mixup_active, mixup_fn)
+    :note: 没有自动下载, 下载及md5请参考spikingjelly, sampler默认为DistributedSampler
+    """
+
+    reconstruct = kwargs["reconstruct"] if "reconstruct" in kwargs else False
+
+    train_transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(15)
+    ])
+    test_transform = transforms.Compose([
+        lambda x: dvs_channel_check_expend(x),
+    ])
+
+    if reconstruct:
+        assert step == 1
+        train_dataset = ESImagenet2D_Dataset(mode='train',
+                                            data_set_path=os.path.join(DATA_DIR, 'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
+                                            transform=train_transform)
+
+        test_dataset = ESImagenet2D_Dataset(mode='test',
+                                            data_set_path=os.path.join(DATA_DIR, 'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
+                                            transform=test_transform)
+    else:
+        assert step == 8
+        train_dataset = ESImagenet_Dataset(mode='train',
+                                             data_set_path=os.path.join(DATA_DIR,
+                                                                        'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
+                                             transform=train_transform)
+
+        test_dataset = ESImagenet_Dataset(mode='test',
+                                            data_set_path=os.path.join(DATA_DIR,
+                                                                       'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
+                                            transform=test_transform)
+
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              noise=noise)
+
+    train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
+    test_sampler = torch.utils.data.distributed.DistributedSampler(test_dataset)
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=True, num_workers=8,
+        shuffle=False, sampler=train_sampler
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=1,
+        shuffle=False, sampler=test_sampler
+    )
+
+    return train_loader, test_loader, mixup_active, None
