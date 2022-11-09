@@ -1107,3 +1107,33 @@ class aEIF(BaseNode):
         ad = ad + dt / tau_ad * (-ad + beta_ad * v)
         vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
         return v, ad, vv
+
+
+class LIAFNode(BaseNode):
+    """
+    Leaky Integrate and Analog Fire (LIAF), Reference: https://ieeexplore.ieee.org/abstract/document/9429228
+    与LIF相同, 但前传的是膜电势, 更新沿用阈值和膜电势
+    :param act_fun: 前传使用的激活函数 [ReLU, SeLU, LeakyReLU]
+    :param threshold_related: 阈值依赖模式，若为"True"则 self.spike = act_fun(mem-threshold)
+    :note that BaseNode return self.spike, and here self.spike is analog value.
+    """
+    def __init__(self, spike_act=BackEIGateGrad(), act_fun="SELU", threshold=0.5, tau=2., threshold_related=True, *args, **kwargs):
+        super().__init__(threshold, *args, **kwargs)
+        if isinstance(act_fun, str):
+            act_fun = eval("nn." + act_fun + "()")
+        self.tau = tau
+        self.act_fun = act_fun
+        self.spike_act = spike_act
+        self.threshold_related = threshold_related
+
+    def integral(self, inputs):
+        self.mem = self.mem + (inputs - self.mem) / self.tau
+
+    def calc_spike(self):
+        if self.threshold_related:
+            spike_tmp = self.act_fun(self.mem - self.threshold)
+        else:
+            spike_tmp = self.act_fun(self.mem)
+        self.spike = self.spike_act(self.mem - self.threshold)
+        self.mem = self.mem * (1 - self.spike)
+        self.spike = spike_tmp
