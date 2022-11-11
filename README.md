@@ -21,6 +21,8 @@ braincog provides essential and fundamental components to model biological and a
 ### Lecture
 The current version of the lectures are in Chinese, and the English version will come soon. Stay tuned...
 
+- [[BrainCog Talk] Begining BrainCog Lecture 10. Multi-brain Areas Coordinated Brain-inspired Decision-Making Spiking Neural Network Based on Braincog](https://www.bilibili.com/video/BV1jD4y1x7PU/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 9. Spikin Neural Networks with Global Feedback Connections Based on BrainCog](https://www.bilibili.com/video/BV1qv4y1D74Y/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 8. Converting Artificial Neural Network to Spiking Neural Network through BrainCog](https://www.bilibili.com/video/BV17e4y147H6/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 7. Implementing quantum superposition inspired spatio-temporal spike encoding through BrainCog](https://www.bilibili.com/video/BV1BG41177Z6/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 6. Implementing spiking deep Q network through Braincog](https://www.bilibili.com/video/BV1XN4y1c7Kn/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
