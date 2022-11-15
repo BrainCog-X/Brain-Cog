@@ -131,7 +131,7 @@ class Encoder(nn.Module):
         :return:
         """
         shape = (self.step,) + inputs.shape
-        return (inputs > torch.rand_like(shape)).float()
+        return (inputs > torch.rand(shape, device=inputs.device)).float()
 
     @torch.no_grad()
     def phase(self, inputs):
