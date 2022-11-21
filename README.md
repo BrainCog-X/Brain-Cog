@@ -1,19 +1,19 @@
 # braincog
 BrainCog is an open source spiking neural network based brain-inspired 
-cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on braincog can be found on its homepage http://www.brain-cog.network/
+cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on BrainCog can be found on its homepage http://www.brain-cog.network/
 
 The current version of BrainCog contains at least 18 functional spiking neural network algorithms (including but not limited to perception and learning, decision making, knowledge representation and reasoning, motor control, social cognition, etc.) built based on BrainCog infrastructures, and BrainCog also provide brain simulations to drosophila, rodent, monkey, and human brains at multiple scales based on spiking neural networks at multiple scales. More detail in http://www.brain-cog.network/docs/
 
 BrainCog is a community based effort for spiking neural network based artificial intelligence, and we welcome any forms of contributions, from contributing to the development of core components, to contributing for applications.
 
-If you use braincog in your research, the following paper can be cited as the source for braincog.
+If you use BrainCog in your research, the following paper can be cited as the source for BrainCog.
 
 Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian Zhang, Yinqian Sun, Qian Liang, Yuxuan Zhao, Zhuoya Zhao, Hongjian Fang, Yuwei Wang, Yang Li, Xin Liu, Chengcheng Du, Qingqun Kong, Zizhe Ruan, Weida Bi. BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation. arXiv:2207.08533, 2022.
 https://arxiv.org/abs/2207.08533
 
 <img src="http://www.brain-cog.network/static/image/github_readme/logo.jpg" alt="./figures/logo.jpg" width="70%" />
 
-braincog provides essential and fundamental components to model biological and artificial intelligence.
+BrainCog provides essential and fundamental components to model biological and artificial intelligence.
 
 ![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
 
@@ -39,7 +39,7 @@ The current version of the lectures are in Chinese, and the English version will
 - [How to build a cognitive network](http://www.brain-cog.network/docs/tutorial/How_to_build_a_cognitive_network.html)
 
 ## Brain-Inspired AI
-braincog currently provides cognitive functions components that can be classified 
+BrainCog currently provides cognitive functions components that can be classified 
 into five categories: 
 * Perception and Learning
 * Decision Making
@@ -51,7 +51,7 @@ into five categories:
 <img src="https://raw.githubusercontent.com/BrainCog-X/Brain-Cog/main/figures/joy.gif" alt="mt" width="55%" />
 
 ## Brain Simulation
-braincog currently include two parts for brain simulation:
+BrainCog currently include two parts for brain simulation:
 * Brain Cognitive Function Simulation
 * Multi-scale Brain Structure Simulation
 
@@ -145,4 +145,4 @@ cd ./examples/Perception_and_Learning/img_cls/bp
 python main.py --model dvs_convnet --node-type LIFNode --dataset dvsc10 --step 10 --batch-size 128 --act-fun QGateGrad --device 0 
 ```
 
-Other braincog features and tutorials can be found at http://www.brain-cog.network/docs/
+Other BrainCog features and tutorials can be found at http://www.brain-cog.network/docs/
