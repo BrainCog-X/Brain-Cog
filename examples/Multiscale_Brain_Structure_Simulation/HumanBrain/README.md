@@ -20,6 +20,10 @@ Human Brain Simulation is a large scale brain modeling framework depending on br
 * tonic (special)
 * pandas >= 1.4.2  
 
+## Input:
+Data is obtained from the following link:
+https://drive.google.com/drive/folders/1eEQRqW_YsXjh1-jCYfrz3TZjn6kNdezh?usp=sharing
+
 ## Example:
 
 ```shell 
