@@ -46,19 +46,19 @@ into five categories:
 * Motor Control
 * Knowledge Representation and Reasoning
 * Social Cognition
-
-
-<img src="https://github.com/BrainCog-X/Brain-Cog/blob/main/figures/mirror-test.gif" alt="mt" width="55%" /><img src="https://github.com/BrainCog-X/Brain-Cog/blob/main/figures/joy.gif" alt="mt" width="55%" />
+ 
+<img src="https://raw.githubusercontent.com/BrainCog-X/Brain-Cog/main/figures/mirror-test.gif" alt="mt" width="55%" />
+<img src="https://raw.githubusercontent.com/BrainCog-X/Brain-Cog/main/figures/joy.gif" alt="mt" width="55%" />
 
 ## Brain Simulation
 braincog currently include two parts for brain simulation:
 * Brain Cognitive Function Simulation
 * Multi-scale Brain Structure Simulation
 
-
-<img src="https://github.com/BrainCog-X/Brain-Cog/blob/main/figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
-<img src="https://github.com/BrainCog-X/Brain-Cog/blob/main/figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
-<img src="https://github.com/BrainCog-X/Brain-Cog/blob/main/figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
+ 
+<img src="https://raw.githubusercontent.com/BrainCog-X/Brain-Cog/main/figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
+<img src="https://raw.githubusercontent.com/BrainCog-X/Brain-Cog/main/figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
+<img src="https://raw.githubusercontent.com/BrainCog-X/Brain-Cog/main/figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
 
 
 The anatomical and imaging data is used to support our simulation from various aspects. 
