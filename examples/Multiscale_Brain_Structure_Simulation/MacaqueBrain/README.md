@@ -20,6 +20,11 @@ Macaque Brain Simulation is a large scale brain modeling framework depending on 
 * tonic (special)
 * pandas >= 1.4.2  
 
+## Input:
+Data is obtained from the following link:
+https://drive.google.com/drive/folders/1WieGUftdubKYeYejhvH-gpakia4MP5fl?usp=sharing
+
+
 ## Example:
 
 ```shell 
