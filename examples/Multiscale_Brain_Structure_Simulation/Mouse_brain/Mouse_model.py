@@ -22,7 +22,7 @@ class Mouse_brain():
     def __init__(self):
         self.p = [[-50, -44, -45, -50, -50, -45],    % vth     : Spiking threshold for  neurons [mV]
                   [100, 100, 85, 200, 20, 40],       % tau_v   : Membrane capacitance for inhibitory neurons [pf];
-                  [12, 10, 10, 12, 10, 10],          %Tsig     : Variance of current in the inhibitory neurons 
+                  [12, 10, 10, 12, 10, 10],          % Tsig     : Variance of current in the inhibitory neurons 
                   [0, 4.5, 4.5, 0, 4.5, 4.5],        % beta_ad : Conductance of the adaptation variable variable of neurons 
                   [0, - 2, - 2, 0, -2, -2],          % alpha_ad: Coupling of the adaptation variable variable of  neurons
                   [-110, -110, -66, -60, -60, -60]]  %vr       :rest voltage for neurons [mV]
