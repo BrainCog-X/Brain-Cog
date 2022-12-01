@@ -22,6 +22,12 @@ def setup_seed(seed):
     np.random.seed(seed)
     random.seed(seed)
 
+
+    torch.backends.cudnn.benchmark = False
+
+    torch.backends.cudnn.deterministic = True
+
+
     os.environ['PYTHONHASHSEED'] = str(seed)
 
 
@@ -54,7 +60,16 @@ class AverageMeter(object):
         self.cnt += n
         self.avg = self.sum / self.cnt
 
+class TensorGather(object):
+    def __init__(self):
+        self.reset()
+    def reset(self):
+        self.gather=None
 
+    def update(self, val):
+        if self.gather is not None:self.gather=torch.cat([self.gather,val],dim=0)
+        else:self.gather=val
+ 
 def accuracy(output, target, topk=(1,)):
     """Compute the top1 and top5 accuracy
     """
@@ -141,3 +156,21 @@ def save_spike_info(fname, epoch, batch_idx, step, avg, var, spike, avg_per_step
         writer.writerow(lst)
 
 
+def calc_aurc(confidences, labels):
+    
+ 
+    predictions = torch.argmax(confidences, dim=1)
+    max_confs = torch.max(confidences, dim=1)[0]
+
+    n = len(labels)
+
+    indices = torch.argsort(max_confs)
+
+    labels, predictions, confidences = labels[indices].flip(dims=[0]), predictions[indices].flip(dims=[0]), confidences[indices].flip(dims=[0])
+    risk_cov = torch.divide(torch.cumsum(labels != predictions,dim=0).float(), torch.arange(1, n+1).cuda())
+    nrisk = torch.sum(labels != predictions)
+    aurc = torch.mean(risk_cov)
+    opt_aurc = (1./n) * torch.sum(torch.divide(torch.arange(1, nrisk + 1).cuda().float(), n - nrisk + torch.arange(1, nrisk + 1).cuda()))
+    eaurc = aurc - opt_aurc
+            
+    return aurc, eaurc
