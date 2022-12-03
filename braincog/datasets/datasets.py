@@ -18,6 +18,9 @@ from braincog.datasets.NOmniglot.nomniglot_nw_ks import NOmniglotNWayKShot
 from braincog.datasets.NOmniglot.nomniglot_pair import NOmniglotTrainSet, NOmniglotTestSet
 from braincog.datasets.ESimagenet.ES_imagenet import ESImagenet_Dataset
 from braincog.datasets.ESimagenet.reconstructed_ES_imagenet import ESImagenet2D_Dataset
+from braincog.datasets.CUB2002011 import CUB2002011
+from braincog.datasets.TinyImageNet import TinyImageNet
+from braincog.datasets.StanfordDogs import StanfordDogs 
 
 from .cut_mix import CutMix, EventMix, MixUp
 from .rand_aug import *
@@ -296,6 +299,37 @@ def get_cifar100_data(batch_size, num_workers=8, same_data=False, *args, **kwarg
     )
     return train_loader, test_loader, False, None
 
+def get_TinyImageNet_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+    size=kwargs["size"] if "size" in kwargs else 224
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(size),
+        transforms.RandomHorizontalFlip(), 
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    test_transform = transforms.Compose([
+        transforms.Resize(size*8//7),
+        transforms.CenterCrop(size),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    root=os.path.join(DATA_DIR, 'TinyImageNet')
+    train_datasets = TinyImageNet(
+        root=root, split="train", transform=test_transform if same_da else train_transform, download=True)
+    test_datasets = TinyImageNet(
+        root=root, split="val", transform=test_transform, download=True)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=True, shuffle=True, num_workers=num_workers
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=num_workers
+    )
+
+    return train_loader, test_loader, False, None
 
 def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
     """
@@ -667,8 +701,8 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
         lambda x: torch.tensor(x, dtype=torch.float),
         # lambda x: print(x.shape),
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
-        transforms.RandomCrop(size, padding=size // 12),
-        transforms.RandomHorizontalFlip(),
+        # transforms.RandomCrop(size, padding=size // 12),
+        # transforms.RandomHorizontalFlip(),
         transforms.RandomRotation(15)
     ])
     test_transform = transforms.Compose([
@@ -986,3 +1020,161 @@ def get_esimnet_data(batch_size, step, **kwargs):
     )
 
     return train_loader, test_loader, mixup_active, None
+
+
+def get_CUB2002011_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(), 
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    test_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    root=os.path.join(DATA_DIR, 'CUB2002011')
+    train_datasets = CUB2002011(
+        root=root, train=True, transform=test_transform if same_da else train_transform, download=True)
+    test_datasets = CUB2002011(
+        root=root, train=False, transform=test_transform, download=True)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=True, shuffle=True, num_workers=num_workers
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=num_workers
+    )
+
+    return train_loader, test_loader, False, None
+
+def get_StanfordCars_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(), 
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    test_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    root=os.path.join(DATA_DIR, 'StanfordCars')
+    train_datasets = datasets.StanfordCars(
+        root=root, split ="train", transform=test_transform if same_da else train_transform, download=True)
+    test_datasets = datasets.StanfordCars(
+        root=root, split ="test", transform=test_transform, download=True)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=True, shuffle=True, num_workers=num_workers
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=num_workers
+    )
+
+    return train_loader, test_loader, False, None
+
+def get_StanfordDogs_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(), 
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    test_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    root=os.path.join(DATA_DIR, 'StanfordDogs')
+    train_datasets = StanfordDogs(
+        root=root, train=True, transform=test_transform if same_da else train_transform, download=True)
+    test_datasets = StanfordDogs(
+        root=root, train=False, transform=test_transform, download=True)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=True, shuffle=True, num_workers=num_workers
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=num_workers
+    )
+
+    return train_loader, test_loader, False, None
+
+
+def get_FGVCAircraft_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(), 
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    test_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    root=os.path.join(DATA_DIR, 'FGVCAircraft')
+    train_datasets = datasets.FGVCAircraft(
+        root=root, split="train", transform=test_transform if same_da else train_transform, download=True)
+    test_datasets = datasets.FGVCAircraft(
+        root=root, split="test", transform=test_transform, download=True)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=True, shuffle=True, num_workers=num_workers
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=num_workers
+    )
+
+    return train_loader, test_loader, False, None
+
+
+def get_Flowers102_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(), 
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    test_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    root=os.path.join(DATA_DIR, 'Flowers102')
+    train_datasets = datasets.Flowers102(
+        root=root, split="train", transform=test_transform if same_da else train_transform, download=True)
+    test_datasets = datasets.Flowers102(
+        root=root, split="test", transform=test_transform, download=True)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=True, shuffle=True, num_workers=num_workers
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_datasets, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=num_workers
+    )
+
+    return train_loader, test_loader, False, None
