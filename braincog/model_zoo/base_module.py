@@ -89,12 +89,7 @@ class BaseConvModule(nn.Module):
                               padding=padding,
                               stride=stride,
                               bias=bias)
-        # self.conv = DeformConvPack(in_channels=in_channels,
-        #                            out_channels=out_channels,
-        #                            kernel_size=kernel_size,
-        #                            padding=padding,
-        #                            stride=stride,
-        #                            bias=bias)
+ 
 
         self.bn = nn.BatchNorm2d(out_channels * self.groups)
 
@@ -198,9 +193,24 @@ class BaseModule(nn.Module, abc.ABC):
         for mod in self.modules():
             if isinstance(mod, BaseNode):
                 if temporal_info:
-                    outputs.append(mod.feature_map)
+                    outputs.append(mod.feature_map)#[l,[t,[b,w,h]]]
                 else:
                     outputs.append(sum(mod.feature_map) / len(mod.feature_map))
+        return outputs
+
+    def get_mem(self, temporal_info=False):
+        """
+        获取所有神经元的模电势
+        :param temporal_info: 是否要读取神经元的时间维度状态, False会把时间维度拍平
+        :return: 所有神经元的状态, List
+        """
+        outputs = []
+        for mod in self.modules():
+            if isinstance(mod, BaseNode):
+                if temporal_info:
+                    outputs.append(mod.mem_collect)#[l,[t,[b,w,h]]]
+                else:
+                    outputs.append(sum(mod.mem_collect) / len(mod.mem_collect))
         return outputs
 
     def get_fire_rate(self, requires_grad=False):
@@ -258,12 +268,20 @@ class BaseModule(nn.Module, abc.ABC):
             lst = []
             for t in range(self.step + 1):
                 lst.append(float((spike_feature == t).sum() / num))
-                # lst.append(  # for mem storage
-                #     float(torch.logical_and(spike_feature >= 2 * t / (self.step + 1) - 1,
-                #                             spike_feature < 2 * (t + 1) / (self.step + 1) - 1).sum() / num))
+
             spike.append(lst)
 
         return avg, var, spike, avg_per_step
+
+    def set_requires_fp(self, flag):
+        for mod in self.modules():
+            if hasattr(mod, 'requires_fp'):
+                mod.requires_fp = flag
+
+    def set_requires_mem(self, flag):
+        for mod in self.modules():
+            if hasattr(mod, 'requires_mem'):
+                mod.requires_mem = flag        
 
     def get_attr(self, attr):
         """
