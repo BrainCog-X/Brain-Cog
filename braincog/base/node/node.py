@@ -10,7 +10,6 @@
 import abc
 import math
 from abc import ABC
-
 import numpy as np
 import random
 import torch
@@ -58,13 +57,14 @@ class BaseNode(nn.Module, abc.ABC):
         self.spike = 0.
         self.dt = dt
         self.feature_map = []
+        self.mem_collect = []
         self.requires_fp = requires_fp
         self.v_reset = v_reset
         self.step = step
         self.layer_by_layer = layer_by_layer
         self.groups = n_groups
-        # print(self.layer_by_layer)
         self.mem_detach = kwargs['mem_detach'] if 'mem_detach' in kwargs else False
+        self.requires_mem = kwargs['requires_mem'] if 'requires_mem' in kwargs else False
 
     @abc.abstractmethod
     def calc_spike(self):
@@ -145,16 +145,18 @@ class BaseNode(nn.Module, abc.ABC):
 
             outputs = []
             for i in range(self.step):
-                # print(inputs.shape)
+                
                 if self.mem_detach and hasattr(self.mem, 'detach'):
                     self.mem = self.mem.detach()
                     self.spike = self.spike.detach()
                 self.integral(inputs[i])
-                # print(self.mem)
+                
                 self.calc_spike()
-                # print(self.spike)
+                
                 if self.requires_fp is True:
                     self.feature_map.append(self.spike)
+                if self.requires_mem is True:
+                    self.mem_collect.append(self.mem)
                 outputs.append(self.spike)
             outputs = torch.stack(outputs)
 
@@ -168,6 +170,8 @@ class BaseNode(nn.Module, abc.ABC):
             self.calc_spike()
             if self.requires_fp is True:
                 self.feature_map.append(self.spike)
+            if self.requires_mem is True:
+                self.mem_collect.append(self.mem)   
             return self.spike
 
     def n_reset(self):
@@ -178,7 +182,7 @@ class BaseNode(nn.Module, abc.ABC):
         self.mem = self.v_reset
         self.spike = 0.
         self.feature_map = []
-
+        self.mem_collect = []
     def get_n_attr(self, attr):
 
         if hasattr(self, attr):
@@ -213,7 +217,8 @@ class BaseNode(nn.Module, abc.ABC):
         else:
             raise NotImplementedError
 
-
+#============================================================================
+# node的基类
 class BaseMCNode(nn.Module, abc.ABC):
     """
     多房室神经元模型的基类
@@ -318,8 +323,9 @@ class ThreeCompNode(BaseMCNode):
         self.mems['apical'] = self.mems['apical']  * (1. - self.spike.detach())
 
 
+#============================================================================
 
-# for static test.
+# 用于静态测试 使用ANN的情况 不累积电位 
 class ReLUNode(BaseNode):
     """
     用于相同连接的ANN的测试
@@ -340,6 +346,8 @@ class ReLUNode(BaseNode):
         self.spike = self.act_fun(x)
         if self.requires_fp is True:
             self.feature_map.append(self.spike)
+        if self.requires_mem is True:
+            self.mem_collect.append(self.mem)
         return self.spike
 
     def calc_spike(self):
@@ -367,7 +375,6 @@ class BiasReLUNode(BaseNode):
         pass
 
 
-# for static test.
 class BinaryNode(BaseNode):
     """
     用于相同连接的Binary-NN的测试
@@ -388,6 +395,8 @@ class BinaryNode(BaseNode):
         self.spike = self.act_fun(x)
         if self.requires_fp is True:
             self.feature_map.append(self.spike)
+        if self.requires_mem is True:
+                self.mem_collect.append(self.mem)
         return self.spike
 
     def calc_spike(self):
@@ -412,12 +421,15 @@ class IRNode(BaseNode):
         self.spike = BinaryQuantize().apply(x, self.k, self.t)
         if self.requires_fp is True:
             self.feature_map.append(self.spike)
+        if self.requires_mem is True:
+                self.mem_collect.append(self.mem)
         return self.spike
 
     def calc_spike(self):
         pass
 
-
+# ============================================================================
+# 用于SNN的node
 class IFNode(BaseNode):
     """
     Integrate and Fire Neuron
@@ -544,8 +556,7 @@ class BackEINode(BaseNode):
         self.mem = None
         self.spike = None
         self.feature_map = []
-
-
+        self.mem_collect = []
 
 
 class NoiseLIFNode(LIFNode):
@@ -809,10 +820,6 @@ class DoubleSidePLIFNode(LIFNode):
         self.spike = self.act_fun(self.mem - self.get_thres()) - self.act_fun(self.get_thres - self.mem)
         self.mem = self.mem * (1. - torch.abs(self.spike.detach()))
 
-    # print(self.get_thres(), self.decay)
-
-
-
 
 class IzhNode(BaseNode):
     """
@@ -934,7 +941,6 @@ class DGLIFNode(BaseNode):
                      torch.where(spike.detach() > self.get_thres(), torch.ones_like(spike), torch.zeros_like(spike))
         self.spike = spike
         self.mem = torch.where(self.mem >= self.get_thres(), torch.zeros_like(self.mem), self.mem)
-        # self.mem[[(spike > self.get_thres())]] = self.mem[[(spike > self.get_thres())]] - self.get_thres()
 
 
 class HTDGLIFNode(IFNode):
