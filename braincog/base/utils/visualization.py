@@ -27,6 +27,7 @@ import seaborn as sns
 RS = 20150101
 
 
+
 def spike_rate_vis_1d(data, output_dir=''):
     assert len(data.shape) == 2, 'Shape should be (t, c).'
 
@@ -73,15 +74,15 @@ def plot_mem_distribution(data,
     data = np.delete(data, idx)
     idx = np.argwhere(data > mean + 3 * std)
     data = np.delete(data, idx)
-
+    
     sns.set_style('darkgrid')
     # sns.set_palette('deep', desat=.6)
     sns.set_context("notebook", font_scale=1.5,
                     rc={"lines.linewidth": 2.5})
-
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111, aspect='equal')
-
+ 
+    # fig = plt.figure(figsize=(8, 8))
+    # ax = fig.add_subplot(111, aspect='equal')
+         
     # sns.distplot(data, bins=int(np.sqrt(data.shape[0])),
     #              hist=True, kde=False, hist_kws={'histtype': 'stepfilled'}, **kwargs)
 
@@ -101,26 +102,28 @@ def plot_mem_distribution(data,
     plt.ylabel(ylabel)
     # if legend != '':
     #     plt.legend(legend)
-    ax.axis('tight')
+    # ax.axis('tight')
 
     if output_dir != '':
-        plt.savefig(output_dir, facecolor=fig.get_facecolor(), bbox_inches='tight')
+        plt.savefig(output_dir, bbox_inches='tight')
         print('{} saved'.format(output_dir))
-    plt.show()
+    # plt.show()
 
 
-def plot_tsne(x, colors, output_dir):
+def plot_tsne(x, colors,output_dir="", num_classes=None):
     if isinstance(x, torch.Tensor):
         x = x.to('cpu').numpy()
     if isinstance(colors, torch.Tensor):
         colors = colors.to('cpu').numpy()
 
+    if num_classes is None:
+        num_classes=colors.max()+1
     x = TSNE(random_state=RS, n_components=2).fit_transform(x)
     sns.set_style('darkgrid')
     sns.set_palette('muted')
     sns.set_context("notebook", font_scale=1.5,
                     rc={"lines.linewidth": 2.5})
-    palette = np.array(sns.color_palette("hls", 10))
+    palette = np.array(sns.color_palette("hls", num_classes))
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, aspect='equal')
     sc = ax.scatter(x[:, 0], x[:, 1], lw=0, s=25,
@@ -132,10 +135,10 @@ def plot_tsne(x, colors, output_dir):
     # plt.grid('off')
 
     plt.savefig(output_dir, facecolor=fig.get_facecolor(), bbox_inches='tight')
-    plt.show()
+    #plt.show()
 
 
-def plot_tsne_3d(x, colors, output_dir):
+def plot_tsne_3d(x, colors,output_dir="", num_classes=None):
     """
     绘制3D t-SNE聚类图, 直接将图片保存到输出路径
     :param x: 输入的feature map / spike
@@ -148,16 +151,18 @@ def plot_tsne_3d(x, colors, output_dir):
     if isinstance(colors, torch.Tensor):
         colors = colors.to('cpu').numpy()
 
+    if num_classes is None:
+        num_classes=colors.max()+1
     x = TSNE(random_state=RS, n_components=3, perplexity=30).fit_transform(x)
     # sns.set_style('darkgrid')
     sns.set_palette('muted')
     sns.set_context("notebook", font_scale=1.5,
                     rc={"lines.linewidth": 2.5})
     fig = plt.figure(figsize=(8, 8))
-    palette = np.array(sns.color_palette("hls", 10))
+    palette = np.array(sns.color_palette("hls", num_classes))
     ax = Axes3D(fig)
-    sc = ax.scatter(x[:, 0], x[:, 1], x[:, 2], lw=0, s=20, alpha=0.8,
-                    c=palette[colors.astype(np.int)])
+    # sc = ax.scatter(x[:, 0], x[:, 1], x[:, 2], lw=0, s=20, alpha=0.8,
+    #                 c=palette[colors.astype(np.int)])
     ax.view_init(elev=15, azim=30)
     # plt.xlim(-25, 25)
     # plt.ylim(-25, 25)
@@ -166,7 +171,7 @@ def plot_tsne_3d(x, colors, output_dir):
     # plt.grid('off')
 
     plt.savefig(output_dir, facecolor=fig.get_facecolor(), bbox_inches='tight')
-    plt.show()
+    #plt.show()
 
 
 def plot_confusion_matrix(logits, labels, output_dir):
@@ -200,7 +205,7 @@ def plot_confusion_matrix(logits, labels, output_dir):
     plt.ylabel('True labels')
 
     plt.savefig(output_dir, bbox_inches='tight')
-    plt.show()
+    #plt.show()
 
 
 if __name__ == '__main__':
