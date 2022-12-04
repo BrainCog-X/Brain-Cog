@@ -5,6 +5,7 @@ torch
 torchvision
 torchaudio
 timm
+scikit-learn
 einops
 thop
 pyyaml
