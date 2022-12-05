@@ -3,7 +3,7 @@ try:
     import tonic
     from tonic import DiskCachedDataset
 except:
-    warnings.warn("tonic should be installed, 'pip install git+https://github.com/FloyedShen/tonic.git'")
+    warnings.warn("tonic should be installed, 'pip install git+https://github.com/BrainCog-X/tonic_braincog.git'")
 import torch
 import torch.nn.functional as F
 import torch.utils
