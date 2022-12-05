@@ -6,6 +6,8 @@ import math
 import scipy.io as sci
 from braincog.base.node.node import aEIF
 
+import matplotlib.pyplot as plt
+
 
 class Mouse_brain():
     """
@@ -45,7 +47,7 @@ class Mouse_brain():
         self.g_m = 1
         
     def plot(self,path=None):
-    data = scio.loadmat(path)
+    data = sci.loadmat(path)
     Iraster = data['Iraster']
     t=[]
     neuron=[]
