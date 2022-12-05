@@ -6,6 +6,8 @@ import math
 import scipy.io as sci
 from braincog.base.node.node import aEIF
 
+import matplotlib.pyplot as plt
+
 
 class Mouse_brain():
     """
@@ -45,7 +47,7 @@ class Mouse_brain():
         self.g_m = 1
         
     def plot(self,path=None):
-    data = scio.loadmat(path)
+    data = sci.loadmat(path)
     Iraster = data['Iraster']
     t=[]
     neuron=[]
@@ -89,7 +91,7 @@ class Mouse_brain():
         NTRN = int(NType[5])
         NC = int(NE + NI_BC + NI_MC)
         NT = int(NTC + NTI + NTRN)
-        NSum = int(NCR * (NE + NE + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
+        NSum = int(NCR * (NE + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
         Ncycle = self.Ncycle
         dt = self.dt
         T = self.T
