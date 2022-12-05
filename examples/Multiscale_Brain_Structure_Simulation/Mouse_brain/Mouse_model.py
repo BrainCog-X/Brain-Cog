@@ -91,7 +91,7 @@ class Mouse_brain():
         NTRN = int(NType[5])
         NC = int(NE + NI_BC + NI_MC)
         NT = int(NTC + NTI + NTRN)
-        NSum = int(NCR * (NE + NE + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
+        NSum = int(NCR * (NE + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
         Ncycle = self.Ncycle
         dt = self.dt
         T = self.T
