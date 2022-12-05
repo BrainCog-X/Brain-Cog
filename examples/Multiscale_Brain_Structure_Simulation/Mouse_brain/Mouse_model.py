@@ -43,6 +43,17 @@ class Mouse_brain():
         self.T = 200
         self.gamma_c = 0.1
         self.g_m = 1
+        
+    def plot(self,path=None):
+    data = scio.loadmat(path)
+    Iraster = data['Iraster']
+    t=[]
+    neuron=[]
+    for i in Iraster:
+        t.append(i[0])
+        neuron.append(i[1])
+    plt.scatter(t, neuron, c='k', marker='.')
+    plt.show()
 
     def Mouse_model(self, sheet):
         """
@@ -360,10 +371,13 @@ class Mouse_brain():
             print(t)
 
         sci.savemat('./100ms-.mat', mdict={'Iraster': Iraster})
+       
 
 
 if __name__ == '__main__':
-    workbook = xlrd.open_workbook(r'E:/code/cog-matlab/W_213.xlsx')
+    workbook = xlrd.open_workbook(r'W_213.xlsx')
     sheet = workbook.sheet_by_index(5)
     test = Mouse_brain()
     test.Mouse_model(sheet)
+    path='100ms-.mat'
+    test.plot(path)
