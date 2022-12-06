@@ -4,8 +4,7 @@ import numpy as np
 import random
 import math
 import scipy.io as sci
-from braincog.base.node.node import aEIF
-
+from braincog.base.node.node import *
 import matplotlib.pyplot as plt
 
 
@@ -22,12 +21,12 @@ class Mouse_brain():
     """
 
     def __init__(self):
-        self.p = [[-50, -44, -45, -50, -50, -45],    % vth     : Spiking threshold for  neurons [mV]
-                  [100, 100, 85, 200, 20, 40],       % tau_v   : Membrane capacitance for inhibitory neurons [pf];
-                  [12, 10, 10, 12, 10, 10],          % Tsig     : Variance of current in the inhibitory neurons 
-                  [0, 4.5, 4.5, 0, 4.5, 4.5],        % beta_ad : Conductance of the adaptation variable variable of neurons 
-                  [0, - 2, - 2, 0, -2, -2],          % alpha_ad: Coupling of the adaptation variable variable of  neurons
-                  [-110, -110, -66, -60, -60, -60]]  %vr       :rest voltage for neurons [mV]
+        self.p = [[-50, -44, -45, -50, -50, -45],    # vth     : Spiking threshold for  neurons [mV]
+                  [100, 100, 85, 200, 20, 40],       # tau_v   : Membrane capacitance for inhibitory neurons [pf];
+                  [12, 10, 10, 12, 10, 10],          # Tsig     : Variance of current in the inhibitory neurons 
+                  [0, 4.5, 4.5, 0, 4.5, 4.5],        # beta_ad : Conductance of the adaptation variable variable of neurons 
+                  [0, - 2, - 2, 0, -2, -2],          # alpha_ad: Coupling of the adaptation variable variable of  neurons
+                  [-110, -110, -66, -60, -60, -60]]  #vr       :rest voltage for neurons [mV]
         self.tau_ad = 20
         self.tau_I = 10
         self.GammaII = 15
@@ -47,15 +46,15 @@ class Mouse_brain():
         self.g_m = 1
         
     def plot(self,path=None):
-    data = sci.loadmat(path)
-    Iraster = data['Iraster']
-    t=[]
-    neuron=[]
-    for i in Iraster:
-        t.append(i[0])
-        neuron.append(i[1])
-    plt.scatter(t, neuron, c='k', marker='.')
-    plt.show()
+        data = sci.loadmat(path)
+        Iraster = data['Iraster']
+        t=[]
+        neuron=[]
+        for i in Iraster:
+            t.append(i[0])
+            neuron.append(i[1])
+        plt.scatter(t, neuron, c='k', marker='.')
+        plt.savefig('500mouse.jpg')
 
     def Mouse_model(self, sheet):
         """
@@ -91,7 +90,7 @@ class Mouse_brain():
         NTRN = int(NType[5])
         NC = int(NE + NI_BC + NI_MC)
         NT = int(NTC + NTI + NTRN)
-        NSum = int(NCR * (NE + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
+        NSum = int(NCR * (NE  + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
         Ncycle = self.Ncycle
         dt = self.dt
         T = self.T
@@ -348,7 +347,11 @@ class Mouse_brain():
             vm1 = np.array(vm1)
             beta_ad = np.array(beta_ad)
             ad = np.array(ad)
-            v, ad, vv = aEIF().aEIFNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1)
+            v = v + dt / c_m * (-g_m * v + alpha_w * ad + Ieff + Ichem + Igap)
+            ad = ad + dt / tau_ad * (-ad + beta_ad * v)
+            vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
+
+            #v, ad, vv = aEIF.aEIFNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1)
             vm1 = v
 
             Isp = np.nonzero(vv)
@@ -381,5 +384,5 @@ if __name__ == '__main__':
     sheet = workbook.sheet_by_index(5)
     test = Mouse_brain()
     test.Mouse_model(sheet)
-    path='100ms-.mat'
+    path='200ms-.mat'
     test.plot(path)
