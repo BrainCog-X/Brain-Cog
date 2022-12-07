@@ -347,11 +347,11 @@ class Mouse_brain():
             vm1 = np.array(vm1)
             beta_ad = np.array(beta_ad)
             ad = np.array(ad)
-            v = v + dt / c_m * (-g_m * v + alpha_w * ad + Ieff + Ichem + Igap)
-            ad = ad + dt / tau_ad * (-ad + beta_ad * v)
-            vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
+            #v = v + dt / c_m * (-g_m * v + alpha_w * ad + Ieff + Ichem + Igap)
+            #ad = ad + dt / tau_ad * (-ad + beta_ad * v)
+            #vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
 
-            #v, ad, vv = aEIF.aEIFNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1)
+            v, ad, vv = aEIF().aEIFNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1)
             vm1 = v
 
             Isp = np.nonzero(vv)
