@@ -1113,6 +1113,8 @@ class aEIF(BaseNode):
         ad = ad + dt / tau_ad * (-ad + beta_ad * v)
         vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
         return v, ad, vv
+    def calc_spike(self,x):
+        pass
 
 
 class LIAFNode(BaseNode):

@@ -9,7 +9,6 @@ scikit-learn
 einops
 thop
 pyyaml
-loris
 matplotlib
 seaborn
 pygame
