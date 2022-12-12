@@ -8,7 +8,6 @@ import time
 import sys
 from tqdm import tqdm
 
-from braincog.base.encoder.population_coding import *
 from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
 from braincog.base.learningrule.STDP import *
 import sys

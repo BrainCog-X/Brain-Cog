@@ -1,16 +1,3 @@
-import math
-import random
-import matplotlib
-# matplotlib.use("TkAgg")
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import pickle
-from pygame.locals import *
-import pandas as pd
-import time
-
-from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
 from braincog.base.learningrule.STDP import *
 from braincog.base.brainarea.PFC import dlPFC
 from utils.Encoder import *
