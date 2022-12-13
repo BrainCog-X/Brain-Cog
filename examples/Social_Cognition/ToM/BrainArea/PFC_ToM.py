@@ -58,21 +58,21 @@ class PFC_ToM(dlPFC):
                   out_features=self.out_features, bias=self.bias)
         return fc
 
-    def update_c(self, c, STDP, tau_c=0.2):
+    def update_c(self, c, dw, tau_c=0.2):
         """
         update the trace of eligibility
         @param c: a tensor to record eligibility
-        @param STDP: the results of STDP
+        @param dw: the results of STDP
         @param tau_c: the parameter of trace decay
         @return: a update tensor to record eligibility
         Equation:
-        delta_c = (-(c / tau_c) + STDP) * dela_t
+        delta_c = (-(c / tau_c) + dw) * dela_t
         c = c + delta_c
         reference:<Solving the Distal Reward Problem through ...>
         """
-        # delta_c = -(c / tau_c) + STDP           #dela_t = 1 ignore
+        # delta_c = -(c / tau_c) + dw           #dela_t = 1 ignore
         # c = c + delta_c
-        c = c + tau_c * STDP
+        c = c + tau_c * dw
         return c
 
     def _call_reward(self, R, c, s, T_map):  # eligibility
