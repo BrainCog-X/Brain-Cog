@@ -2,27 +2,17 @@
 Zoe Zhao 2022.5
 ToM Demo
 """
-import ast
 import argparse
-import time
-import yaml
 import copy
-import abc
-import random
 import numpy as np
 import torch
-import torch.nn as nn
-from torch.nn import Parameter
+
 np.set_printoptions(threshold=np.inf)
 torch.set_printoptions(threshold=np.inf)
 
-from tqdm import *
-import matplotlib.pyplot as plt
 import matplotlib
-# import seaborn as sns
 import pygame
 pygame.init()
-# sns.set(style='ticks', palette='Set2')
 matplotlib.rcParams.update({'font.size': 12})
 import os
 os.environ["SDL_VIDEODRIVER"] = "dummy"
@@ -32,12 +22,8 @@ from BrainArea.TPJ import ToM
 from BrainArea.dACC import *
 from rulebasedpolicy.Find_a_way import *
 from env.env import FalseBelief_env
-import  sys
-
-from braincog.base.connection import layer
 from braincog.base.encoder.encoder import *
 from braincog.base.node import node
-from braincog.model_zoo.base_module import BaseLinearModule, BaseModule
 
 #NPC2
 #state
