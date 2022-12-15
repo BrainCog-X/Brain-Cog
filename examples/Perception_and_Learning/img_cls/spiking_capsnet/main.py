@@ -193,14 +193,14 @@ def evaluate(test_iter, net, device):
 if __name__ == '__main__':
     train_loader, test_loader, _, _ = get_mnist_data(batch_size)
     capsule_net = CapsNet().to(device)
-    optimizer = Adam(capsule_net.parameters())
+    optimizer = Adam(capsule_net.parameters(), lr=0.0005)
 
-    n_epochs = 50
+    n_epochs = 30
     best, losses = 0, []
 
     for epoch in range(n_epochs):
-        if epoch in [20, 35, 45]:
-            optimizer.param_groups[0]['lr'] *= 0.1
+        if epoch in [15, 25, 45]:
+            optimizer.param_groups[0]['lr'] *= 0.3
 
         capsule_net.train()
         train_loss, correct, n = 0, 0, 0
