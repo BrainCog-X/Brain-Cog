@@ -377,7 +377,7 @@ class Mouse_brain():
 
 if __name__ == '__main__':
     workbook = xlrd.open_workbook(r'W_213.xlsx')
-    sheet = workbook.sheet_by_index(5)
+    sheet = workbook.sheet_by_index(0)
     test = Mouse_brain()
     test.Mouse_model(sheet)
     path='200ms-.mat'

@@ -331,6 +331,7 @@ def get_TinyImageNet_data(batch_size, num_workers=8, same_da=False, *args, **kwa
 
     return train_loader, test_loader, False, None
 
+
 def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
     """
     获取ImageNet数据集
@@ -348,23 +349,23 @@ def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
             'Training folder does not exist at: {}'.format(train_dir))
         exit(1)
     dataset_train = ImageDataset(train_dir)
-    collate_fn = None
-    mixup_fn = None
-    mixup_active = args.mixup > 0 or args.cutmix > 0. or args.cutmix_minmax is not None
-    if mixup_active:
-        mixup_args = dict(
-            mixup_alpha=args.mixup, cutmix_alpha=args.cutmix, cutmix_minmax=args.cutmix_minmax,
-            prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
-            label_smoothing=args.smoothing, num_classes=args.num_classes)
-        if args.prefetcher:
-            # collate conflict (need to support deinterleaving in collate mixup)
-            assert not num_aug_splits
-            collate_fn = FastCollateMixup(**mixup_args)
-        else:
-            mixup_fn = Mixup(**mixup_args)
+    # collate_fn = None
+    # mixup_fn = None
+    # mixup_active = args.mixup > 0 or args.cutmix > 0. or args.cutmix_minmax is not None
+    # if mixup_active:
+    #     mixup_args = dict(
+    #         mixup_alpha=args.mixup, cutmix_alpha=args.cutmix, cutmix_minmax=args.cutmix_minmax,
+    #         prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
+    #         label_smoothing=args.smoothing, num_classes=args.num_classes)
+    #     if args.prefetcher:
+    #         # collate conflict (need to support deinterleaving in collate mixup)
+    #         assert not num_aug_splits
+    #         collate_fn = FastCollateMixup(**mixup_args)
+    #     else:
+    #         mixup_fn = Mixup(**mixup_args)
 
-    if num_aug_splits > 1:
-        dataset_train = AugMixDataset(dataset_train, num_splits=num_aug_splits)
+    # if num_aug_splits > 1:
+    #     dataset_train = AugMixDataset(dataset_train, num_splits=num_aug_splits)
 
     train_interpolation = args.train_interpolation
     if args.no_aug or not train_interpolation:
@@ -376,27 +377,25 @@ def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
         is_training=True,
         use_prefetcher=args.prefetcher,
         no_aug=args.no_aug,
-        re_prob=args.reprob,
-        re_mode=args.remode,
-        re_count=args.recount,
-        re_split=args.resplit,
+        # re_prob=args.reprob,
+        # re_mode=args.remode,
+        # re_count=args.recount,
+        # re_split=args.resplit,
         scale=args.scale,
         ratio=args.ratio,
         hflip=args.hflip,
-        vflip=args.vflip,
+        # vflip=arg,
         color_jitter=args.color_jitter,
-        auto_augment=args.aa,
+        #auto_augment=args.aa,
         num_aug_splits=num_aug_splits,
         interpolation=train_interpolation,
         mean=data_config['mean'],
         std=data_config['std'],
         num_workers=args.workers,
         distributed=args.distributed,
-        collate_fn=collate_fn,
+        #collate_fn=collate_fn,
         pin_memory=args.pin_mem,
-        use_multi_epochs_loader=args.use_multi_epochs_loader
-    )
-
+        use_multi_epochs_loader=args.use_multi_epochs_loader)
     eval_dir = os.path.join(DATA_DIR, 'ILSVRC2012/val')
     if not os.path.isdir(eval_dir):
         eval_dir = os.path.join(DATA_DIR, 'ILSVRC2012/validation')
@@ -420,7 +419,7 @@ def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
         crop_pct=data_config['crop_pct'],
         pin_memory=args.pin_mem,
     )
-    return loader_train, loader_eval, mixup_active, mixup_fn
+    return loader_train, loader_eval, False, None
 
 
 def get_dvsg_data(batch_size, step, **kwargs):
