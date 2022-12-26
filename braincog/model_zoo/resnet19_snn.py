@@ -99,8 +99,8 @@ class ResNet(BaseModule):
 
         if norm_layer is None:
             norm_layer = ThresholdDependentBatchNorm2d
-        self._norm_layer = norm_layer
-
+        self._norm_layer = partial(norm_layer,   step=step)
+        self.sum_output=kwargs["sum_output"] if "sum_output"in kwargs else True 
         self.inplanes = 128
         self.dilation = 1
         if replace_stride_with_dilation is None:
@@ -180,7 +180,9 @@ class ResNet(BaseModule):
         x = self.fc1(x)
         x = self.node2(x)
         x = self.fc2(x)
-        x = rearrange(x, '(t b) c -> b c t', t=self.step).mean(-1)
+        
+        if self.sum_output:x= rearrange(x, '(t b) c -> b c t', t=self.step).mean(-1)
+        else :x=  rearrange(x, '(t b) c -> t b c ', t=self.step)
         return x
 
     def forward(self, inputs):
@@ -190,8 +192,8 @@ class ResNet(BaseModule):
         return self._forward_impl(inputs)
 
 
-def _resnet(arch, block, layers, pretrained, progress, **kwargs):
-    tdBN = partial(ThresholdDependentBatchNorm2d, layer_by_layer=kwargs['layer_by_layer'], threshold=kwargs['threshold'])
+def _resnet(arch, block, layers, pretrained, progress,norm=ThresholdDependentBatchNorm2d, **kwargs):
+    tdBN = partial(norm, layer_by_layer=kwargs['layer_by_layer'], threshold=kwargs['threshold'])
     model = ResNet(block, layers, norm_layer=tdBN, **kwargs)
     if pretrained:
         raise NotImplementedError
@@ -199,8 +201,8 @@ def _resnet(arch, block, layers, pretrained, progress, **kwargs):
 
 
 @register_model
-def resnet19(pretrained=False, progress=True, **kwargs):
-    return _resnet('resnet19', BasicBlock, [3, 3, 2], pretrained, progress, **kwargs)
+def resnet19(pretrained=False, progress=True,norm=ThresholdDependentBatchNorm2d, **kwargs):
+    return _resnet('resnet19', BasicBlock, [3, 3, 2], pretrained, progress,norm=norm, **kwargs)
 
 
 if __name__ == '__main__':
