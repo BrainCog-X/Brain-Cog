@@ -17,8 +17,31 @@ BrainCog provides essential and fundamental components to model biological and a
 
 ![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
 
+## Brain-Inspired AI
+BrainCog currently provides cognitive functions components that can be classified 
+into five categories: 
+* Perception and Learning
+* Decision Making
+* Motor Control
+* Knowledge Representation and Reasoning
+* Social Cognition
+ 
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/mirror-test.gif" alt="mt" width="55%" />
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/joy.gif" alt="mt" width="55%" />
+
+## Brain Simulation
+BrainCog currently include two parts for brain simulation:
+* Brain Cognitive Function Simulation
+* Multi-scale Brain Structure Simulation
+ 
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
+
+The anatomical and imaging data is used to support our simulation from various aspects. 
+
 ## Resources
-### Lecture
+### Lectures
 The current version of the lectures are in Chinese, and the English version will come soon. Stay tuned...
 
 - [[BrainCog Talk] Begining BrainCog Lecture 10. Multi-brain Areas Coordinated Brain-inspired Decision-Making Spiking Neural Network Based on Braincog](https://www.bilibili.com/video/BV1jD4y1x7PU/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
@@ -70,30 +93,6 @@ You can easily use them in the braincog/datasets folder, taking DVSCIFAR10 as an
 ```python
 loader_train, loader_eval,_,_ = get_dvsc10_data(batch_size=128,step=10)
 ```
-## Brain-Inspired AI
-BrainCog currently provides cognitive functions components that can be classified 
-into five categories: 
-* Perception and Learning
-* Decision Making
-* Motor Control
-* Knowledge Representation and Reasoning
-* Social Cognition
- 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/mirror-test.gif" alt="mt" width="55%" />
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/joy.gif" alt="mt" width="55%" />
-
-## Brain Simulation
-BrainCog currently include two parts for brain simulation:
-* Brain Cognitive Function Simulation
-* Multi-scale Brain Structure Simulation
-
- 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
-
-
-The anatomical and imaging data is used to support our simulation from various aspects. 
 
 ## Requirements:
 * python == 3.8
