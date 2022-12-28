@@ -110,7 +110,23 @@ class ThresholdDependentBatchNorm2d(_BatchNorm):
         return output
         # return rearrange(output, 'b (t c) w h -> (t b) c w h', t=self.step)
 
-
+class TEBN(nn.Module):
+    def __init__(self, num_features,step, eps=1e-5, momentum=0.1,**kwargs):
+        super(TEBN, self).__init__()
+        self.bn = nn.BatchNorm3d(num_features)
+        self.p = nn.Parameter(torch.ones(4, 1, 1, 1, 1))
+        self.step=step
+    def forward(self, input):
+        #y = input.transpose(1, 2).contiguous()  # N T C H W ,  N C T H W
+        y = rearrange(input,"(t b) c w h -> t c b w h",t=self.step)
+        y = self.bn(y)
+        # y = y.contiguous().transpose(1, 2)
+        # y = y.transpose(0, 1).contiguous()  # NTCHW  TNCHW
+        y = rearrange(y,"t c b w h -> t b c w h")
+        y = y * self.p
+        #y = y.contiguous().transpose(0, 1)  # TNCHW  NTCHW
+        y = rearrange(y, "t b c w h -> (t b) c w h")
+        return y
 class LayerNorm(nn.Module):
     """ LayerNorm that supports two data formats: channels_last (default) or channels_first.
     The ordering of the dimensions in the inputs. channels_last corresponds to inputs with

@@ -17,20 +17,48 @@ BrainCog provides essential and fundamental components to model biological and a
 
 ![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
 
+## Brain-Inspired AI
+BrainCog currently provides cognitive functions components that can be classified 
+into five categories: 
+* Perception and Learning
+* Decision Making
+* Motor Control
+* Knowledge Representation and Reasoning
+* Social Cognition
+ 
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/mirror-test.gif" alt="mt" width="55%" />
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/joy.gif" alt="mt" width="55%" />
+
+## Brain Simulation
+BrainCog currently include two parts for brain simulation:
+* Brain Cognitive Function Simulation
+* Multi-scale Brain Structure Simulation
+ 
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
+
+The anatomical and imaging data is used to support our simulation from various aspects. 
+
 ## Resources
-### Lecture
+### Lectures
 The current version of the lectures are in Chinese, and the English version will come soon. Stay tuned...
 
-- [[BrainCog Talk] Begining BrainCog Lecture 10. Multi-brain Areas Coordinated Brain-inspired Decision-Making Spiking Neural Network Based on Braincog](https://www.bilibili.com/video/BV1jD4y1x7PU/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
-- [[BrainCog Talk] Begining BrainCog Lecture 9. Spikin Neural Networks with Global Feedback Connections Based on BrainCog](https://www.bilibili.com/video/BV1qv4y1D74Y/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
-- [[BrainCog Talk] Begining BrainCog Lecture 8. Converting Artificial Neural Network to Spiking Neural Network through BrainCog](https://www.bilibili.com/video/BV17e4y147H6/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
-- [[BrainCog Talk] Begining BrainCog Lecture 7. Implementing quantum superposition inspired spatio-temporal spike encoding through BrainCog](https://www.bilibili.com/video/BV1BG41177Z6/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 15. SNN-based Music Learning and Generation Based on BrainCog](https://www.bilibili.com/video/BV1M3411X7C2/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 14. The Implement of Multisensory Concept Learning Framework Based on SNNs with Braincog](https://www.bilibili.com/video/BV1Ae411P7tY/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 13. Symbolic Representation and Reasoning SNN base on Braincog](https://www.bilibili.com/video/BV1DW4y1p7kg/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 12. Unsupervised STDP-based Spiking Neural Networks based on BrainCog](https://www.bilibili.com/video/BV1MR4y1Z7Be/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 11. Backpropagation with spatiotemporal adjustment for training deep spiking neural networks through BrainCog](https://www.bilibili.com/video/BV1EK411Z71F/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 10. Multi-brain Areas Coordinated Brain-inspired Decision-Making Spiking Neural Network Based on Braincog](https://www.bilibili.com/video/BV1jD4y1x7PU/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 9. Spiking Neural Networks with Global Feedback Connections Based on BrainCog](https://www.bilibili.com/video/BV1qv4y1D74Y/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 8. Converting Artificial Neural Network to Spiking Neural Network through BrainCog](https://www.bilibili.com/video/BV17e4y147H6/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[BrainCog Talk] Begining BrainCog Lecture 7. Implementing quantum superposition inspired spatio-temporal spike encoding through BrainCog](https://www.bilibili.com/video/BV1BG41177Z6/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 - [[BrainCog Talk] Begining BrainCog Lecture 6. Implementing spiking deep Q network through Braincog](https://www.bilibili.com/video/BV1XN4y1c7Kn/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 5. Advanced BrainCog System Functions](https://www.bilibili.com/video/BV1tT411N7c9/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 4. Creating Cognitive SNNs for Brain Areas](https://www.bilibili.com/video/BV19d4y1679Y/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 3.  Creating SNNs Easily and Quickly](https://www.bilibili.com/video/BV1Be4y1874W/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 2.  Computational Modeling of Spiking Neurons](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
-- [[BrainCog Talk] Begining BrainCog Lecture 1.  Installing and Deploying BrainCog platform](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[BrainCog Talk] Begining BrainCog Lecture 1.  Installing and Deploying BrainCog platform](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 ### Tutorial
 - [How to install braincog](http://www.brain-cog.network/docs/tutorial/Installation.html)
 - [Overall introduction of BrainCog](http://www.brain-cog.network/docs/tutorial/Introduction.html)
@@ -70,30 +98,6 @@ You can easily use them in the braincog/datasets folder, taking DVSCIFAR10 as an
 ```python
 loader_train, loader_eval,_,_ = get_dvsc10_data(batch_size=128,step=10)
 ```
-## Brain-Inspired AI
-BrainCog currently provides cognitive functions components that can be classified 
-into five categories: 
-* Perception and Learning
-* Decision Making
-* Motor Control
-* Knowledge Representation and Reasoning
-* Social Cognition
- 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/mirror-test.gif" alt="mt" width="55%" />
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/joy.gif" alt="mt" width="55%" />
-
-## Brain Simulation
-BrainCog currently include two parts for brain simulation:
-* Brain Cognitive Function Simulation
-* Multi-scale Brain Structure Simulation
-
- 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
-
-
-The anatomical and imaging data is used to support our simulation from various aspects. 
 
 ## Requirements:
 * python == 3.8
