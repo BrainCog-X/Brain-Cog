@@ -54,7 +54,7 @@ class droDMTestNet(nn.Module):
         :return: None
         """
         self.connection[i].update(dw)
-        self.connection[i].weight.data = F.normalize(self.connection[i].weight.data.float(), p=1, dim=1)
+        self.connection[i].weight.data = F.normalize(self.connection[i].weight.data.float(), p=1, dim=0)
 
     def reset(self):
         """
