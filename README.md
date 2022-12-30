@@ -183,3 +183,7 @@ python main.py --model dvs_convnet --node-type LIFNode --dataset dvsc10 --step 1
 ```
 
 Other BrainCog features and tutorials can be found at http://www.brain-cog.network/docs/
+
+## BrainCog Assistant 
+Please add our BrainCog Assitant via wechat and we will invite you to our wechat developer group.
+![image](https://github.com/Brain-Cog-Lab/Brain-Cog/blob/main/figures/wechat_ass.jpg)
