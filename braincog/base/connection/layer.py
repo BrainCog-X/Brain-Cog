@@ -88,7 +88,7 @@ class ThresholdDependentBatchNorm2d(_BatchNorm):
     https://ojs.aaai.org/index.php/AAAI/article/view/17320
     """
 
-    def __init__(self, num_features, alpha: float, threshold: float = .5, layer_by_layer: bool = True, affine: bool = True):
+    def __init__(self, num_features, alpha: float, threshold: float = .5, layer_by_layer: bool = True, affine: bool = True,**kwargs):
         self.alpha = alpha
         self.threshold = threshold
 
