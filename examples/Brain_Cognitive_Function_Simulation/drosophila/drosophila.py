@@ -1,7 +1,7 @@
 import numpy as np
 import torch,os,sys
 from torch import nn
-from torch.nn import Parameter 
+from torch.nn import Parameter
 
 import abc
 import math
@@ -19,6 +19,7 @@ from braincog.base.learningrule.STDP import STDP,MutliInputSTDP
 from braincog.base.connection.CustomLinear import CustomLinear
 from braincog.model_zoo.nonlinearNet import droDMTestNet
 from braincog.model_zoo.linearNet import droDMTrainNet
+import copy
 
 if __name__=="__main__":
     """
@@ -100,25 +101,24 @@ if __name__=="__main__":
 
 
     #linear test conflict decision making
-    MB_test = droDMTrainNet(train_weight)
-    MB_test.reset()
     test_num=12
     t1=torch.zeros((test_num), dtype=torch.float)
     t2=torch.zeros((test_num), dtype=torch.float)
     for c in range(t1.shape[0]):
-        Gt = torch.tensor([0, (c*0.1)+0.5, 0, 0, 1.0])
-        BT = torch.tensor([0, 0, (c*0.1)+0.5, 1.0, 0])
+        MB_test = droDMTrainNet(copy.deepcopy(train_weight))
+        MB_test.reset()
+        Gt = torch.tensor([0, (c*0.1), 0, 0, 0.5])
+        BT = torch.tensor([0, 0, (c*0.1), 0.5, 0])
         input =Gt - BT   # input Gt
         input[input < 0] = 0
         count=torch.zeros((num_action), dtype=torch.float)
         for i_train in range(500):
-            GT_out,dwkc,dwmbon=MB(input)
+            GT_out,dwkc,dwmbon=MB_test(input)
             count+=GT_out
         t1[c]=count[0]
         t2[c]=count[1]
     p1=(t1-t2)/(t1+t2)
     print(t1,t2,p1)
-    MB_test = MB.getweight()
     for i in range(len(train_weight)):
         print("weight after learning:", train_weight[i].weight.data)
 
@@ -150,22 +150,22 @@ if __name__=="__main__":
     da_mb_connection.append(CustomLinear(weight_exc * con_matrix11, con_matrix11))
 
     #0 input-vis 1 vis-kc 2 kc-mbon 3-mbon-mbon 4 kc-apl 5 apl-kc 6 da-apl 7 apl-da 8 input-da
-    DA_MB_test = droDMTestNet(da_mb_connection)
-    DA_MB_test.reset()
     t1 = torch.zeros((test_num), dtype=torch.float)
     t2 = torch.zeros((test_num), dtype=torch.float)
     for c in range(t1.shape[0]):
-        Gt = torch.tensor([0, (c * 0.1) + 0.5, 0, 0, 1.0])
-        BT = torch.tensor([0, 0, (c * 0.1) + 0.5, 1.0, 0])
+        DA_MB_test = droDMTestNet(copy.deepcopy(da_mb_connection))
+        DA_MB_test.reset()
+        Gt = torch.tensor([0, (c * 0.1), 0, 0, 0.5])
+        BT = torch.tensor([0, 0, (c * 0.1), 0.5, 0])
         input = Gt - BT  # input Gt
         input[input < 0] = 0
         count = torch.zeros((num_action), dtype=torch.float)
         for i_train in range(500):
-            if i_train<10:
-                input_da = torch.tensor([1.0])
+            if i_train<10 and i_train%2==0:
+                input_da = torch.tensor([0.5])
             else:
                 input_da = torch.tensor([0.0])
-            GT_out, dwkc, dwapl = DA_MB_test(input,input_da)
+            GT_out, dwkc, dwapl= DA_MB_test(input,input_da)
             DA_MB_test.UpdateWeight(5, dwkc)
             DA_MB_test.UpdateWeight(4, dwapl)
             count += GT_out
@@ -179,7 +179,7 @@ if __name__=="__main__":
 
 
 x = torch.arange(0, test_num)
-x=x*0.1+0.5
+x=x*0.1
 plt.figure()
 A,=plt.plot(x, p1,label="linear")
 B,=plt.plot(x, p2,label="non-linear")
