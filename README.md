@@ -44,6 +44,7 @@ The anatomical and imaging data is used to support our simulation from various a
 ### Lectures
 The current version of the lectures are in Chinese, and the English version will come soon. Stay tuned...
 
+- [[BrainCog Talk] Begining BrainCog Lecture 17. A Brain-inspired Theory of Mind Model Based on BrainCog for Reducing Other Agents’ Safety Risks](https://www.bilibili.com/video/BV12A411f74Q/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 - [[BrainCog Talk] Begining BrainCog Lecture 16. Brain-inspired Bodily Self-perception Model Based on BrainCog](https://www.bilibili.com/video/BV1pK411i7Jk/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 - [[BrainCog Talk] Begining BrainCog Lecture 15. SNN-based Music Memory and Generation Based on BrainCog](https://www.bilibili.com/video/BV1M3411X7C2/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 - [[BrainCog Talk] Begining BrainCog Lecture 14. The Implement of Multisensory Concept Learning Framework Based on SNNs with Braincog](https://www.bilibili.com/video/BV1Ae411P7tY/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
