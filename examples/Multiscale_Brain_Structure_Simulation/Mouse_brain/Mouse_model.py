@@ -191,11 +191,11 @@ class Mouse_brain():
                 WIE = GammaIE * c_mE / NI_BC / dt
                 for n in range(NCR):
                     va[n][t] = weight_matrix[m][n] * \
-                        (sum(vv[(n - 1) * NC:(n - 1) * NC + NE]))
+                        (sum(vv[(n) * NC:(n) * NC + NE]))
                     vb[n][t] = weight_matrix[m][n] * \
-                        (sum(vv[(n - 1) * NC + NE:(n - 1) * NC + NE + NI_BC]))
+                        (sum(vv[(n) * NC + NE:(n) * NC + NE + NI_BC]))
                     vc[n][t] = weight_matrix[m][n] * \
-                        (sum(vv[(n - 1) * NC + NE + NI_BC:(n - 1) * NC + NE + NI_BC + NI_MC]))
+                        (sum(vv[(n) * NC + NE + NI_BC:(n) * NC + NE + NI_BC + NI_MC]))
 
                 for n in range(NCR, NCR + NTN):
                     vd[n][t] = weight_matrix[m][n] * \
