@@ -257,6 +257,7 @@ class Mouse_brain():
                     vc[n][t] = weight_matrix[m][n] * \
                                (np.sum(vv[n * NC + NE + NI_BC:n * NC + NE + NI_BC + NI_MC]))
 
+
                 for n in range(NCR, NCR + NTN):
                     vd[n][t] = weight_matrix[m][n] * \
                                np.sum(vv[NCR * NC + (n - NCR - 1) * NT:NCR * NC + (n - NCR - 1) * NT + NTC])
