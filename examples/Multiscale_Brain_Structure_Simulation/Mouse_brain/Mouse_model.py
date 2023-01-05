@@ -3,7 +3,7 @@ import numpy as np
 
 import random
 import math
-import scipy.io as sci
+import scipy.io as scio
 from braincog.base.node.node import *
 import matplotlib.pyplot as plt
 
@@ -21,12 +21,12 @@ class Mouse_brain():
     """
 
     def __init__(self):
-        self.p = [[-50, -44, -45, -50, -50, -45],    # vth     : Spiking threshold for  neurons [mV]
-                  [100, 100, 85, 200, 20, 40],       # tau_v   : Membrane capacitance for inhibitory neurons [pf];
-                  [12, 10, 10, 12, 10, 10],          # Tsig     : Variance of current in the inhibitory neurons 
-                  [0, 4.5, 4.5, 0, 4.5, 4.5],        # beta_ad : Conductance of the adaptation variable variable of neurons 
-                  [0, - 2, - 2, 0, -2, -2],          # alpha_ad: Coupling of the adaptation variable variable of  neurons
-                  [-110, -110, -66, -60, -60, -60]]  #vr       :rest voltage for neurons [mV]
+        self.p = [[-5, -4, -5, -5, -5, -5],  # vth     : Spiking threshold for  neurons [mV]
+                  [100, 100, 85, 200, 20, 40],  # tau_v   : Membrane capacitance for inhibitory neurons [pf];
+                  [12, 10, 10, 12, 10, 10],  # Tsig     : Variance of current in the inhibitory neurons
+                  [0, 4.5, 4.5, 0, 4.5, 4.5],  # beta_ad : Conductance of the adaptation variable variable of neurons
+                  [0, - 2, - 2, 0, -2, -2],  # alpha_ad: Coupling of the adaptation variable variable of  neurons
+                  [-20, -20, -20, -20, -20, -20]]  # vr       :rest voltage for neurons [mV]
         self.tau_ad = 20
         self.tau_I = 10
         self.GammaII = 15
@@ -44,28 +44,22 @@ class Mouse_brain():
         self.T = 200
         self.gamma_c = 0.1
         self.g_m = 1
-        
-    def plot(self,path=None):
-        data = sci.loadmat(path)
+
+    def plot(self, path=None):
+        data = scio.loadmat(path)
         Iraster = data['Iraster']
-        t=[]
-        neuron=[]
+        t = []
+        neuron = []
         for i in Iraster:
             t.append(i[0])
             neuron.append(i[1])
-        plt.scatter(t, neuron, c='k', marker='.')
+        plt.scatter(t, neuron, c='k', marker='.', s=0.1)
         plt.savefig('500mouse.jpg')
 
-    def Mouse_model(self, sheet):
+    def Mouse_model(self, w):
         """
         Calculation of rat brain model
         """
-        w = []
-        for i in range(sheet.nrows):
-            w.append(sheet.row_values(i))
-        for i in range(sheet.nrows):
-            for j in range(sheet.ncols):
-                w[i][j] = w[i][j] / 100000
         p = self.p
         tau_ad = self.tau_ad
         tau_I = self.tau_I
@@ -75,7 +69,7 @@ class Mouse_brain():
         GammaEI = self.GammaEI
         TEmean = self.TEmean
         TTCmean = self.TTCmean
-        NR = sheet.nrows
+        NR = len(w)
         NCR = self.NCR
         NTN = self.NTN
         NN = self.NN
@@ -90,15 +84,19 @@ class Mouse_brain():
         NTRN = int(NType[5])
         NC = int(NE + NI_BC + NI_MC)
         NT = int(NTC + NTI + NTRN)
-        NSum = int(NCR * (NE  + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
+        NSum = int(NCR * (NE + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
         Ncycle = self.Ncycle
         dt = self.dt
         T = self.T
+        Delta_T = 0.5  # exponential parameter
+        refrac = 5 / self.dt  # refractory period [ms]
+        ref = np.zeros((NSum))  # refractory counter
+
         gamma_c = self.gamma_c
-        TI_BCmean = -5 * p[0][1]
-        TI_MCmean = -5 * p[0][2]
-        TTImean = -5 * p[0][4]
-        TTRNmean = -5 * p[0][5]
+        TI_BCmean = -20
+        TI_MCmean = -20
+        TTImean = -20
+        TTRNmean = -20
 
         g_m = self.g_m
         Gama_c = g_m * gamma_c / (1 - gamma_c)
@@ -138,79 +136,135 @@ class Mouse_brain():
         NTRNsig = p[2][5] * (g_m + Gama_c)
         Vgap = Gama_c / NType[1]
 
-        I_total = [0.0] * T
-        V_total = [0.0] * T
+        I_total = np.zeros((T))
+        V_total = np.zeros((T))
 
-        V_E = [[0.0] * T] * NR
-        V_I_BC = [[0.0] * T] * NR
-        V_I_MC = [[0.0] * T] * NR
-        V_TC = [[0.0] * T] * NR
-        V_TI = [[0.0] * T] * NR
-        V_TRN = [[0.0] * T] * NR
+        V_E = np.zeros((NR, T))
+        V_I_BC = np.zeros((NR, T))
+        V_I_MC = np.zeros((NR, T))
+        V_TC = np.zeros((NR, T))
+        V_TI = np.zeros((NR, T))
+        V_TRN = np.zeros((NR, T))
 
-        v = [0.0] * NSum
+        v = -20 * np.ones((NSum))
 
-        vt = [0.0] * NSum
-        c_m = [0.0] * NSum
-        alpha_w = [0.0] * NSum
-        beta_ad = [0.0] * NSum
-        ad = [0.0] * NSum
-        vv = [0.0] * NSum
-        Iback = [0.0] * NSum
-        Istimu = [0.0] * NSum
+        vt = np.zeros((NSum))
+        vr = np.zeros((NSum))
+        vm1 = np.zeros((NSum))
+        c_m = np.zeros((NSum))
+        alpha_w = np.zeros((NSum))
+        beta_ad = np.zeros((NSum))
+        ad = np.zeros((NSum))
+        vv = np.zeros((NSum))
+        Iback = np.zeros((NSum))
+        Istimu = np.zeros((NSum))
         Im_sp = 0
-        Igap = [0.0] * NSum
-        Ichem = [0.0] * NSum
-        Ieff = [0.0] * NSum
-        vm1 = [0.0] * NSum
-        va = [[0.0] * T] * NR
-        vb = [[0.0] * T] * NR
-        vc = [[0.0] * T] * NR
-        vd = [[0.0] * T] * NR
-        ve = [[0.0] * T] * NR
-        vf = [[0.0] * T] * NR
+        Igap = np.zeros((NSum))
+        Ichem = np.zeros((NSum))
+        Ieff = np.zeros((NSum))
 
-        I = [0.0] * T
 
-        V = [0.0] * T
-        Isubregion = [[0.0] * T] * NR
-        Vsubregion = [[0.0] * T] * NR
+        va = np.zeros((NR, T))
+        vb = np.zeros((NR, T))
+        vc = np.zeros((NR, T))
+        vd = np.zeros((NR, T))
+        ve = np.zeros((NR, T))
+        vf = np.zeros((NR, T))
+
+        I = np.zeros((T))
+
+        V = np.zeros((T))
+        Isubregion = np.zeros((NR, T))
+        Vsubregion = np.zeros((NR, T))
 
         weight_matrix = w
+        for m in range(NR):
+            tau_vI = 10
+            GammaII = 15
+            GammaIE = -10
+            c_mI_BC = tau_vI * (g_m + Gama_c)
+            WII = GammaII * c_mI_BC / NI_BC / dt
+            WEE = GammaEE * c_mE / NE / dt
+            WEI = GammaEI * c_mI_BC / NE / dt
+            WIE = GammaIE * c_mE / NI_BC / dt
+            if m < NCR:
+                c_m[m * NC: m * NC + NE] = c_mE
+                c_m[m * NC + NE: m * NC + NE + NI_BC] = c_mI_BC
+                c_m[m * NC + NE + NI_BC: m * NC +
+                                         NE + NI_BC + NI_MC] = c_mI_MC
 
+                alpha_w[m * NC: m * NC + NE] = alpha_wE
+                alpha_w[m * NC + NE: m * NC + NE + NI_BC] = alpha_wI_BC
+                alpha_w[m * NC + NE + NI_BC: m * NC +
+                                             NE + NI_BC + NI_MC] = alpha_wI_MC
+
+                vt[m * NC: m * NC + NE] = p[0][0]
+                vt[m * NC + NE: m * NC + NE + NI_BC] = p[0][1]
+                vt[m * NC + NE + NI_BC: m * NC +
+                                        NE + NI_BC + NI_MC] = p[0][2]
+
+                vr[m * NC: m * NC + NE] = p[5][0]
+                vr[m * NC + NE: m * NC + NE + NI_BC] = p[5][1]
+                vr[m * NC + NE + NI_BC: m * NC +
+                                        NE + NI_BC + NI_MC] = p[5][2]
+
+                beta_ad[m * NC: m * NC + NE] = p[3][0]
+                beta_ad[m * NC + NE: m * NC + NE + NI_BC] = p[3][1]
+                beta_ad[m * NC + NE + NI_BC: m *
+                                             NC + NE + NI_BC + NI_MC] = p[3][2]
+            else:
+                c_m[NCR * NC + (m - NCR) * NT: NCR * NC +
+                                               (m - NCR) * NT + NTC] = c_mTC
+                c_m[NCR * NC + (m - NCR) * NT + NTC: NCR *
+                                                     NC + (m - NCR) * NT + NTC + NTI] = c_mTI
+                c_m[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
+                                                           NC + (m - NCR) * NT + NTC + NTI + NTRN] = c_mTRN
+
+                alpha_w[NCR * NC + (m - NCR) * NT: NCR * NC + (m - NCR) * NT + NTC] = alpha_wTC
+                alpha_w[NCR * NC + (m - NCR) * NT + NTC: NCR * NC + (m - NCR) * NT + NTC + NTI] = alpha_wTI
+                alpha_w[
+                NCR * NC + (m - NCR) * NT + NTC + NTI: NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN] = alpha_wTRN
+
+                vt[NCR * NC + (m - NCR) * NT: NCR * NC +
+                                              (m - NCR) * NT + NTC] = p[0][3]
+                vt[NCR * NC + (m - NCR) * NT + NTC: NCR *
+                                                    NC + (m - NCR) * NT + NTC + NTI] = p[0][4]
+                vt[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
+                                                          NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[0][5]
+
+                vr[NCR * NC + (m - NCR) * NT: NCR * NC +
+                                              (m - NCR) * NT + NTC] = p[5][3]
+                vr[NCR * NC + (m - NCR) * NT + NTC: NCR *
+                                                    NC + (m - NCR) * NT + NTC + NTI] = p[5][4]
+                vr[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
+                                                          NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[5][5]
+
+                beta_ad[NCR * NC + (m - NCR) * NT: NCR *
+                                                   NC + (m - NCR) * NT + NTC] = p[3][3]
+                beta_ad[NCR * NC + (m - NCR) * NT + NTC: NCR *
+                                                         NC + (m - NCR) * NT + NTC + NTI] = p[3][4]
+                beta_ad[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[3][
+                    5]
         Iraster = []
         for t in range(T):
+            Iback = Iback + dt / tau_I * (np.random.randn(NSum) - Iback)
             for m in range(NR):
-                tau_vI = 10
-                GammaII = 15
-                GammaIE = -10
-                c_mI_BC = tau_vI * (g_m + Gama_c)
-                WII = GammaII * c_mI_BC / NI_BC / dt
-                WEE = GammaEE * c_mE / NE / dt
-                WEI = GammaEI * c_mI_BC / NE / dt
-                WIE = GammaIE * c_mE / NI_BC / dt
                 for n in range(NCR):
                     va[n][t] = weight_matrix[m][n] * \
-                        (sum(vv[(n - 1) * NC:(n - 1) * NC + NE]))
+                               (np.sum(vv[n * NC:n * NC + NE]))
                     vb[n][t] = weight_matrix[m][n] * \
-                        (sum(vv[(n - 1) * NC + NE:(n - 1) * NC + NE + NI_BC]))
+                               (np.sum(vv[n * NC + NE:n * NC + NE + NI_BC]))
                     vc[n][t] = weight_matrix[m][n] * \
-                        (sum(vv[(n - 1) * NC + NE + NI_BC:(n - 1) * NC + NE + NI_BC + NI_MC]))
+                               (np.sum(vv[n * NC + NE + NI_BC:n * NC + NE + NI_BC + NI_MC]))
+
 
                 for n in range(NCR, NCR + NTN):
                     vd[n][t] = weight_matrix[m][n] * \
-                        sum(vv[NCR * NC + (n - NCR - 1) * NT:NCR * NC + (n - NCR - 1) * NT + NTC])
-                    ve[n][t] = weight_matrix[m][n] * sum(vv[NCR * NC + (
-                        n - NCR - 1) * NT + NTC:NCR * NC + (n - NCR - 1) * NT + NTC + NTI])
-                    vf[n][t] = weight_matrix[m][n] * sum(vv[NCR * NC + (
-                        n - NCR - 1) * NT + NTC + NTI:NCR * NC + (n - NCR - 1) * NT + NTC + NTI + NTRN])
-
-                va = np.array(va)
-                vb = np.array(vb)
-                vc = np.array(vc)
-                vd = np.array(vd)
-                ve = np.array(ve)
-                vf = np.array(vf)
+                               np.sum(vv[NCR * NC + (n - NCR - 1) * NT:NCR * NC + (n - NCR - 1) * NT + NTC])
+                    ve[n][t] = weight_matrix[m][n] * np.sum(vv[NCR * NC + (
+                            n - NCR - 1) * NT + NTC:NCR * NC + (n - NCR - 1) * NT + NTC + NTI])
+                    vf[n][t] = weight_matrix[m][n] * np.sum(vv[NCR * NC + (
+                            n - NCR - 1) * NT + NTC + NTI:NCR * NC + (n - NCR - 1) * NT + NTC + NTI + NTRN])
 
                 v_e = np.sum(va, axis=0)[t] + np.sum(vd, axis=0)[t]
                 v_i = np.sum(vb, axis=0)[t] + np.sum(vc, axis=0)[t] + np.sum(ve, axis=0)[t] + np.sum(vf, axis=0)[t]
@@ -221,134 +275,62 @@ class Mouse_brain():
                 vj = np.sum(vd, axis=0)[t]
                 vk = np.sum(ve, axis=0)[t]
                 vl = np.sum(vf, axis=0)[t]
-                for i in range(NSum):
-                    Iback[i] = Iback[i] + dt / tau_I * (random.normalvariate(0, 1) - Iback[i])
 
-                c_m = np.array(c_m)
-                alpha_w = np.array(alpha_w)
-                vt = np.array(vt)
-                v = np.array(v)
-                beta_ad = np.array(beta_ad)
-                Iback = np.array(Iback)
-                Ichem = np.array(Ichem)
-                vv = np.array(vv)
-                Ieff = np.array(Ieff)
-                Igap = np.array(Igap)
-                if m + 1 < NCR:
-                    c_m[m * NC: m * NC + NE] = c_mE
-                    c_m[m * NC + NE: m * NC + NE + NI_BC] = c_mI_BC
-                    c_m[m * NC + NE + NI_BC: m * NC +
-                        NE + NI_BC + NI_MC] = c_mI_MC
-
-                    alpha_w[m * NC: m * NC + NE] = alpha_wE
-                    alpha_w[m * NC + NE: m * NC + NE + NI_BC] = alpha_wI_BC
-                    alpha_w[m * NC + NE + NI_BC: m * NC +
-                            NE + NI_BC + NI_MC] = alpha_wI_MC
-
-                    vt[m * NC: m * NC + NE] = p[0][0]
-                    vt[m * NC + NE: m * NC + NE + NI_BC] = p[0][1]
-                    vt[m * NC + NE + NI_BC: m * NC +
-                        NE + NI_BC + NI_MC] = p[0][2]
-
-                    v[m * NC: m * NC + NE] = p[5][0]
-                    v[m * NC + NE: m * NC + NE + NI_BC] = p[5][1]
-                    v[m * NC + NE + NI_BC: m * NC + NE + NI_BC + NI_MC] = p[5][2]
-
-                    beta_ad[m * NC: m * NC + NE] = p[3][0]
-                    beta_ad[m * NC + NE: m * NC + NE + NI_BC] = p[3][1]
-                    beta_ad[m * NC + NE + NI_BC: m *
-                            NC + NE + NI_BC + NI_MC] = p[3][2]
-
-                    midv1 = sum(v[m * NC + NE:m * NC + NE + NI_BC])
-                    midv2 = sum(
+                if m < NCR:
+                    midv1 = np.sum(v[m * NC + NE:m * NC + NE + NI_BC])
+                    midv2 = np.sum(
                         v[m * NC + NE + NI_MC:m * NC + NE + NI_BC + NI_MC])
 
-                    for k in range(m * NC, m * NC + NE):
-                        Ieff[k] = Iback[k] / \
-                            math.sqrt(1 / (2 * (tau_I / dt))) * float(NEsig) + float(NEmean)
-                        Ichem[k] = Ichem[k] + float(dt / tau_I * (-Ichem[k] + WEE * (
-                            vg + vj - vv[k]) + WIE * (vh + vi + vk + vl)))
+                    k = range(m * NC, m * NC + NE)
+                    Ieff[k] = Iback[k] / \
+                            math.sqrt(1 / (2 * (tau_I / dt))) * NEsig + NEmean
+                    Ichem[k] = Ichem[k] + dt / tau_I * (-Ichem[k] + WEE * (
+                            vg + vj - vv[k]) + WIE * (vh + vi + vk + vl))
 
-                    for k in range(m * NC + NE, m * NC + NE + NI_BC):
-                        Ieff[k] = Iback[k] / math.sqrt(1 / (2 * (tau_I / dt))) * float(
-                            NI_BCsig) + float(NI_BCmean)
-                        Ichem[k] = Ichem[k] + \
-                            float(dt / tau_I * (-Ichem[k] + WII * (vh - vv[k]) + WEI * vg))
-                        Igap[k] = Vgap * (midv1 - float(NI_BC) * v[k])
+                    k = range(m * NC + NE, m * NC + NE + NI_BC)
+                    Ieff[k] = Iback[k] / math.sqrt(1 / (2 * (tau_I / dt))) * NI_BCsig + NI_BCmean
+                    Ichem[k] = Ichem[k] + \
+                               dt / tau_I * (-Ichem[k] + WII * (vh - vv[k]) + WEI * vg)
+                    Igap[k] = Vgap * (midv1 - NI_BC * v[k])
 
-                    for k in range(
+                    k = range(
                             m * NC + NE + NI_BC,
-                            m * NC + NE + NI_BC + NI_MC):
-                        Ieff[k] = Iback[k] / math.sqrt(1 / (2 * (tau_I / dt))) * float(
-                            NI_MCsig) + float(NI_MCmean)
-                        Ichem[k] = Ichem[k] + \
-                            float(dt / tau_I * (-Ichem[k] + WII * (vi - vv[k]) + WEI * vg))
-                        Igap[k] = Vgap * (midv2 - NI_MC * v[k])
+                            m * NC + NE + NI_BC + NI_MC)
+                    Ieff[k] = Iback[k] / math.sqrt(1 / (2 * (tau_I / dt))) * NI_MCsig + NI_MCmean
+                    Ichem[k] = Ichem[k] + \
+                               dt / tau_I * (-Ichem[k] + WII * (vi - vv[k]) + WEI * vg)
+                    Igap[k] = Vgap * (midv2 - NI_MC * v[k])
 
                 else:
-                    c_m[NCR * NC + (m - NCR) * NT: NCR * NC +
-                        (m - NCR) * NT + NTC] = c_mTC
-                    c_m[NCR * NC + (m - NCR) * NT + NTC: NCR *
-                        NC + (m - NCR) * NT + NTC + NTI] = c_mTI
-                    c_m[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
-                        NC + (m - NCR) * NT + NTC + NTI + NTRN] = c_mTRN
+                    midv1 = np.sum(v[NCR * NC + (m - NCR) * NT +
+                                  NTC:NCR * NC + (m - NCR) * NT + NTC + NTI])
+                    midv2 = np.sum(v[NCR * NC + (m - NCR) * NT + NTC + \
+                                  NTI:NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN])
 
-                    alpha_w[NCR * NC + (m - NCR) * NT: NCR * NC + (m - NCR) * NT + NTC] = alpha_wTC
-                    alpha_w[NCR * NC + (m - NCR) * NT + NTC: NCR * NC + (m - NCR) * NT + NTC + NTI] = alpha_wTI
-                    alpha_w[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN] = alpha_wTRN
+                    k = range(NCR * NC + (m - NCR) * NT,
+                                   NCR * NC + (m - NCR) * NT + NTC)
+                    Ieff[k] = Iback[k] / \
+                              math.sqrt(1 / (2 * (tau_I / dt))) * NTCsig + NTCmean
+                    Ichem[k] = Ichem[k] + dt / tau_I * (-Ichem[k] + WEE * (vg - vv[k])) + WIE * (vh + vj + vk + vl)
+                    k = range(NCR * NC + (m - NCR) * NT + NTC,
+                                NCR * NC + (m - NCR) * NT + NTC + NTI)
+                    Ieff[k] = Iback[k] / \
+                              math.sqrt(1 / (2 * (tau_I / dt))) * NTIsig + NTImean
+                    Ichem[k] = Ichem[k] + \
+                               dt / tau_I * (-Ichem[k] + WII * (vk - vv[k]) + WEI * vj)
+                    Igap[k] = Vgap * (midv1 - NTI * v[k])
 
-                    vt[NCR * NC + (m - NCR) * NT: NCR * NC +
-                       (m - NCR) * NT + NTC] = p[0][3]
-                    vt[NCR * NC + (m - NCR) * NT + NTC: NCR *
-                       NC + (m - NCR) * NT + NTC + NTI] = p[0][4]
-                    vt[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
-                       NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[0][5]
+                    k = range(NCR * NC + (m - NCR) * NT + NTC + NTI,
+                                NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN)
+                    Ieff[k] = Iback[k] / \
+                              math.sqrt(1 / (2 * (tau_I / dt))) * NTRNsig + NTRNmean
+                    Ichem[k] = Ichem[k] + \
+                               dt / tau_I * (-Ichem[k] + WII * (vl - vv[k]) + WEI * vj)
+                    Igap[k] = Vgap * (midv2 - NTRN * v[k])
 
-                    v[NCR * NC + (m - NCR) * NT: NCR * NC +
-                      (m - NCR) * NT + NTC] = p[5][3]
-                    v[NCR * NC + (m - NCR) * NT + NTC: NCR * NC +
-                      (m - NCR) * NT + NTC + NTI] = p[5][4]
-                    v[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
-                      NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[5][5]
-
-                    beta_ad[NCR * NC + (m - NCR) * NT: NCR *
-                            NC + (m - NCR) * NT + NTC] = p[3][3]
-                    beta_ad[NCR * NC + (m - NCR) * NT + NTC: NCR *
-                            NC + (m - NCR) * NT + NTC + NTI] = p[3][4]
-                    beta_ad[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[3][5]
-
-                    midv1 = sum(v[NCR * NC + (m - NCR) * NT +
-                                NTC:NCR * NC + (m - NCR - 1) * NT + NTC + NTI])
-                    midv2 = sum(v[NCR * NC + (m - NCR) * NT + NTC + \
-                                NTI:NCR * NC + (m - NCR - 1) * NT + NTC + NTI + NTRN])
-
-                    for k in range(NCR * NC + (m - NCR) * NT,
-                                   NCR * NC + (m - NCR) * NT + NTC):
-                        Ieff[k] = Iback[k] / \
-                            math.sqrt(1 / (2 * (tau_I / dt))) * float(NTCsig) + float(NTCmean)
-                        Ichem[k] = Ichem[k] + float(
-                            dt / tau_I * (-Ichem[k] + WEE * (vg - vv[k])) + WIE * (vh + vj + vk + vl))
-                    for k in range(NCR * NC + (m - NCR) * NT + NTC,
-                                   NCR * NC + (m - NCR) * NT + NTC + NTI):
-                        Ieff[k] = Iback[k] / \
-                            math.sqrt(1 / (2 * (tau_I / dt))) * float(NTIsig) + float(NTImean)
-                        Ichem[k] = Ichem[k] + \
-                            float(dt / tau_I * (-Ichem[k] + WII * (vk - vv[k]) + WEI * vj))
-                        Igap[k] = Vgap * (midv1 - NTI * v[k])
-
-                    for k in range(NCR * NC + (m - NCR) * NT + NTC + NTI,
-                                   NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN):
-                        Ieff[k] = Iback[k] / \
-                            math.sqrt(1 / (2 * (tau_I / dt))) * float(NTRNsig) + float(NTRNmean)
-                        Ichem[k] = Ichem[k] + \
-                            float(dt / tau_I * (-Ichem[k] + WII * (vl - vv[k]) + WEI * vj))
-                        Igap[k] = Vgap * (midv2 - NTRN * v[k])
-
-            vm1 = np.array(vm1)
-            beta_ad = np.array(beta_ad)
-            ad = np.array(ad)
-            v, ad, vv = aEIF().aEIFNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1)
-            vm1 = v
+            v, ad, vv, vm1 = adth().adthNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1)
+            # v, ad, vv, ref = aEIF().aEIFNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap,
+            #      tau_ad, beta_ad, Delta_T, vt, vr, refrac, ref)
 
             Isp = np.nonzero(vv)
             Isp = np.array(Isp[0])
@@ -358,7 +340,7 @@ class Mouse_brain():
                 left = np.array(left)
                 left = left.reshape(len(left), 1)
                 mide = np.concatenate((left, Isp), axis=1)
-            if(len(Isp) != 0) and (len(Iraster) != 0):
+            if (len(Isp) != 0) and (len(Iraster) != 0):
                 Iraster = np.concatenate((Iraster, mide), axis=0)
                 print('here')
             if (len(Iraster) == 0) and (len(Isp) != 0):
@@ -368,17 +350,15 @@ class Mouse_brain():
             print(Iraster)
 
             I = Ieff + Ichem + Igap
-            V[t] = sum(v) / NSum
+            V[t] = np.sum(v) / NSum
             print(t)
 
-        sci.savemat('./100ms-.mat', mdict={'Iraster': Iraster})
-       
+        scio.savemat('./200ms-.mat', mdict={'Iraster': Iraster})
 
 
 if __name__ == '__main__':
-    workbook = xlrd.open_workbook(r'W_213.xlsx')
-    sheet = workbook.sheet_by_index(0)
+    W = np.array(scio.loadmat('./W_213.mat')['W'])
     test = Mouse_brain()
-    test.Mouse_model(sheet)
-    path='200ms-.mat'
+    test.Mouse_model(W)
+    path = '200ms-.mat'
     test.plot(path)
