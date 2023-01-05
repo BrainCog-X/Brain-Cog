@@ -1,8 +1,6 @@
 ## Input:
 
-* Program to enter a table of connection weights between 213 brain regions. The document is placed on Google Drive, and the name is 'W_213.xlsx'..
-
-Link：https://drive.google.com/drive/folders/1snPbpiVBpVuRgRYcl4AG4v49NgKKwBtA?usp=sharing
+* Program to enter a table of connection weights between 213 brain regions, which is saved in 'W_213.mat'
 
 
 ## output
