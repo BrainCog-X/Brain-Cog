@@ -1112,8 +1112,10 @@ class adth(BaseNode):
         v = v + dt / c_m * (-g_m * v + alpha_w * ad + Ieff + Ichem + Igap)
         ad = ad + dt / tau_ad * (-ad + beta_ad * v)
         vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
-        return v, ad, vv
-    def calc_spike(self,x):
+        vm1 = v
+        return v, ad, vv, vm1
+
+    def calc_spike(self):
         pass
 
 class aEIF(BaseNode):
@@ -1126,25 +1128,27 @@ class aEIF(BaseNode):
     def __init__(self, *args, **kwargs):
         super().__init__(requires_fp=False, *args, **kwargs)
 
-    def aEIFNode(self, v, dt, c_m, g_m, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, delta, vt, vm1):
+    def aEIFNode(self, v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap,
+                 tau_ad, beta_ad, Delta_T, vt, vr, refrac, ref):
         """
                 Calculate the neurons that discharge after the current threshold is reached
                 :param v: Current neuron voltage
                 :param dt: time step
-                :param ad: Adaptive variable
-                :param delta: Slope factor
+                :param ad:Adaptive variable
                 :param vv:Spike, if the voltage exceeds the threshold from below
         """
-        print((v-vt)/delta)
-        v = v + dt / c_m * (-g_m * v + g_m * delta * np.exp((v - vt)/delta)
-                            - ad + Ieff + Ichem + Igap)
-        ad = ad + dt / tau_ad * (-ad + beta_ad * v)
-        vv = (v >= vt).astype(int) * (vm1 < vt).astype(int)
-        return v, ad, vv
+        v = v + (ref>refrac) * dt / c_m * (-g_m * v + g_m * Delta_T * np.exp((v - vt)/Delta_T)
+                            + alpha_w * ad + Ieff + Ichem + Igap)
+        ad = ad + (ref>refrac) * dt / tau_ad * (-ad + beta_ad * v)
+        vv = (v >= vt).astype(int)
+        ref = ref * (1 - vv) + 1
+        ad = ad + vv * 30
+        v = (v >= vt).astype(int) * vr + (v < vt) * v
+        return v, ad, vv, ref
 
     def calc_spike(self):
         pass
-
+    
 class LIAFNode(BaseNode):
     """
     Leaky Integrate and Analog Fire (LIAF), Reference: https://ieeexplore.ieee.org/abstract/document/9429228
