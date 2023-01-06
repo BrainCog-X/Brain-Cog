@@ -62,11 +62,23 @@ The current version of the lectures are in Chinese, and the English version will
 - [[BrainCog Talk] Begining BrainCog Lecture 2. Computational Modeling of Spiking Neurons](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
 - [[BrainCog Talk] Begining BrainCog Lecture 1. Installing and Deploying BrainCog platform](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 ### Tutorial
-- [How to install braincog](http://www.brain-cog.network/docs/tutorial/Installation.html)
-- [Overall introduction of BrainCog](http://www.brain-cog.network/docs/tutorial/Introduction.html)
-- [Tutorial of Spiking Neuron Modeling](http://www.brain-cog.network/docs/tutorial/Spiking_Neuron_Modeling.html)
-- [Building Efficient Spiking Neural Networks with BrainCog](http://www.brain-cog.network/docs/tutorial/Building_Efficient_Spiking_Neural_Networks.html)
-- [How to build a cognitive network](http://www.brain-cog.network/docs/tutorial/How_to_build_a_cognitive_network.html)
+- [How to Install BrainCog](http://www.brain-cog.network/docs/tutorial/1_installation.html)
+- [Overall Introduction of BrainCog](http://www.brain-cog.network/docs/tutorial/2_Overall%20introduction%20of%20BrainCog.html)
+- [Spiking Neuron Modeling with BrainCog](http://www.brain-cog.network/docs/tutorial/3_Tutorial%20of%20Spiking%20Neuron%20Modeling.html)
+- [Building Efficient Spiking Neural Networks with BrainCog](http://www.brain-cog.network/docs/tutorial/4_Building%20Efficient%20Spiking%20Neural%20Networks%20with%20BrainCog.html)
+- [Building Cognitive Networks with BrainCog](http://www.brain-cog.network/docs/tutorial/5_How%20to%20build%20a%20cognitive%20network.html)
+- [Implementing Deep Reinforcement Learning SNNs with BrainCog](http://www.brain-cog.network/docs/tutorial/6_SDQN.html)
+- [Quantum Superposition State Inspired Encoding With BrainCog](http://www.brain-cog.network/docs/tutorial/7_QSSNN.html)
+- [Converting ANNs to SNNs with BrainCog](http://www.brain-cog.network/docs/tutorial/8_conversion.html)
+- [SNNs with Global Feedback Connections Based on BrainCog](http://www.brain-cog.network/docs/tutorial/9_GLSNN.html)
+- [Multi-brain Areas Coordinated Brain-inspired Decision-Making SNNs Based on Braincog](http://www.brain-cog.network/docs/tutorial/10_BDMSNN.html)
+- [Backpropagation with Spatiotemporal Adjustment for Training SNNs Based on BrainCog](http://www.brain-cog.network/docs/tutorial/11_biobp.html)
+- [Unsupervised STDP Based SNNs with Multiple Adaptive Mechanisms Based on BrainCog](http://www.brain-cog.network/docs/tutorial/12_unsup.html)
+- [Symbolic Representation and Reasoning SNNs Based on BrainCog](http://www.brain-cog.network/docs/tutorial/13_krr.html)
+- [Multisensory Integration Based on BrainCog](http://www.brain-cog.network/docs/tutorial/14_multisensory.html)
+- [SNN-based Music Memory and Generation Based on BrainCog](http://www.brain-cog.network/docs/tutorial/15_musicSNN.html)
+- [Brain-inspired Bodily Self-perception Model Based on BrainCog](http://www.brain-cog.network/docs/tutorial/16_self.html)
+- [A Brain-inspired Theory of Mind Model Based on BrainCog for Reducing Other Agents’ Safety Risks](http://www.brain-cog.network/docs/tutorial/17_tom.html)
 
 ## BrainCog Data Engine
 In addition to the static datasets, BrainCog supports the commonly used neuromorphic
