@@ -35,8 +35,8 @@ class Mouse_brain():
         self.GammaEI = 15
         self.TEmean = 5
         self.TTCmean = 5
-        self.NCR = 187
-        self.NTN = 26
+        self.NCR = 177
+        self.NTN = 36
         self.NN = 500
         self.NType = [0.60, 0.16, 0.08, 0.1, 0.02, 0.04]
         self.Ncycle = 1
@@ -260,11 +260,11 @@ class Mouse_brain():
 
                 for n in range(NCR, NCR + NTN):
                     vd[n][t] = weight_matrix[m][n] * \
-                               np.sum(vv[NCR * NC + (n - NCR - 1) * NT:NCR * NC + (n - NCR - 1) * NT + NTC])
+                               np.sum(vv[NCR * NC + (n - NCR) * NT:NCR * NC + (n - NCR) * NT + NTC])
                     ve[n][t] = weight_matrix[m][n] * np.sum(vv[NCR * NC + (
-                            n - NCR - 1) * NT + NTC:NCR * NC + (n - NCR - 1) * NT + NTC + NTI])
+                            n - NCR) * NT + NTC:NCR * NC + (n - NCR) * NT + NTC + NTI])
                     vf[n][t] = weight_matrix[m][n] * np.sum(vv[NCR * NC + (
-                            n - NCR - 1) * NT + NTC + NTI:NCR * NC + (n - NCR - 1) * NT + NTC + NTI + NTRN])
+                            n - NCR) * NT + NTC + NTI:NCR * NC + (n - NCR) * NT + NTC + NTI + NTRN])
 
                 v_e = np.sum(va, axis=0)[t] + np.sum(vd, axis=0)[t]
                 v_i = np.sum(vb, axis=0)[t] + np.sum(vc, axis=0)[t] + np.sum(ve, axis=0)[t] + np.sum(vf, axis=0)[t]
