@@ -35,8 +35,8 @@ class Mouse_brain():
         self.GammaEI = 15
         self.TEmean = 5
         self.TTCmean = 5
-        self.NCR = 187
-        self.NTN = 26
+        self.NCR = 177
+        self.NTN = 36
         self.NN = 500
         self.NType = [0.60, 0.16, 0.08, 0.1, 0.02, 0.04]
         self.Ncycle = 1

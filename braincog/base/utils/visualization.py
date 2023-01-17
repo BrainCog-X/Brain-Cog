@@ -161,8 +161,8 @@ def plot_tsne_3d(x, colors,output_dir="", num_classes=None):
     fig = plt.figure(figsize=(8, 8))
     palette = np.array(sns.color_palette("hls", num_classes))
     ax = Axes3D(fig)
-    # sc = ax.scatter(x[:, 0], x[:, 1], x[:, 2], lw=0, s=20, alpha=0.8,
-    #                 c=palette[colors.astype(np.int)])
+    sc = ax.scatter(x[:, 0], x[:, 1], x[:, 2], lw=0, s=20, alpha=0.8,
+                    c=palette[colors.astype(np.int)])
     ax.view_init(elev=15, azim=30)
     # plt.xlim(-25, 25)
     # plt.ylim(-25, 25)
