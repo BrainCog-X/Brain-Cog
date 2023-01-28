@@ -1,117 +1,105 @@
-# BrainCog
-BrainCog is an open source spiking neural network based brain-inspired 
-cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on BrainCog can be found on its homepage http://www.brain-cog.network/
+# 智脉
+人脑能够自组织地协同数百项认知功能，灵活适应复杂多变的环境。如何整合多尺度生物可塑性法则来构建具有生物合理性和计算高效性的神经网络模型是类脑人工智能和计算神经科学领域共同关注和面临的重要挑战。中国科学院自动化研究所类脑认知智能研究组历时9年，打造全脉冲神经网络的类脑认知智能引擎(Brain-inspired Cognitive Engine，简写为BrainCog，中文名“智脉”)，并进行全面开源开放，助力自然智能的计算本质探索和新一代人工智能的发展。关于BrainCog的更多信息可以关注主页 http://www.brain-cog.network/
 
-The current version of BrainCog contains at least 18 functional spiking neural network algorithms (including but not limited to perception and learning, decision making, knowledge representation and reasoning, motor control, social cognition, etc.) built based on BrainCog infrastructures, and BrainCog also provide brain simulations to drosophila, rodent, monkey, and human brains at multiple scales based on spiking neural networks at multiple scales. More detail in http://www.brain-cog.network/docs/
+目前，智脉已正式开源部署至OpenI启智社区，欢迎全球的研究人员共同努力、贡献智慧，打造面向未来的人工智能，探索智能的计算本质。如果在您的研究中使用了智脉，欢迎引用如下文章。
 
-BrainCog is a community based effort for spiking neural network based artificial intelligence, and we welcome any forms of contributions, from contributing to the development of core components, to contributing for applications.
+Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian Zhang, Yinqian Sun, Qian Liang, Yuxuan Zhao, Zhuoya Zhao, Hongjian Fang, Yuwei Wang, Yang Li, Xin Liu, Chengcheng Du, Qingqun Kong, Zizhe Ruan, Weida Bi. [BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation](https://arxiv.org/abs/2207.08533)
 
-If you use BrainCog in your research, the following paper can be cited as the source for BrainCog.
+<img src="https://ai-for-sdgs.academy/static/image/github_readme/logo.png" alt="mt" width="70%" />
 
-Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian Zhang, Yinqian Sun, Qian Liang, Yuxuan Zhao, Zhuoya Zhao, Hongjian Fang, Yuwei Wang, Yang Li, Xin Liu, Chengcheng Du, Qingqun Kong, Zizhe Ruan, Weida Bi. BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation. arXiv:2207.08533, 2022.
-https://arxiv.org/abs/2207.08533
+智脉以多尺度生物可塑性原理为基础，支持全脉冲神经网络建模，具备脑启发的人工智能模型以及脑功能和结构模拟能力。智脉为类脑人工智能和计算神经科学的研究者提供了一套完整的、系统化的接口组件。
+智脉涵盖了不同精细程度的神经元模型、多种脉冲编码方式、丰富的突触可塑性学习模型，以这些基本组件为基础，实现了不同脑区及神经环路，并在此基础上实现了不同类型的认知功能、对多个物种的生物脑进行了不同尺度的模拟。智脉分别从类脑人工智能计算模型（目前发布约20个算法模型及源代码）、脑结构和功能模拟（覆盖鼠脑、猴脑、人脑模拟）方面提供了相当数量的应用案例，这为研发基于脉冲神经网络的人工智能和计算神经科学研究提供了强有力的基础设施。
+![image](https://ai-for-sdgs.academy/static/image/github_readme/braincog-cn.png)
 
-<img src="http://www.brain-cog.network/static/image/github_readme/logo.jpg" alt="./figures/logo.jpg" width="70%" />
+## 类脑人工智能
+智脉目前提供的认知功能组件可分为5类：
+* 感知和学习
+* 决策
+* 运动控制
+* 知识表征和推理
+* 社会认知
 
-BrainCog provides essential and fundamental components to model biological and artificial intelligence.
+<img src="https://ai-for-sdgs.academy/static/image/github_readme/mirror-test.gif" alt="mt" width="55%" />
+<img src="https://ai-for-sdgs.academy/static/image/github_readme/joy.gif" alt="mt" width="55%" />
 
-![image](http://www.brain-cog.network/static/image/github_readme/braincog.png)
+## 脑模拟
+目前智脉包括两部分的脑模拟，分别为：
+* 脑认知功能模拟
+* 脑结构模拟
 
-## Brain-Inspired AI
-BrainCog currently provides cognitive functions components that can be classified 
-into five categories: 
-* Perception and Learning
-* Decision Making
-* Motor Control
-* Knowledge Representation and Reasoning
-* Social Cognition
- 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/mirror-test.gif" alt="mt" width="55%" />
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/joy.gif" alt="mt" width="55%" />
+<img src="https://ai-for-sdgs.academy/static/image/github_readme/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
+<img src="https://ai-for-sdgs.academy/static/image/github_readme/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
+<img src="https://ai-for-sdgs.academy/static/image/github_readme/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
 
-## Brain Simulation
-BrainCog currently include two parts for brain simulation:
-* Brain Cognitive Function Simulation
-* Multi-scale Brain Structure Simulation
- 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-mouse-brain-model-10s.gif" alt="bmbm10s" width="55%" /> 
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-macaque-10s.gif" alt="bm10s" width="55%" />
-<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/braincog-humanbrain-10s.gif" alt="bh10s" width="55%" />
+从解剖到成像的多尺度连接数据从多个方面支撑我们的模拟。
 
-The anatomical and imaging data is used to support our simulation from various aspects. 
+## 学习资源
+### 视频
+- [[智脉说] 第17期 基于BrainCog的类脑心理揣测模型以及在帮助其他智能体避免安全风险任务中的应用](https://www.bilibili.com/video/BV12A411f74Q/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第16期 用BrainCog实现基于脉冲神经网络的类脑身体自我感知模型](https://www.bilibili.com/video/BV1pK411i7Jk/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第15期 用BrainCog实现基于脉冲神经网络的音乐记忆与创作模型](https://www.bilibili.com/video/BV1M3411X7C2/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第14期 用BrainCog实现基于多感觉融合的概念学习框架](https://www.bilibili.com/video/BV1Ae411P7tY/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第13期 用BrainCog实现基于群体编码机制启发的符号表征与推理](https://www.bilibili.com/video/BV1DW4y1p7kg/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第12期 用BrainCog实现基于脉冲时序依赖可塑性的无监督脉冲神经网络](https://www.bilibili.com/video/BV1MR4y1Z7Be/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第11期 用Braincog实现类脑脉冲神经网络高效时空调节训练](https://www.bilibili.com/video/BV1EK411Z71F/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第10期 用Braincog实现多脑区协同的类脑自主决策脉冲神经网络](https://www.bilibili.com/video/BV1jD4y1x7PU/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第9期 用BrainCog实现全局反馈连接脉冲神经网络](https://www.bilibili.com/video/BV1qv4y1D74Y/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第8期 用BrainCog实现从人工神经网络到脉冲神经网络的转换](https://www.bilibili.com/video/BV17e4y147H6/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第7期 用BrainCog实现受量子叠加态启发的脉冲时空编码](https://www.bilibili.com/video/BV1BG41177Z6/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第6期 用BrainCog实现深度强化学习脉冲神经网络](https://www.bilibili.com/video/BV1XN4y1c7Kn/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[智脉说] 第5期 BrainCog系统功能进阶](https://www.bilibili.com/video/BV1tT411N7c9/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[智脉说] 第4期 构建脑区的认知脉冲神经网络模型](https://www.bilibili.com/video/BV19d4y1679Y/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[智脉说] 第3期 高效构建脉冲神经网络](https://www.bilibili.com/video/BV1Be4y1874W/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[智脉说] 第2期 脉冲神经元计算建模](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)
+- [[智脉说] 第1期 BrainCog系统部署](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+### 教程
 
-## Resources
-### Lectures
-- [BrainCog Talk] Beginning BrainCog Lecture 17. A Brain-inspired Theory of Mind Model Based on BrainCog for Reducing Other Agents’ Safety Risks [[English Version](https://www.youtube.com/watch?v=16Csw03bTjY&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=17&t=15s), [Chinese Version](https://www.bilibili.com/video/BV12A411f74Q/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 16. Brain-inspired Bodily Self-perception Model Based on BrainCog [[English Version](https://www.youtube.com/watch?v=mV_iMsDEQsg&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=16), [Chinese Version](https://www.bilibili.com/video/BV1pK411i7Jk/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 15. SNN-based Music Memory and Generation Based on BrainCog [[English Version](https://www.youtube.com/watch?v=c0Tcs1B5xho&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=15), [Chinese Version](https://www.bilibili.com/video/BV1M3411X7C2/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 14. The Implement of Multisensory Concept Learning Framework Based on SNNs with Braincog [[English Version](https://www.youtube.com/watch?v=c9UfOCGzFPQ&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=14), [Chinese Version](https://www.bilibili.com/video/BV1Ae411P7tY/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 13. Symbolic Representation and Reasoning SNN Based on Braincog [[English Version](https://www.youtube.com/watch?v=1iosjPkOBRo&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=13), [Chinese Version](https://www.bilibili.com/video/BV1DW4y1p7kg/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 12. Unsupervised STDP-based Spiking Neural Networks Based on BrainCog [[English Version](https://www.youtube.com/watch?v=pzPJ1XOEB9U&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=12), [Chinese Version](https://www.bilibili.com/video/BV1MR4y1Z7Be/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 11. Backpropagation with Spatiotemporal Adjustment for Training Deep Spiking Neural Networks through BrainCog [[English Version](https://www.youtube.com/watch?v=Fm85BjQszng&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=11), [Chinese Version](https://www.bilibili.com/video/BV1EK411Z71F/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 10. Multi-brain Areas Coordinated Brain-inspired Decision-Making Spiking Neural Network Based on Braincog [[English Version](https://www.youtube.com/watch?v=uVCcZHzzN3U&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=10), [Chinese Version](https://www.bilibili.com/video/BV1jD4y1x7PU/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 9. Spiking Neural Networks with Global Feedback Connections Based on BrainCog [[English Version](https://www.youtube.com/watch?v=g_qelwoQsD8&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=9), [Chinese Version](https://www.bilibili.com/video/BV1qv4y1D74Y/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 8. Converting Artificial Neural Network to Spiking Neural Network through BrainCog [[English Version](https://www.youtube.com/watch?v=cxiKyQ7F8UE&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=8), [Chinese Version](https://www.bilibili.com/video/BV17e4y147H6/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 7. Implementing Quantum Superposition Inspired Spatio-temporal Spike Encoding through BrainCog [[English Version](https://www.youtube.com/watch?v=5T-2Yyr9a0s&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=7), [Chinese Version](https://www.bilibili.com/video/BV1BG41177Z6/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-- [BrainCog Talk] Beginning BrainCog Lecture 6. Implementing spiking deep Q network through Braincog [[English Version](https://www.youtube.com/watch?v=jCsOBtiN-q0&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=6), [Chinese Version](https://www.bilibili.com/video/BV1XN4y1c7Kn/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)]
-- [BrainCog Talk] Beginning BrainCog Lecture 5. Advanced BrainCog System Functions [[English Version](https://www.youtube.com/watch?v=VJBORFl6dTQ&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=5), [Chinese Version](https://www.bilibili.com/video/BV1tT411N7c9/?spm_id_from=333.337.search-card.all.click&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)]
-- [BrainCog Talk] Beginning BrainCog Lecture 4. Creating Cognitive SNNs for Brain Areas [[English Version](https://www.youtube.com/watch?v=gYxG1D1b4Zo&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=4), [Chinese Version](https://www.bilibili.com/video/BV19d4y1679Y/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)]
-- [BrainCog Talk] Beginning BrainCog Lecture 3. Creating SNNs Easily and Quickly [[English Version](https://www.youtube.com/watch?v=k3byUIp4O24&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=3), [Chinese Version](https://www.bilibili.com/video/BV1Be4y1874W/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)]
-- [BrainCog Talk] Beginning BrainCog Lecture 2. Computational Modeling of Spiking Neurons [[English Version](https://www.youtube.com/watch?v=5jPsPkyFTY8&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=2), [Chinese Version](https://www.bilibili.com/video/BV16K411f7vQ/?spm_id_from=333.788&vd_source=ffca9a0cf41b21082e79f7f6ad9a5301)]
-- [BrainCog Talk] Beginning BrainCog Lecture 1. Installing and Deploying BrainCog platform [[English Version](https://www.youtube.com/watch?v=XkHq-MbKo20&list=PLNXUFsTshMlYTW6oleY5YjVEfnoQSw0N7&index=1), [Chinese Version](https://www.bilibili.com/video/BV1AW4y1b7v1/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)]
-### Tutorial
-- How to Install BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/1_installation.html), [Chinese Version](https://mp.weixin.qq.com/s/fX-S3fKKDfR3NV4ISAHrZg)]
-- Overall Introduction of BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/2_Overall%20introduction%20of%20BrainCog.html), [Chinese Version](https://mp.weixin.qq.com/s/ywgQ5ydQxr6W7d_Y_XqC6w)]
-- Spiking Neuron Modeling with BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/3_Tutorial%20of%20Spiking%20Neuron%20Modeling.html), [Chinese Version](https://mp.weixin.qq.com/s/pCdlbkrdnMNHj7wcwi9D2Q)]
-- Building Efficient Spiking Neural Networks with BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/4_Building%20Efficient%20Spiking%20Neural%20Networks%20with%20BrainCog.html), [Chinese Version](https://mp.weixin.qq.com/s/NIz7MSAOJQ79m97hkP3HVg)]
-- Building Cognitive Networks with BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/5_How%20to%20build%20a%20cognitive%20network.html), [Chinese Version](https://mp.weixin.qq.com/s/K0pY6V8TupJgYXH4WvS9jg)]
-- Implementing Deep Reinforcement Learning SNNs with BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/6_SDQN.html), [Chinese Version](https://mp.weixin.qq.com/s/Zt78vj_sKn5jffEyeh86Cw)]
-- Quantum Superposition State Inspired Encoding With BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/7_QSSNN.html), [Chinese Version](https://mp.weixin.qq.com/s/YVNkwDwuF9FG-YqQyd3KTg)]
-- Converting ANNs to SNNs with BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/8_conversion.html), [Chinese Version](https://mp.weixin.qq.com/s/4g8WBoa4SOcb_VQ24wO-Xw)]
-- SNNs with Global Feedback Connections Based on BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/9_GLSNN.html), [Chinese Version](https://mp.weixin.qq.com/s/-AS0BihlXdFwCt1hgzFx3g)]
-- Multi-brain Areas Coordinated Brain-inspired Decision-Making SNNs Based on Braincog [[English Version](http://www.brain-cog.network/docs/tutorial/10_BDMSNN.html), [Chinese Version](https://mp.weixin.qq.com/s/dltOGjhUZ9yTzSssIvkhtA)]
-- Backpropagation with Spatiotemporal Adjustment for Training SNNs Based on BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/11_biobp.html), [Chinese Version](https://mp.weixin.qq.com/s/6ZtaWtiY9K96UhVnvhfP7w)]
-- Unsupervised STDP Based SNNs with Multiple Adaptive Mechanisms Based on BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/12_unsup.html), [Chinese Version](https://mp.weixin.qq.com/s/v_svhQ0N3JAYo1l8NQ1W1w)]
-- Symbolic Representation and Reasoning SNNs Based on BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/13_krr.html), [Chinese Version](https://mp.weixin.qq.com/s/UXc5QDbg8tUKVU3L6dhvxw)]
-- Multisensory Integration Based on BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/14_multisensory.html), [Chinese Version](https://mp.weixin.qq.com/s/s9gXF5NkPUGXkcFAFtsCMw)]
-- SNN-based Music Memory and Generation Based on BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/15_musicSNN.html), [Chinese Version](https://mp.weixin.qq.com/s/y-t9rFEXYSmI_-rnVk_usw)]
-- Brain-inspired Bodily Self-perception Model Based on BrainCog [[English Version](http://www.brain-cog.network/docs/tutorial/16_self.html), [Chinese Version](https://mp.weixin.qq.com/s/RLbS3GmhE8ScyZTKJKl_SQ)]
-- A Brain-inspired Theory of Mind Model Based on BrainCog for Reducing Other Agents’ Safety Risks [[English Version](http://www.brain-cog.network/docs/tutorial/17_tom.html), [Chinese Version](https://mp.weixin.qq.com/s/xzFF6IK86W4h2CMs7jt7Xw)]
+- [智脉的部署](https://mp.weixin.qq.com/s/fX-S3fKKDfR3NV4ISAHrZg)
+- [智脉的全面介绍](https://mp.weixin.qq.com/s/ywgQ5ydQxr6W7d_Y_XqC6w)
+- [用智脉实现脉冲神经元建模](https://mp.weixin.qq.com/s/pCdlbkrdnMNHj7wcwi9D2Q)
+- [用智脉构建高效深度脉冲神经网络](https://mp.weixin.qq.com/s/NIz7MSAOJQ79m97hkP3HVg)
+- [用智脉构建认知脉冲网络](https://mp.weixin.qq.com/s/K0pY6V8TupJgYXH4WvS9jg)
+- [用智脉实现深度强化学习脉冲神经网络](https://mp.weixin.qq.com/s/Zt78vj_sKn5jffEyeh86Cw)
+- [用智脉实现受量子叠加态启发的脉冲序列时空编码](https://mp.weixin.qq.com/s/YVNkwDwuF9FG-YqQyd3KTg)
+- [用智脉实现从人工神经网络到​脉冲神经网络的转换](https://mp.weixin.qq.com/s/4g8WBoa4SOcb_VQ24wO-Xw)
+- [用智脉实现全局反馈连接脉冲神经网络](https://mp.weixin.qq.com/s/-AS0BihlXdFwCt1hgzFx3g)
+- [用智脉实现多脑区协同的类脑自主决策脉冲神经网络](https://mp.weixin.qq.com/s/dltOGjhUZ9yTzSssIvkhtA)
+- [用智脉实现类脑脉冲神经网络高效时空调节训练](https://mp.weixin.qq.com/s/6ZtaWtiY9K96UhVnvhfP7w)
+- [用智脉实现基于脉冲时序依赖可塑性的无监督脉冲神经网络](https://mp.weixin.qq.com/s/v_svhQ0N3JAYo1l8NQ1W1w)
+- [用智脉实现基于群体编码机制启发的符号表征与推理](https://mp.weixin.qq.com/s/UXc5QDbg8tUKVU3L6dhvxw)
+- [用智脉实现基于脉冲神经网络的多感觉融合概念学习](https://mp.weixin.qq.com/s/s9gXF5NkPUGXkcFAFtsCMw)
+- [用Braincog实现基于脉冲神经网络的音乐记忆与创作模型](https://mp.weixin.qq.com/s/y-t9rFEXYSmI_-rnVk_usw)
 
-## BrainCog Data Engine
-In addition to the static datasets, BrainCog supports the commonly used neuromorphic
-datasets, such as DVSGesture, DVSCIFAR10, NCALTECH101, ES-ImageNet.
-Also, the neuromorphic dataset N-Omniglot for few-shot learning is also integrated into 
-BrainCog.
+
+## 智脉数据引擎
+除了静态数据集之外，智脉还支持常用的神经形态数据集，如DVSGesture、DVSCIFAR10、NCALTECH101、ES-ImageNet。同时，我们自己设计的用于小样本学习的神经形态数据集N-Omniglot也被整合到智脉的数据接口中。
 
 **[DVSGesture](https://openaccess.thecvf.com/content_cvpr_2017/papers/Amir_A_Low_Power_CVPR_2017_paper.pdf)**
 
-This dataset contains 11 hand gestures from 29 subjects under 3 illumination conditions recorded using a DVS128. 
+该数据集包含了使用DVS128记录的29名被试在3种照明条件下的11种手势。
 
 **[DVSCIFAR10](https://www.frontiersin.org/articles/10.3389/fnins.2017.00309/full)**
 
-This dataset converts 10,000 frame-based images in the CIFAR10 dataset into 10,000 event streams using a dynamic vision sensor.
+该数据集使用DVS将CIFAR10数据集中的10,000幅基于帧的图像转换为10,000个事件流。
 
 **[NCALTECH101](https://www.frontiersin.org/articles/10.3389/fnins.2015.00437/full)**
 
-The NCaltech101 dataset is captured by mounting the ATIS sensor on a motorized pan-tilt unit and having the sensor move while it views Caltech101 examples on an LCD monitor. 
-The "Faces" class has been removed from N-Caltech101, leaving 100 object classes plus a background class
+该数据集使用ATIS，通过拍摄在显示器上呈现的Caltech101数据集获得，同时将”Faces“这一类从N-Caltech101中删除，只有100个类和一个背景。
 
 **[ES-ImageNet](https://arxiv.org/abs/2110.12211)**
 
-The dataset is converted with Omnidirectional Discrete Gradient (ODG) from 1,300,000 frame-based images in the ImageNet dataset into event-stream samples, which has 1000 categories. 
+该数据集使用全向离散梯度（ODG）方法将ImageNet数据集中的1,300,000张基于帧的图像转换为事件流，共有1000类。
 
 **[N-Omniglot](https://www.nature.com/articles/s41597-022-01851-z)**
 
-This dataset contains 1,623 categories of handwritten characters, with only 20 samples per class. 
-The dataset is acquired with the DVS acquisition platform to shoot videos (generated from the original Omniglot dataset) played on the monitor, and use the Robotic Process Automation (RPA) software to collect the data automatically.
- 
-You can easily use them in the braincog/datasets folder, taking DVSCIFAR10 as an example
+该数据集包括1623类手写字符，每类只有20个样本。该数据集是用DVS相机拍摄在显示器上播放的视频（由原始的Omniglot数据集生成），并由Robotic Process Automation软件自动收集获得。
+
+数据集的接口开放在braincog/datasets文件夹中，以DVSCIFAR10为例
 ```python
 loader_train, loader_eval,_,_ = get_dvsc10_data(batch_size=128,step=10)
 ```
 
-## Requirements:
+## 依赖包
 * python == 3.8
 * CUDA toolkit == 11.
 * numpy >= 1.21.2
@@ -131,44 +119,40 @@ loader_train, loader_eval,_,_ = get_dvsc10_data(batch_size=128,step=10)
 * pandas >= 1.4.2  
 * xlrd == 1.2.0
 
+## 安装
 
-## Install 
+### 在线安装
 
-
-
-### Install Online
-
-1. You can install braincog by running:
+1. 你可以通过运行以下命令来安装智脉
 
     > `pip install braincog`
 
-2. Also, install from github by running:
+2. 你也可以基于启智平台下载:
 
-    > `pip install git+https://github.com/braincog-X/Brain-Cog.git`
+    > `pip install git+https://openi.pcl.ac.cn/BrainCogLab/braincog.git`
 
 
-### Install locally
+### 本地安装
 
-1.  If you are a developer, it is recommanded to download or clone
-    braincog from github.
+1. 如果你是一个开发者，我们推荐你下载或者从启智平台上clone一份到本地安装。 
 
-    > `git clone https://github.com/braincog-X/Brain-Cog.git`
+    > `git clone https://openi.pcl.ac.cn/BrainCogLab/braincog.git`
 
-2.  Enter the folder of braincog
+2.  进入braincog文件夹
 
     > `cd Brain-Cog`
 
-3.  Install braincog locally
+3.  本地安装braincog
 
     > `pip install -e .`
  
-### Install datasets (optional)
+### 数据集依赖安装（可选的）
 
-If you use datasets in your code, especially neuromorphic datasets, you have to install another package
+如果你在算法中使用数据集，尤其是神经形态版本的数据集，你需要安装以下包：
 
 > `pip install git+https://github.com/BrainCog-X/tonic_braincog.git`
 
-You can download this package and install locally as well.
+你也可以下载并在本地安装：
 
 
 
@@ -178,23 +162,24 @@ You can download this package and install locally as well.
 
 
 
-## Example 
+## 样例
 
-1. Examples for Image Classification
+1. 静态图片分类样例
 ```shell 
 cd ./examples/Perception_and_Learning/img_cls/bp 
 python main.py --model cifar_convnet --dataset cifar10 --node-type LIFNode --step 8 --device 0
 ```
 
-2. Examples for Event Classification 
+2. 事件数据分类样例
 
 ```shell
 cd ./examples/Perception_and_Learning/img_cls/bp 
 python main.py --model dvs_convnet --node-type LIFNode --dataset dvsc10 --step 10 --batch-size 128 --act-fun QGateGrad --device 0 
 ```
 
-Other BrainCog features and tutorials can be found at http://www.brain-cog.network/docs/
+其他BrainCog的功能和教程可以在以下网站找到 http://www.brain-cog.network/docs/
 
-## BrainCog Assistant 
-Please add our BrainCog Assitant via wechat and we will invite you to our wechat developer group.
-![image](https://github.com/Brain-Cog-Lab/Brain-Cog/blob/main/figures/wechat_ass.jpg)
+## BrainCog小助手
+BrainCog（添加微信号，会由小助手拉您进入BrainCog研发者群）
+
+![image](https://ai-for-sdgs.academy/static/image/github_readme/wechat_assistant.jpg)
