@@ -172,7 +172,8 @@ class SEWResNet(BaseModule):
         self.node = kwargs['node_type']
         if issubclass(self.node, BaseNode):
             self.node = partial(self.node, **kwargs, step=step)
-
+        self.once=kwargs["once"] if "once"in kwargs else False
+        self.sum_output=kwargs["sum_output"] if "sum_output"in kwargs else True
         self.dataset = kwargs['dataset']
         if not is_dvs_data(self.dataset):
             init_channel = 3
@@ -189,6 +190,9 @@ class SEWResNet(BaseModule):
                              "or a 3-element tuple, got {}".format(replace_stride_with_dilation))
         self.groups = groups
         self.base_width = width_per_group
+
+ 
+
         self.conv1 = nn.Conv2d(init_channel, self.inplanes, kernel_size=7, stride=2, padding=3,
                                bias=False)
         self.bn1 = norm_layer(self.inplanes)
@@ -269,7 +273,10 @@ class SEWResNet(BaseModule):
 
             
             x = self.fc(x)
-            x = rearrange(x, '(t b) c -> t b c', t=self.step).mean(0)
+            
+            x = rearrange(x, '(t b) c -> t b c', t=self.step)
+            #print(x)
+            if self.sum_output:x=x.mean(0)
  
 
             return x
@@ -295,11 +302,370 @@ class SEWResNet(BaseModule):
                 x = self.fc(x)
 
                 outputs.append(x)
-
+            if not self.sum_output:return outputs
             return sum(outputs) / len(outputs)
 
+    def _forward_once(self,x):
+        # inputs = self.encoder(inputs)
+        # x = inputs[t]
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.node1(x)
+        x = self.maxpool(x)
 
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        
+        
+        x = self.fc(x)
+        return x
     def forward(self, x):
+        if self.once:return self._forward_once(x)
+        return self._forward_impl(x)
+
+class SEWResNet19(BaseModule):
+    def __init__(self, block, layers, num_classes=1000, step=8,encode_type="direct",zero_init_residual=False,
+                 groups=1, width_per_group=64, replace_stride_with_dilation=None,
+                 norm_layer=None, cnf: str = None,   *args,**kwargs):
+        super().__init__(            
+            step,
+            encode_type,
+            *args,
+            **kwargs
+        )
+        if norm_layer is None:
+            norm_layer = nn.BatchNorm2d
+        self._norm_layer = norm_layer
+        self.num_classes = num_classes
+
+        self.node = kwargs['node_type']
+        if issubclass(self.node, BaseNode):
+            self.node = partial(self.node, **kwargs, step=step)
+        self.once=kwargs["once"] if "once"in kwargs else False
+        self.sum_output=kwargs["sum_output"] if "sum_output"in kwargs else True
+        self.dataset = kwargs['dataset']
+        if not is_dvs_data(self.dataset):
+            init_channel = 3
+        else:
+            init_channel = 2
+        self.inplanes = 64
+        self.dilation = 1
+        if replace_stride_with_dilation is None:
+            # each element in the tuple indicates if we should replace
+            # the 2x2 stride with a dilated convolution instead
+            replace_stride_with_dilation = [False, False, False]
+        if len(replace_stride_with_dilation) != 3:
+            raise ValueError("replace_stride_with_dilation should be None "
+                             "or a 3-element tuple, got {}".format(replace_stride_with_dilation))
+        self.groups = groups
+        self.base_width = width_per_group
+
+ 
+
+        self.conv1 = nn.Conv2d(init_channel, self.inplanes, kernel_size=3, stride=1, padding=1,
+                               bias=False)
+        self.bn1 = norm_layer(self.inplanes)
+        self.node1 = self.node() 
+        self.layer1 = self._make_layer(block, 128, layers[0], cnf=cnf, node=self.node, **kwargs)
+        self.layer2 = self._make_layer(block, 256, layers[1], stride=2,
+                                       dilate=replace_stride_with_dilation[0], cnf=cnf, node=self.node, **kwargs)
+        self.layer3 = self._make_layer(block, 512, layers[2], stride=2,
+                                       dilate=replace_stride_with_dilation[1], cnf=cnf, node=self.node, **kwargs) 
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc1 = nn.Linear(512 * block.expansion, 256)
+        self.fc2 = nn.Linear(256, num_classes)
+         
+        self.node2 = self.node()
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+        # Zero-initialize the last BN in each residual branch,
+        # so that the residual branch starts with zeros, and each residual block behaves like an identity.
+        # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
+        if zero_init_residual:
+            for m in self.modules():
+                if isinstance(m, Bottleneck):
+                    nn.init.constant_(m.bn3.weight, 0)
+                elif isinstance(m, BasicBlock):
+                    nn.init.constant_(m.bn2.weight, 0)
+
+    def _make_layer(self, block, planes, blocks, stride=1, dilate=False, cnf: str=None, node: callable = None, **kwargs):
+        norm_layer = self._norm_layer
+        downsample = None
+        previous_dilation = self.dilation
+        if dilate:
+            self.dilation *= stride
+            stride = 1
+        if stride != 1 or self.inplanes != planes * block.expansion:
+            downsample = nn.Sequential(
+                conv1x1(self.inplanes, planes * block.expansion, stride),
+                norm_layer(planes * block.expansion),
+            )
+
+        layers = []
+        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
+                            self.base_width, previous_dilation, norm_layer, cnf, node, **kwargs))
+        self.inplanes = planes * block.expansion
+        for _ in range(1, blocks):
+            layers.append(block(self.inplanes, planes, groups=self.groups,
+                                base_width=self.base_width, dilation=self.dilation,
+                                norm_layer=norm_layer, cnf=cnf, node=node, **kwargs))
+
+        return nn.Sequential(*layers)
+
+    def _forward_impl(self, inputs):
+        # See note [TorchScript super()]
+        inputs = self.encoder(inputs)
+        self.reset()
+
+        if self.layer_by_layer:
+
+            x = self.conv1(inputs)
+            
+            x = self.bn1(x)
+            x = self.node1(x) 
+
+            x = self.layer1(x)
+            x = self.layer2(x)
+            x = self.layer3(x) 
+
+            x = self.avgpool(x)
+
+            x = torch.flatten(x, 1)
+
+            x = self.fc1(x)
+            x = self.node2(x)
+            x = self.fc2(x)
+            
+            x = rearrange(x, '(t b) c -> t b c', t=self.step)
+            #print(x)
+            if self.sum_output:x=x.mean(0)
+ 
+
+            return x
+
+        else:
+            outputs=[]
+            for t in range(self.step):
+                x = inputs[t]
+                x = self.conv1(x)
+                x = self.bn1(x)
+                x = self.node1(x)
+
+                x = self.layer1(x)
+                x = self.layer2(x)
+                x = self.layer3(x)
+
+                x = self.avgpool(x)
+                x = torch.flatten(x, 1)
+                
+                x = self.fc1(x)
+                x = self.node2(x)
+                x = self.fc2(x)
+
+                outputs.append(x)
+            if not self.sum_output:return outputs
+            return sum(outputs) / len(outputs)
+
+    def _forward_once(self,x):
+        # inputs = self.encoder(inputs)
+        # x = inputs[t]
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.node1(x)
+        x = self.maxpool(x)
+
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        
+        
+        x = self.fc(x)
+        return x
+    def forward(self, x):
+        if self.once:return self._forward_once(x)
+        return self._forward_impl(x)
+ 
+class SEWResNetCifar(BaseModule):
+    def __init__(self, block, layers, num_classes=1000, step=8,encode_type="direct",zero_init_residual=False,
+                 groups=1, width_per_group=64, replace_stride_with_dilation=None,
+                 norm_layer=None, cnf: str = None,   *args,**kwargs):
+        super().__init__(            
+            step,
+            encode_type,
+            *args,
+            **kwargs
+        )
+        if norm_layer is None:
+            norm_layer = nn.BatchNorm2d
+        self._norm_layer = norm_layer
+        self.num_classes = num_classes
+
+        self.node = kwargs['node_type']
+        if issubclass(self.node, BaseNode):
+            self.node = partial(self.node, **kwargs, step=step)
+        self.once=kwargs["once"] if "once"in kwargs else False
+        self.sum_output=kwargs["sum_output"] if "sum_output"in kwargs else True
+        self.dataset = kwargs['dataset']
+        if not is_dvs_data(self.dataset):
+            init_channel = 3
+        else:
+            init_channel = 2
+        self.inplanes = 64
+        self.dilation = 1
+        if replace_stride_with_dilation is None:
+            # each element in the tuple indicates if we should replace
+            # the 2x2 stride with a dilated convolution instead
+            replace_stride_with_dilation = [False, False, False]
+        if len(replace_stride_with_dilation) != 3:
+            raise ValueError("replace_stride_with_dilation should be None "
+                             "or a 3-element tuple, got {}".format(replace_stride_with_dilation))
+        self.groups = groups
+        self.base_width = width_per_group
+
+ 
+
+        self.conv1 = nn.Conv2d(init_channel, self.inplanes, kernel_size=3, stride=1, padding=1,
+                               bias=False)
+        self.bn1 = norm_layer(self.inplanes)
+        self.node1 = self.node()
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        self.layer1 = self._make_layer(block, 128, layers[0], cnf=cnf, node=self.node, **kwargs)
+        self.layer2 = self._make_layer(block, 256, layers[1], stride=2,
+                                       dilate=replace_stride_with_dilation[0], cnf=cnf, node=self.node, **kwargs)
+        self.layer3 = self._make_layer(block, 512, layers[2], stride=2,
+                                       dilate=replace_stride_with_dilation[1], cnf=cnf, node=self.node, **kwargs)
+ 
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = nn.Linear(512 * block.expansion, num_classes)
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+        # Zero-initialize the last BN in each residual branch,
+        # so that the residual branch starts with zeros, and each residual block behaves like an identity.
+        # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
+        if zero_init_residual:
+            for m in self.modules():
+                if isinstance(m, Bottleneck):
+                    nn.init.constant_(m.bn3.weight, 0)
+                elif isinstance(m, BasicBlock):
+                    nn.init.constant_(m.bn2.weight, 0)
+
+    def _make_layer(self, block, planes, blocks, stride=1, dilate=False, cnf: str=None, node: callable = None, **kwargs):
+        norm_layer = self._norm_layer
+        downsample = None
+        previous_dilation = self.dilation
+        if dilate:
+            self.dilation *= stride
+            stride = 1
+        if stride != 1 or self.inplanes != planes * block.expansion:
+            downsample = nn.Sequential(
+                conv1x1(self.inplanes, planes * block.expansion, stride),
+                norm_layer(planes * block.expansion),
+            )
+
+        layers = []
+        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
+                            self.base_width, previous_dilation, norm_layer, cnf, node, **kwargs))
+        self.inplanes = planes * block.expansion
+        for _ in range(1, blocks):
+            layers.append(block(self.inplanes, planes, groups=self.groups,
+                                base_width=self.base_width, dilation=self.dilation,
+                                norm_layer=norm_layer, cnf=cnf, node=node, **kwargs))
+
+        return nn.Sequential(*layers)
+
+    def _forward_impl(self, inputs):
+        # See note [TorchScript super()]
+        inputs = self.encoder(inputs)
+        self.reset()
+
+        if self.layer_by_layer:
+
+            x = self.conv1(inputs)
+            
+            x = self.bn1(x)
+            x = self.node1(x)
+
+            x = self.layer1(x)
+            x = self.layer2(x)
+            x = self.layer3(x)
+
+            x = self.avgpool(x)
+
+            x = torch.flatten(x, 1)
+
+            
+            x = self.fc(x)
+            
+            x = rearrange(x, '(t b) c -> t b c', t=self.step)
+            #print(x)
+            if self.sum_output:x=x.mean(0)
+ 
+
+            return x
+
+        else:
+            outputs=[]
+            for t in range(self.step):
+                x = inputs[t]
+                x = self.conv1(x)
+                x = self.bn1(x)
+                x = self.node1(x)
+
+                x = self.layer1(x)
+                x = self.layer2(x)
+                x = self.layer3(x)
+
+                x = self.avgpool(x)
+                x = torch.flatten(x, 1)
+                
+                
+                x = self.fc(x)
+
+                outputs.append(x)
+            if not self.sum_output:return outputs
+            return sum(outputs) / len(outputs)
+
+    def _forward_once(self,x):
+        # inputs = self.encoder(inputs)
+        # x = inputs[t]
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.node1(x)
+        x = self.maxpool(x)
+
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        
+        
+        x = self.fc(x)
+        return x
+    def forward(self, x):
+        if self.once:return self._forward_once(x)
         return self._forward_impl(x)
 
 
@@ -311,6 +677,26 @@ def _sew_resnet(arch, block, layers, pretrained, progress, cnf,  **kwargs):
         model.load_state_dict(state_dict)
     return model
 
+@register_model
+def sew_resnet19(pretrained=False, progress=True, cnf: str = None,  **kwargs):
+    """
+    :param pretrained: If True, the SNN will load parameters from the ANN pre-trained on ImageNet
+    :type pretrained: bool
+    :param progress: If True, displays a progress bar of the download to stderr
+    :type progress: bool
+    :param cnf: the name of spike-element-wise function
+    :type cnf: str
+    :param node: a spiking neuron layer
+    :type node: callable
+    :param kwargs: kwargs for `node`
+    :type kwargs: dict
+    :return: Spiking ResNet-18
+    :rtype: torch.nn.Module
+    The spike-element-wise ResNet-18 `"Deep Residual Learning in Spiking Neural Networks" <https://arxiv.org/abs/2102.04159>`_ modified by the ResNet-18 model from `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+    """
+
+    return SEWResNet19( BasicBlock, [3,3, 2],  cnf=cnf, **kwargs)
+ 
 @register_model
 def sew_resnet18(pretrained=False, progress=True, cnf: str = None,  **kwargs):
     """
@@ -331,6 +717,82 @@ def sew_resnet18(pretrained=False, progress=True, cnf: str = None,  **kwargs):
 
     return _sew_resnet('resnet18', BasicBlock, [2, 2, 2, 2], pretrained, progress, cnf, **kwargs)
 
+@register_model
+def sew_resnet20(pretrained=False, progress=True, cnf: str = None,  **kwargs):
+    """
+    :param pretrained: If True, the SNN will load parameters from the ANN pre-trained on ImageNet
+    :type pretrained: bool
+    :param progress: If True, displays a progress bar of the download to stderr
+    :type progress: bool
+    :param cnf: the name of spike-element-wise function
+    :type cnf: str
+    :param node: a spiking neuron layer
+    :type node: callable
+    :param kwargs: kwargs for `node`
+    :type kwargs: dict
+    :return: Spiking ResNet-34
+    :rtype: torch.nn.Module
+    The spike-element-wise ResNet-34 `"Deep Residual Learning in Spiking Neural Networks" <https://arxiv.org/abs/2102.04159>`_
+    modified by the ResNet-34 model from `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+    """
+    return SEWResNetCifar(  BasicBlock, [3,3,3],  cnf=cnf,  **kwargs)
+@register_model
+def sew_resnet32(pretrained=False, progress=True, cnf: str = None,  **kwargs):
+    """
+    :param pretrained: If True, the SNN will load parameters from the ANN pre-trained on ImageNet
+    :type pretrained: bool
+    :param progress: If True, displays a progress bar of the download to stderr
+    :type progress: bool
+    :param cnf: the name of spike-element-wise function
+    :type cnf: str
+    :param node: a spiking neuron layer
+    :type node: callable
+    :param kwargs: kwargs for `node`
+    :type kwargs: dict
+    :return: Spiking ResNet-34
+    :rtype: torch.nn.Module
+    The spike-element-wise ResNet-34 `"Deep Residual Learning in Spiking Neural Networks" <https://arxiv.org/abs/2102.04159>`_
+    modified by the ResNet-34 model from `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+    """
+    return SEWResNetCifar(  BasicBlock, [5,5,5],  cnf=cnf,  **kwargs)
+@register_model
+def sew_resnet44(pretrained=False, progress=True, cnf: str = None,  **kwargs):
+    """
+    :param pretrained: If True, the SNN will load parameters from the ANN pre-trained on ImageNet
+    :type pretrained: bool
+    :param progress: If True, displays a progress bar of the download to stderr
+    :type progress: bool
+    :param cnf: the name of spike-element-wise function
+    :type cnf: str
+    :param node: a spiking neuron layer
+    :type node: callable
+    :param kwargs: kwargs for `node`
+    :type kwargs: dict
+    :return: Spiking ResNet-34
+    :rtype: torch.nn.Module
+    The spike-element-wise ResNet-34 `"Deep Residual Learning in Spiking Neural Networks" <https://arxiv.org/abs/2102.04159>`_
+    modified by the ResNet-34 model from `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+    """
+    return SEWResNetCifar(  BasicBlock, [7,7,7],  cnf=cnf,  **kwargs)
+@register_model
+def sew_resnet56(pretrained=False, progress=True, cnf: str = None,  **kwargs):
+    """
+    :param pretrained: If True, the SNN will load parameters from the ANN pre-trained on ImageNet
+    :type pretrained: bool
+    :param progress: If True, displays a progress bar of the download to stderr
+    :type progress: bool
+    :param cnf: the name of spike-element-wise function
+    :type cnf: str
+    :param node: a spiking neuron layer
+    :type node: callable
+    :param kwargs: kwargs for `node`
+    :type kwargs: dict
+    :return: Spiking ResNet-34
+    :rtype: torch.nn.Module
+    The spike-element-wise ResNet-34 `"Deep Residual Learning in Spiking Neural Networks" <https://arxiv.org/abs/2102.04159>`_
+    modified by the ResNet-34 model from `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+    """
+    return SEWResNetCifar(  BasicBlock, [9,9,9],  cnf=cnf,  **kwargs)
 @register_model
 def sew_resnet34(pretrained=False, progress=True, cnf: str = None,  **kwargs):
     """
@@ -432,6 +894,27 @@ def sew_resnext50_32x4d(pretrained=False, progress=True, cnf: str = None, **kwar
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 4
     return _sew_resnet('resnext50_32x4d', Bottleneck, [3, 4, 6, 3], pretrained, progress, cnf,  **kwargs)
+
+@register_model
+def sew_resnext34_32x4d(pretrained=False, progress=True, cnf: str = None,   **kwargs):
+    """
+    :param pretrained: If True, the SNN will load parameters from the ANN pre-trained on ImageNet
+    :type pretrained: bool
+    :param progress: If True, displays a progress bar of the download to stderr
+    :type progress: bool
+    :param cnf: the name of spike-element-wise function
+    :type cnf: str
+    :param node: a single step neuron
+    :type node: callable
+    :param kwargs: kwargs for `node`
+    :type kwargs: dict
+    :return: Spiking ResNeXt-101 32x8d
+    :rtype: torch.nn.Module
+    The spike-element-wise ResNeXt-101 32x8d `"Deep Residual Learning in Spiking Neural Networks" <https://arxiv.org/abs/2102.04159>`_ modified by the ResNeXt-101 32x8d model from `"Aggregated Residual Transformation for Deep Neural Networks" <https://arxiv.org/pdf/1611.05431.pdf>`_
+    """
+    kwargs['groups'] = 32
+    kwargs['width_per_group'] = 4
+    return _sew_resnet('resnext34_32x4d', BasicBlock, [3, 4, 6, 3], pretrained, progress, cnf,   **kwargs)
 
 @register_model
 def sew_resnext101_32x8d(pretrained=False, progress=True, cnf: str = None, node: callable=None, **kwargs):
