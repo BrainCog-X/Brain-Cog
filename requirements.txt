@@ -13,3 +13,5 @@ matplotlib
 seaborn
 pygame
 dv
+tensorboard
+tonic

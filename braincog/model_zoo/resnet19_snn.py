@@ -192,7 +192,7 @@ class ResNet(BaseModule):
         return self._forward_impl(inputs)
 
 
-def _resnet(arch, block, layers, pretrained, progress,norm=ThresholdDependentBatchNorm2d, **kwargs):
+def _resnet(arch, block, layers, pretrained, progress, norm=ThresholdDependentBatchNorm2d, **kwargs):
     tdBN = partial(norm, layer_by_layer=kwargs['layer_by_layer'], threshold=kwargs['threshold'])
     model = ResNet(block, layers, norm_layer=tdBN, **kwargs)
     if pretrained:
@@ -201,8 +201,8 @@ def _resnet(arch, block, layers, pretrained, progress,norm=ThresholdDependentBat
 
 
 @register_model
-def resnet19(pretrained=False, progress=True,norm=ThresholdDependentBatchNorm2d, **kwargs):
-    return _resnet('resnet19', BasicBlock, [3, 3, 2], pretrained, progress,norm=norm, **kwargs)
+def resnet19(pretrained=False, progress=True, norm=ThresholdDependentBatchNorm2d, **kwargs):
+    return _resnet('resnet19', BasicBlock, [3, 3, 2], pretrained, progress, norm=norm, **kwargs)
 
 
 if __name__ == '__main__':
