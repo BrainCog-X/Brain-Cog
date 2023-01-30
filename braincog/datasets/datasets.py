@@ -1,4 +1,7 @@
 import os, warnings
+
+import braincog
+
 try:
     import tonic
     from tonic import DiskCachedDataset
@@ -540,8 +543,8 @@ def get_dvsc10_data(batch_size, step, **kwargs):
     test_transform = transforms.Compose([
         # tonic.transforms.Denoise(filter_time=10000),
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
-    train_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS_Cifar10'), transform=train_transform)
-    test_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS_Cifar10'), transform=test_transform)
+    train_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS__Cifar10'), transform=train_transform)
+    test_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS__Cifar10'), transform=test_transform)
 
     train_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
@@ -652,9 +655,9 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
     :param kwargs:
     :return: (train loader, test loader, mixup_active, mixup_fn)
     """
-    sensor_size = tonic.datasets.NCALTECH101.sensor_size
-    cls_count = tonic.datasets.NCALTECH101.cls_count
-    dataset_length = tonic.datasets.NCALTECH101.length
+    sensor_size = braincog.datasets.ncaltech101.NCALTECH101.sensor_size
+    cls_count = braincog.datasets.ncaltech101.NCALTECH101.cls_count
+    dataset_length = braincog.datasets.ncaltech101.NCALTECH101.length
     portion = kwargs['portion'] if 'portion' in kwargs else .9
     size = kwargs['size'] if 'size' in kwargs else 48
     # print('portion', portion)
@@ -693,8 +696,8 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
         # tonic.transforms.Denoise(filter_time=10000),
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
 
-    train_dataset = tonic.datasets.NCALTECH101(os.path.join(DATA_DIR, 'DVS/NCALTECH101'), transform=train_transform)
-    test_dataset = tonic.datasets.NCALTECH101(os.path.join(DATA_DIR, 'DVS/NCALTECH101'), transform=test_transform)
+    train_dataset = braincog.datasets.ncaltech101.NCALTECH101(os.path.join(DATA_DIR, 'DVS/NCALTECH101'), transform=train_transform)
+    test_dataset = braincog.datasets.ncaltech101.NCALTECH101(os.path.join(DATA_DIR, 'DVS/NCALTECH101'), transform=test_transform)
 
     train_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
@@ -702,7 +705,7 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
         # transforms.RandomCrop(size, padding=size // 12),
         # transforms.RandomHorizontalFlip(),
-        transforms.RandomRotation(15)
+        # transforms.RandomRotation(15)
     ])
     test_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
@@ -725,6 +728,240 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
                                       transform=train_transform, num_copies=3)
     test_dataset = DiskCachedDataset(test_dataset,
                                      cache_path=os.path.join(DATA_DIR, 'DVS/NCALTECH101/test_cache_{}'.format(step)),
+                                     transform=test_transform, num_copies=3)
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               indices=train_sample_index,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 indices=train_sample_index,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              indices=train_sample_index,
+                              noise=noise)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size,
+        sampler=train_sampler,
+        pin_memory=True, drop_last=True, num_workers=8
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=batch_size,
+        sampler=test_sampler,
+        pin_memory=True, drop_last=False, num_workers=2
+    )
+
+    return train_loader, test_loader, mixup_active, None
+
+def get_UCF101DVS_data(batch_size, step, **kwargs):
+    """
+    获取DVS CIFAR10数据
+    http://journal.frontiersin.org/article/10.3389/fnins.2017.00309/full
+    :param batch_size: batch size
+    :param step: 仿真步长
+    :param kwargs:
+    :return: (train loader, test loader, mixup_active, mixup_fn)
+    """
+    size = kwargs['size'] if 'size' in kwargs else 48
+    sensor_size = braincog.datasets.ucf101_dvs.UCF101DVS.sensor_size
+    train_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        # tonic.transforms.DropEvent(p=0.1),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
+    test_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
+    train_dataset = braincog.datasets.ucf101_dvs.UCF101DVS(os.path.join(DATA_DIR, 'UCF101DVS'), train=True, transform=train_transform)
+    test_dataset = braincog.datasets.ucf101_dvs.UCF101DVS(os.path.join(DATA_DIR, 'UCF101DVS'), train=False, transform=test_transform)
+
+    train_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+        # lambda x: TemporalShift(x, .01),
+        # lambda x: drop(x, 0.15),
+        # lambda x: ShearX(x, 15),
+        # lambda x: ShearY(x, 15),
+        # lambda x: TranslateX(x, 0.225),
+        # lambda x: TranslateY(x, 0.225),
+        # lambda x: Rotate(x, 15),
+        # lambda x: CutoutAbs(x, 0.25),
+        # lambda x: CutoutTemporal(x, 0.25),
+        # lambda x: GaussianBlur(x, 0.5),
+        # lambda x: SaltAndPepperNoise(x, 0.1),
+        # transforms.Normalize(DVSCIFAR10_MEAN_16, DVSCIFAR10_STD_16),
+        # transforms.RandomCrop(size, padding=size // 12),
+        transforms.RandomHorizontalFlip(),
+        # transforms.RandomRotation(15)
+    ])
+    test_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+    ])
+
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            # print('randaug', m, n)
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
+
+    # if 'temporal_flatten' in kwargs.keys():
+    #     if kwargs['temporal_flatten'] is True:
+    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+
+    train_dataset = DiskCachedDataset(train_dataset,
+                                      cache_path=os.path.join(DATA_DIR, 'UCF101DVS/train_cache_{}'.format(step)),
+                                      transform=train_transform)
+    test_dataset = DiskCachedDataset(test_dataset,
+                                     cache_path=os.path.join(DATA_DIR, 'UCF101DVS/test_cache_{}'.format(step)),
+                                     transform=test_transform)
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        # print('cut_mix', beta, prob, num, num_classes)
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              noise=noise)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size, shuffle=True,
+        pin_memory=True, drop_last=True, num_workers=8
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=batch_size, shuffle=False,
+        pin_memory=True, drop_last=False, num_workers=2
+    )
+
+    return train_loader, test_loader, mixup_active, None
+
+
+def get_HMDBDVS_data(batch_size, step, **kwargs):
+    sensor_size = braincog.datasets.hmdb_dvs.HMDBDVS.sensor_size
+
+    train_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        # tonic.transforms.DropEvent(p=0.1),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
+    test_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
+
+    train_dataset = braincog.datasets.hmdb_dvs.HMDBDVS(os.path.join(DATA_DIR, 'HMDBDVS'), transform=train_transform)
+    test_dataset = braincog.datasets.hmdb_dvs.HMDBDVS(os.path.join(DATA_DIR, 'HMDBDVS'), transform=test_transform)
+
+    cls_count = train_dataset.cls_count
+    dataset_length = train_dataset.length
+
+    portion = .5
+    # portion = kwargs['portion'] if 'portion' in kwargs else .9
+    size = kwargs['size'] if 'size' in kwargs else 48
+    # print('portion', portion)
+    train_sample_weight = []
+    train_sample_index = []
+    train_count = 0
+    test_sample_index = []
+    idx_begin = 0
+    for count in cls_count:
+        sample_weight = dataset_length / count
+        train_sample = round(portion * count)
+        test_sample = count - train_sample
+        train_count += train_sample
+        train_sample_weight.extend(
+            [sample_weight] * train_sample
+        )
+        train_sample_weight.extend(
+            [0.] * test_sample
+        )
+        lst = list(range(idx_begin, idx_begin + train_sample + test_sample))
+        random.seed(0)
+        random.shuffle(lst)
+        train_sample_index.extend(
+            lst[:train_sample]
+            # list((range(idx_begin, idx_begin + train_sample)))
+        )
+        test_sample_index.extend(
+            lst[train_sample:train_sample + test_sample]
+            # list(range(idx_begin + train_sample, idx_begin + train_sample + test_sample))
+        )
+        idx_begin += count
+
+    train_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_sample_weight, train_count)
+    test_sampler = torch.utils.data.sampler.SubsetRandomSampler(test_sample_index)
+
+    train_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        # lambda x: print(x.shape),
+        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+        # transforms.RandomCrop(size, padding=size // 12),
+        # transforms.RandomHorizontalFlip(),
+        # transforms.RandomRotation(15)
+    ])
+    test_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+        # lambda x: temporal_flatten(x),
+    ])
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
+
+    # if 'temporal_flatten' in kwargs.keys():
+    #     if kwargs['temporal_flatten'] is True:
+    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+
+    train_dataset = DiskCachedDataset(train_dataset,
+                                      cache_path=os.path.join(DATA_DIR, 'HMDBDVS/train_cache_{}'.format(step)),
+                                      transform=train_transform, num_copies=3)
+    test_dataset = DiskCachedDataset(test_dataset,
+                                     cache_path=os.path.join(DATA_DIR, 'HMDBDVS/test_cache_{}'.format(step)),
                                      transform=test_transform, num_copies=3)
 
     mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)

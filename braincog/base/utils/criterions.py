@@ -32,3 +32,17 @@ class MixLoss(torch.nn.Module):
 
     def forward(self, x, target):
         return 0.1 * self.ce(x, target) + self.mse(x, target)
+
+
+class TetLoss(torch.nn.Module):
+    def __init__(self, loss_fn):
+        super(TetLoss, self).__init__()
+        self.loss_fn = loss_fn
+
+    def forward(self, x, target):
+        loss = 0.
+        for logit in x:
+            loss += self.loss_fn(logit, target)
+
+        return loss / x.shape[0]
+

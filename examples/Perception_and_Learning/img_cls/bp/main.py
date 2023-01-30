@@ -4,6 +4,7 @@ import time
 import timm.models
 import yaml
 import os
+import random as buildin_random
 import logging
 from collections import OrderedDict
 from contextlib import suppress
@@ -15,10 +16,11 @@ from braincog.base.utils.criterions import *
 from braincog.datasets.datasets import *
 from braincog.model_zoo.resnet import *
 from braincog.model_zoo.convnet import *
-from braincog.model_zoo.vgg_snn import VGG_SNN
+from braincog.model_zoo.vgg_snn import VGG_SNN, SNN5
 from braincog.model_zoo.resnet19_snn import resnet19
+from braincog.model_zoo.sew_resnet import sew_resnet18, sew_resnet34, sew_resnet50
 from braincog.utils import save_feature_map, setup_seed
-from braincog.base.utils.visualization import plot_tsne_3d, plot_tsne, plot_confusion_matrix
+from braincog.base.utils.visualization import plot_tsne_3d, plot_tsne, plot_confusion_matrix, plot_mem_distribution
 
 import torch
 import torch.nn as nn
@@ -26,12 +28,14 @@ import torchvision.utils
 from torch.nn.parallel import DistributedDataParallel as NativeDDP
 
 from timm.data import ImageDataset, create_loader, resolve_data_config, Mixup, FastCollateMixup, AugMixDataset
-from timm.models import load_checkpoint, create_model, resume_checkpoint, convert_splitbn_model
+from timm.models import load_checkpoint, create_model, resume_checkpoint, convert_splitbn_model, register_model
 from timm.utils import *
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy, JsdCrossEntropy
 from timm.optim import create_optimizer
 from timm.scheduler import create_scheduler
 from timm.utils import ApexScaler, NativeScaler
+
+from torch.utils.tensorboard import SummaryWriter
 
 # from ptflops import get_model_complexity_info
 # from thop import profile, clever_format
@@ -93,7 +97,7 @@ parser.add_argument('--opt-betas', default=None, type=float, nargs='+', metavar=
                     help='Optimizer Betas (default: None, use opt default)')
 parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                     help='Optimizer momentum (default: 0.9)')
-parser.add_argument('--weight-decay', type=float, default=0.01,
+parser.add_argument('--weight-decay', type=float, default=1e-4,
                     help='weight decay (default: 0.01 for adamw)')
 parser.add_argument('--clip-grad', type=float, default=None, metavar='NORM',
                     help='Clip gradient norm (default: None, no clipping)')
@@ -161,13 +165,13 @@ parser.add_argument('--recount', type=int, default=1,
                     help='Random erase count (default: 1)')
 parser.add_argument('--resplit', action='store_true', default=False,
                     help='Do not random erase first (clean) augmentation split')
-parser.add_argument('--mixup', type=float, default=0.8,
+parser.add_argument('--mixup', type=float, default=0.,
                     help='mixup alpha, mixup enabled if > 0. (default: 0.)')
-parser.add_argument('--cutmix', type=float, default=1.0,
+parser.add_argument('--cutmix', type=float, default=0.,
                     help='cutmix alpha, cutmix enabled if > 0. (default: 0.)')
 parser.add_argument('--cutmix-minmax', type=float, nargs='+', default=None,
                     help='cutmix min/max ratio, overrides alpha and enables cutmix if set (default: None)')
-parser.add_argument('--mixup-prob', type=float, default=1.0,
+parser.add_argument('--mixup-prob', type=float, default=0.,
                     help='Probability of performing mixup or cutmix when either/both is enabled')
 parser.add_argument('--mixup-switch-prob', type=float, default=0.5,
                     help='Probability of switching to cutmix when both mixup and cutmix enabled')
@@ -241,8 +245,9 @@ parser.add_argument('--pin-mem', action='store_true', default=False,
                     help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
 parser.add_argument('--no-prefetcher', action='store_true', default=False,
                     help='disable fast prefetcher')
-parser.add_argument('--output', default='/data/floyed/braincog', type=str, metavar='PATH',
+parser.add_argument('--output', default='/data/floyed/BrainCog', type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
+parser.add_argument('--tensorboard-dir', default='./runs', type=str)
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',
                     help='Best metric (default: "top1"')
 parser.add_argument('--tta', type=int, default=0, metavar='N',
@@ -260,10 +265,13 @@ parser.add_argument('--temporal-flatten', action='store_true',
                     help='Temporal flatten to channels. ONLY FOR EVENT DATA TRAINING BY ANN')
 parser.add_argument('--adaptive-node', action='store_true')
 parser.add_argument('--critical-loss', action='store_true')
+parser.add_argument('--conv-type', type=str, default='normal')
+parser.add_argument('--sew-cnf', type=str, default='ADD')
+parser.add_argument('--rand-step', action='store_true')
 
 # neuron type
 parser.add_argument('--node-type', type=str, default='LIFNode', help='Node type in network (default: PLIF)')
-parser.add_argument('--act-fun', type=str, default='GateGrad',
+parser.add_argument('--act-fun', type=str, default='QGateGrad',
                     help='Surogate Function in node. Only for Surrogate nodes (default: AtanGrad)')
 parser.add_argument('--threshold', type=float, default=.5, help='Firing threshold (default: 0.5)')
 parser.add_argument('--tau', type=float, default=2., help='Attenuation coefficient (default: 2.)')
@@ -276,12 +284,18 @@ parser.add_argument('--noisy-grad', type=float, default=0.,
 parser.add_argument('--spike-output', action='store_true', default=False,
                     help='Using mem output or spike output (default: False)')
 parser.add_argument('--n_groups', type=int, default=1)
+parser.add_argument('--n-encode-type', type=str, default='linear')
+parser.add_argument('--n-preact', action='store_true')
+parser.add_argument('--layer-by-layer', action='store_true',
+                    help='forward step-by-step or layer-by-layer. '
+                         'Larger Model with layer-by-layer will be faster (default: False)')
+parser.add_argument('--tet-loss', action='store_true')
 
 # EventData Augmentation
 parser.add_argument('--mix-up', action='store_true', help='Mix-up for event data (default: False)')
 parser.add_argument('--cut-mix', action='store_true', help='CutMix for event data (default: False)')
 parser.add_argument('--event-mix', action='store_true', help='EventMix for event data (default: False)')
-parser.add_argument('--cutmix_beta', type=float, default=1.0, help='cutmix_beta (default: 1.)')
+parser.add_argument('--cutmix_beta', type=float, default=2.0, help='cutmix_beta (default: 1.)')
 parser.add_argument('--cutmix_prob', type=float, default=0.5, help='cutmix_prib for event data (default: .5)')
 parser.add_argument('--cutmix_num', type=int, default=1, help='cutmix_num for event data (default: 1)')
 parser.add_argument('--cutmix_noise', type=float, default=0.,
@@ -297,12 +311,8 @@ parser.add_argument('--train-portion', type=float, default=0.9,
                     help='Dataset portion, only for datasets which do not have validation set (default: 0.9)')
 parser.add_argument('--event-size', default=48, type=int,
                     help='Event size. Resize event data before process (default: 48)')
-parser.add_argument('--layer-by-layer', action='store_true',
-                    help='forward step-by-step or layer-by-layer. '
-                         'Larger Model with layer-by-layer will be faster (default: False)')
 parser.add_argument('--node-resume', type=str, default='',
                     help='resume weights in node for adaptive node. (default: False)')
-parser.add_argument('--node-trainable', action='store_true')
 
 # visualize
 parser.add_argument('--visualize', action='store_true',
@@ -311,13 +321,12 @@ parser.add_argument('--spike-rate', action='store_true',
                     help='Print spiking rate for each layer, only for validate(default: False)')
 parser.add_argument('--tsne', action='store_true')
 parser.add_argument('--conf-mat', action='store_true')
+parser.add_argument('--mem-dist', action='store_true')
+parser.add_argument('--adaptation-info', action='store_true')
 
 parser.add_argument('--suffix', type=str, default='',
                     help='Add an additional suffix to the save path (default: \'\')')
 
-# for reconstructing es-imagenet
-parser.add_argument('--reconstructed', action='store_true',
-                    help='for ES-imagenet dataset')
 try:
     from apex import amp
     from apex.parallel import DistributedDataParallel as ApexDDP
@@ -352,6 +361,14 @@ def _parse_args():
     return args, args_text
 
 
+@register_model
+def resnet50d_pretrained(*args, **kwargs):
+    model = create_model('resnet50d', pretrained=True)
+    model.fc = nn.Linear(2048, 10)
+    # model.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    return model
+
+
 def main():
     args, args_text = _parse_args()
     # args.no_spike_output = args.no_spike_output | args.cut_mix
@@ -360,18 +377,21 @@ def main():
     if args.local_rank == 0:
         output_base = args.output if args.output else './output'
         exp_name = '-'.join([
-            datetime.now().strftime("%Y%m%d-%H%M%S"),
             args.model,
             args.dataset,
+            args.node_type,
             str(args.step),
-            args.suffix
+            args.suffix,
+            datetime.now().strftime("%Y%m%d-%H%M%S"),
             # str(args.img_size)
         ])
         output_dir = get_outdir(output_base, 'train', exp_name)
         args.output_dir = output_dir
         setup_default_logging(log_path=os.path.join(output_dir, 'log.txt'))
-
+        summary_writer = SummaryWriter(log_dir=os.path.join(args.tensorboard_dir, exp_name))
+        args.tensorboard_prefix = os.path.join(args.dataset, args.model)
     else:
+        summary_writer = None
         setup_default_logging()
 
     args.prefetcher = not args.no_prefetcher
@@ -424,8 +444,14 @@ def main():
         temporal_flatten=args.temporal_flatten,
         layer_by_layer=args.layer_by_layer,
         n_groups=args.n_groups,
-        reconstruct=args.reconstructed
+        n_encode_type=args.n_encode_type,
+        n_preact=args.n_preact,
+        tet_loss=args.tet_loss,
+        sew_cnf=args.sew_cnf,
+        conv_type=args.conv_type,
     )
+
+    _logger.info('[MODEL ARCH]\n{}'.format(model))
 
     if 'dvs' in args.dataset:
         args.channels = 2
@@ -481,7 +507,12 @@ def main():
         if args.channels_last:
             model = model.to(memory_format=torch.channels_last)
 
-    optimizer = create_optimizer(args, model)
+    if args.opt not in ['NGD']:
+        optimizer = create_optimizer(args, model)
+    else:
+        optimizer = NGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+
+    _logger.info('[OPTIMIZER]\n{}'.format(optimizer))
 
     amp_autocast = suppress  # do nothing
     loss_scaler = None
@@ -514,6 +545,8 @@ def main():
             log_info=args.local_rank == 0)
         # print(model.get_attr('mu'))
         # print(model.get_attr('sigma'))
+        if hasattr(model, 'set_threshold'):
+            model.set_threshold(args.threshold)
 
     if args.critical_loss or args.spike_rate:
         model.set_requires_fp(True)
@@ -555,7 +588,7 @@ def main():
         else:
             if args.local_rank == 0:
                 _logger.info("Using native Torch DistributedDataParallel.")
-            model = NativeDDP(model, device_ids=[args.local_rank],
+            model = NativeDDP(model.cuda(), device_ids=[args.local_rank],
                               find_unused_parameters=True)  # can use device str in Torch >= 1.1
         model_without_ddp = model.module
     # NOTE: EMA model does not need to be wrapped by DDP
@@ -596,10 +629,9 @@ def main():
         randaug_n=args.randaug_n,
         randaug_m=args.randaug_m,
         portion=args.train_portion,
-        reconstruct=args.reconstructed,
         _logger=_logger,
     )
-
+    # _logger.info('train_loader:\n{}\nval_loader:\n{}'.format(loader_train, loader_eval))
     if args.loss_fn == 'mse':
         train_loss_fn = UnilateralMse(1.)
         validate_loss_fn = UnilateralMse(1.)
@@ -622,28 +654,28 @@ def main():
         train_loss_fn = MixLoss(train_loss_fn)
         validate_loss_fn = MixLoss(validate_loss_fn)
 
+    if args.tet_loss:
+        train_loss_fn = TetLoss(train_loss_fn)
+        validate_loss_fn = TetLoss(validate_loss_fn)
+
     eval_metric = args.eval_metric
     best_metric = None
     best_epoch = None
 
     if args.eval:  # evaluate the model
-        if args.distributed:
-            state_dict = torch.load(args.eval_checkpoint)['state_dict_ema']
-            new_state_dict = OrderedDict()
-            # add module prefix for DDP
-            for k, v in state_dict.items():
-                k = 'module.' + k
-                new_state_dict[k] = v
-
-            model.load_state_dict(new_state_dict)
+        # if args.distributed:
+        #     raise NotImplementedError('eval not has not been verified for distributed')
         # else:
         #     load_checkpoint(model, args.eval_checkpoint, args.model_ema)
-        for i in range(1):
+        model.eval()
+        for t in range(1, args.step * 3):
+        # for t in range(args.step, args.step + 1):
+            model.set_attr('step', t)
             val_metrics = validate(start_epoch, model, loader_eval, validate_loss_fn, args,
                                    visualize=args.visualize, spike_rate=args.spike_rate,
-                                   tsne=args.tsne, conf_mat=args.conf_mat)
-            print(f"Top-1 accuracy of the model is: {val_metrics['top1']:.1f}%")
-        # return
+                                   tsne=args.tsne, conf_mat=args.conf_mat, summary_writer=summary_writer)
+            print(f"[STEP:{t}], Top-1 accuracy of the model is: {val_metrics['top1']:.1f}%")
+        return
 
     saver = None
     if args.local_rank == 0:
@@ -667,7 +699,9 @@ def main():
             train_metrics = train_epoch(
                 epoch, model, loader_train, optimizer, train_loss_fn, args,
                 lr_scheduler=lr_scheduler, saver=saver, output_dir=output_dir,
-                amp_autocast=amp_autocast, loss_scaler=loss_scaler, model_ema=model_ema, mixup_fn=mixup_fn)
+                amp_autocast=amp_autocast, loss_scaler=loss_scaler,
+                model_ema=model_ema, mixup_fn=mixup_fn, summary_writer=summary_writer
+            )
 
             if args.distributed and args.dist_bn in ('broadcast', 'reduce'):
                 if args.local_rank == 0:
@@ -676,7 +710,7 @@ def main():
 
             eval_metrics = validate(epoch, model, loader_eval, validate_loss_fn, args, amp_autocast=amp_autocast,
                                     visualize=args.visualize, spike_rate=args.spike_rate,
-                                    tsne=args.tsne, conf_mat=args.conf_mat)
+                                    tsne=args.tsne, conf_mat=args.conf_mat, summary_writer=summary_writer)
 
             if model_ema is not None and not args.model_ema_force_cpu:
                 if args.distributed and args.dist_bn in ('broadcast', 'reduce'):
@@ -684,7 +718,8 @@ def main():
                 ema_eval_metrics = validate(
                     epoch, model_ema.ema, loader_eval, validate_loss_fn, args, amp_autocast=amp_autocast, log_suffix=' (EMA)',
                     visualize=args.visualize, spike_rate=args.spike_rate,
-                    tsne=args.tsne, conf_mat=args.conf_mat)
+                    tsne=args.tsne, conf_mat=args.conf_mat, summary_writer=summary_writer
+                )
                 eval_metrics = ema_eval_metrics
 
             if lr_scheduler is not None:
@@ -710,7 +745,7 @@ def main():
 def train_epoch(
         epoch, model, loader, optimizer, loss_fn, args,
         lr_scheduler=None, saver=None, output_dir='', amp_autocast=suppress,
-        loss_scaler=None, model_ema=None, mixup_fn=None):
+        loss_scaler=None, model_ema=None, mixup_fn=None, summary_writer=None):
     if args.mixup_off_epoch and epoch >= args.mixup_off_epoch:
         if args.prefetcher and loader.mixup_enabled:
             loader.mixup_enabled = False
@@ -721,7 +756,7 @@ def train_epoch(
     batch_time_m = AverageMeter()
     data_time_m = AverageMeter()
     losses_m = AverageMeter()
-    closses_m = AverageMeter()
+    # closses_m = AverageMeter()
     top1_m = AverageMeter()
     top5_m = AverageMeter()
 
@@ -734,8 +769,13 @@ def train_epoch(
     end = time.time()
     last_idx = len(loader) - 1
     num_updates = epoch * len(loader)
+    iters_per_epoch = len(loader)
     for batch_idx, (inputs, target) in enumerate(loader):
         last_batch = batch_idx == last_idx
+        if args.rand_step:
+            step = buildin_random.randint(1, args.step + 2)
+            model.set_attr('step', step)
+
         data_time_m.update(time.time() - end)
         if not args.prefetcher or args.dataset != 'imnet':
             inputs, target = inputs.type(torch.FloatTensor).cuda(), target.cuda()
@@ -746,30 +786,15 @@ def train_epoch(
         with amp_autocast():
             output = model(inputs)
             loss = loss_fn(output, target)
-        if not (args.cut_mix | args.mix_up | args.event_mix) and args.dataset != 'imnet':
+        if args.tet_loss:
+            output = output.mean(0)
+
+        if not (args.cut_mix | args.mix_up | args.event_mix | (args.cutmix != 0.) | (args.mixup != 0.)):
             # print(output.shape, target.shape)
             acc1, acc5 = accuracy(output, target, topk=(1, 5))
             # acc1, = accuracy(output, target)
         else:
             acc1, acc5 = torch.tensor([0.]), torch.tensor([0.])
-
-        closs = torch.tensor([0.], device=loss.device)
-
-
-        loss = loss + .1 * closs
-
-        spike_rate_avg_layer_str = ''
-        threshold_str = ''
-        if not args.distributed:
-            losses_m.update(loss.item(), inputs.size(0))
-            top1_m.update(acc1.item(), inputs.size(0))
-            top5_m.update(acc5.item(), inputs.size(0))
-            closses_m.update(closs.item(), inputs.size(0))
-
-            spike_rate_avg_layer = model.get_fire_rate().tolist()
-            spike_rate_avg_layer_str = ['{:.3f}'.format(i) for i in spike_rate_avg_layer]
-            threshold = model.get_threshold()
-            threshold_str = ['{:.3f}'.format(i) for i in threshold]
 
         optimizer.zero_grad()
         if loss_scaler is not None:
@@ -781,10 +806,10 @@ def train_epoch(
                 random_gradient(model, args.noisy_grad)
             if args.clip_grad is not None:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip_grad)
-            if args.opt == 'lamb':
-                optimizer.step(epoch=epoch)
-            else:
-                optimizer.step()
+            # if args.opt == 'lamb':
+            #     optimizer.step(epoch=epoch)
+            # else:
+            optimizer.step()
 
         torch.cuda.synchronize()
         if model_ema is not None:
@@ -792,80 +817,49 @@ def train_epoch(
         num_updates += 1
 
         batch_time_m.update(time.time() - end)
+
+        if args.local_rank == 0:
+            summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'batch/train/top1'), acc1.item(), epoch * iters_per_epoch + batch_idx)
+            summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'batch/train/top5'), acc5.item(), epoch * iters_per_epoch + batch_idx)
+            summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'batch/train/loss'), loss.item(), epoch * iters_per_epoch + batch_idx)
+
         if last_batch or batch_idx % args.log_interval == 0:
             lrl = [param_group['lr'] for param_group in optimizer.param_groups]
             lr = sum(lrl) / len(lrl)
 
-            mu_str = ''
-            sigma_str = ''
-            if not args.distributed:
-                if 'Noise' in args.node_type:
-                    mu, sigma = model.get_noise_param()
-                    mu_str = ['{:.3f}'.format(i.detach()) for i in mu]
-                    sigma_str = ['{:.3f}'.format(i.detach()) for i in sigma]
-
             if args.distributed:
-                reduced_loss = reduce_tensor(loss.data, args.world_size)
-                losses_m.update(reduced_loss.item(), inputs.size(0))
-                closses_m.update(reduced_loss.item(), inputs.size(0))
+                loss = reduce_tensor(loss.data, args.world_size)
+                acc1 = reduce_tensor(acc1, args.world_size)
+                acc5 = reduce_tensor(acc5, args.world_size)
+
+            losses_m.update(loss.item(), inputs.size(0))
+            top1_m.update(acc1.item(), output.size(0))
+            top5_m.update(acc5.item(), output.size(0))
+                # closses_m.update(reduced_loss.item(), inputs.size(0))
 
             if args.local_rank == 0:
-                if args.distributed:
-                    _logger.info(
-                        'Train: {} [{:>4d}/{} ({:>3.0f}%)]  '
-                        'Loss: {loss.val:>9.6f} ({loss.avg:>6.4f})  '
-                        'cLoss: {closs.val:>9.6f} ({closs.avg:>6.4f})  '
-                        'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})  '
-                        'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})  '
-                        'Time: {batch_time.val:.3f}s, {rate:>7.2f}/s  '
-                        '({batch_time.avg:.3f}s, {rate_avg:>7.2f}/s)  '
-                        'LR: {lr:.3e}  '
-                        'Data: {data_time.val:.3f} ({data_time.avg:.3f})'.format(
-                            epoch,
-                            batch_idx, len(loader),
-                            100. * batch_idx / last_idx,
-                            loss=losses_m,
-                            closs=closses_m,
-                            top1=top1_m,
-                            top5=top5_m,
-                            batch_time=batch_time_m,
-                            rate=inputs.size(0) * args.world_size / batch_time_m.val,
-                            rate_avg=inputs.size(0) * args.world_size / batch_time_m.avg,
-                            lr=lr,
-                            data_time=data_time_m
-                        ))
-                else:
-                    _logger.info(
-                        'Train: {} [{:>4d}/{} ({:>3.0f}%)]  '
-                        'Loss: {loss.val:>9.6f} ({loss.avg:>6.4f})  '
-                        'cLoss: {closs.val:>9.6f} ({closs.avg:>6.4f})  '
-                        'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})  '
-                        'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})  '
-                        'Time: {batch_time.val:.3f}s, {rate:>7.2f}/s  '
-                        '({batch_time.avg:.3f}s, {rate_avg:>7.2f}/s)  '
-                        'LR: {lr:.3e}  '
-                        'Data: {data_time.val:.3f} ({data_time.avg:.3f})\n'
-                        'Fire_rate: {spike_rate}\n'
-                        'Thres: {threshold}\n'
-                        'Mu: {mu_str}\n'
-                        'Sigma: {sigma_str}\n'.format(
-                            epoch,
-                            batch_idx, len(loader),
-                            100. * batch_idx / last_idx,
-                            loss=losses_m,
-                            closs=closses_m,
-                            top1=top1_m,
-                            top5=top5_m,
-                            batch_time=batch_time_m,
-                            rate=inputs.size(0) * args.world_size / batch_time_m.val,
-                            rate_avg=inputs.size(0) * args.world_size / batch_time_m.avg,
-                            lr=lr,
-                            data_time=data_time_m,
-                            spike_rate=spike_rate_avg_layer_str,
-                            threshold=threshold_str,
-                            mu_str=mu_str,
-                            sigma_str=sigma_str
-                        ))
+                # if args.distributed:
+                _logger.info(
+                    'Train: {} [{:>4d}/{} ({:>3.0f}%)]  '
+                    'Loss: {loss.val:>9.6f} ({loss.avg:>6.4f})  '
+                    'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})  '
+                    'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})  '
+                    'Time: {batch_time.val:.3f}s, {rate:>7.2f}/s  '
+                    '({batch_time.avg:.3f}s, {rate_avg:>7.2f}/s)  '
+                    'LR: {lr:.3e}  '
+                    'Data: {data_time.val:.3f} ({data_time.avg:.3f})'.format(
+                        epoch,
+                        batch_idx, len(loader),
+                        100. * batch_idx / last_idx,
+                        loss=losses_m,
+                        top1=top1_m,
+                        top5=top5_m,
+                        batch_time=batch_time_m,
+                        rate=inputs.size(0) * args.world_size / batch_time_m.val,
+                        rate_avg=inputs.size(0) * args.world_size / batch_time_m.avg,
+                        lr=lr,
+                        data_time=data_time_m
+                    ))
 
                 if args.save_images and output_dir:
                     torchvision.utils.save_image(
@@ -887,16 +881,25 @@ def train_epoch(
     if hasattr(optimizer, 'sync_lookahead'):
         optimizer.sync_lookahead()
 
+    if args.local_rank == 0:
+        summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'epoch/train/top1'), top1_m.avg, epoch)
+        summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'epoch/train/top5'), top5_m.avg, epoch)
+        summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'epoch/train/loss'), losses_m.avg, epoch)
+
+    if args.rand_step:
+        model.set_attr('step', args.step)
+
     return OrderedDict([('loss', losses_m.avg)])
 
 
 def validate(epoch, model, loader, loss_fn, args, amp_autocast=suppress,
-             log_suffix='', visualize=False, spike_rate=False, tsne=False, conf_mat=False):
+             log_suffix='', visualize=False, spike_rate=False, tsne=False, conf_mat=False, summary_writer=None):
     batch_time_m = AverageMeter()
     losses_m = AverageMeter()
-    closses_m = AverageMeter()
+    # closses_m = AverageMeter()
     top1_m = AverageMeter()
     top5_m = AverageMeter()
+    spike_m = AverageMeter()
 
     model.eval()
 
@@ -904,10 +907,23 @@ def validate(epoch, model, loader, loss_fn, args, amp_autocast=suppress,
     feature_cls = []
     logits_vec = []
     labels_vec = []
+    mem_vec = []
 
     end = time.time()
     last_idx = len(loader) - 1
+    iters_per_epoch = len(loader)
     with torch.no_grad():
+
+        if args.adaptation_info:
+            bias_x, weight, bias_y = unpack_adaption_info(model)
+            save_adaptation_info(
+                os.path.join(args.output_dir, 'adaptation_info.csv'),
+                epoch=epoch,
+                bias_x=bias_x,
+                weight=weight,
+                bias_y=bias_y
+            )
+
         for batch_idx, (inputs, target) in enumerate(loader):
             # inputs = inputs.type(torch.float64)
             last_batch = batch_idx == last_idx
@@ -918,44 +934,14 @@ def validate(epoch, model, loader, loss_fn, args, amp_autocast=suppress,
                 inputs = inputs.contiguous(memory_format=torch.channels_last)
 
             if not args.distributed:
-                if (visualize or spike_rate or tsne or conf_mat) and not args.critical_loss:
+                if (visualize or spike_rate or tsne or conf_mat or args.mem_dist) and not args.critical_loss:
                     model.set_requires_fp(True)
-                    # if not args.critical_loss:
-                    #     model.set_requires_fp(False)
 
             with amp_autocast():
                 output = model(inputs)
+
             if isinstance(output, (tuple, list)):
                 output = output[0]
-
-            if not args.distributed:
-                if visualize:
-                    x = model.get_fp()
-                    feature_path = os.path.join(args.output_dir, 'feature_map')
-                    if os.path.exists(feature_path) is False:
-                        os.mkdir(feature_path)
-                    save_feature_map(x, feature_path)
-                    # if not args.critical_loss:
-                    #     model_config.set_requires_fp(False)
-
-                if tsne:
-                    x = model.get_fp(temporal_info=False)[-1]
-                    x = torch.nn.AdaptiveAvgPool2d((1, 1))(x)
-                    x = x.reshape(x.shape[0], -1)
-                    feature_vec.append(x)
-                    feature_cls.append(target)
-
-                if conf_mat:
-                    logits_vec.append(output)
-                    labels_vec.append(target)
-
-                if spike_rate:
-                    avg, var, spike, avg_per_step = model.get_spike_info()
-                    save_spike_info(
-                        os.path.join(args.output_dir, 'spike_info.csv'),
-                        epoch, batch_idx,
-                        args.step, avg, var,
-                        spike, avg_per_step)
 
             # augmentation reduction
             reduce_factor = args.tta
@@ -963,18 +949,11 @@ def validate(epoch, model, loader, loss_fn, args, amp_autocast=suppress,
                 output = output.unfold(0, reduce_factor, reduce_factor).mean(dim=2)
                 target = target[0:target.size(0):reduce_factor]
 
+            # print(args.rank, output.shape, target.shape, max(target))
             loss = loss_fn(output, target)
+            if args.tet_loss:
+                output = output.mean(0)
             acc1, acc5 = accuracy(output, target, topk=(1, 5))
-            # acc1, = accuracy(output, target)
-
-            closs = torch.tensor([0.], device=loss.device)
-
-            if not args.distributed:
-                spike_rate_avg_layer = model.get_fire_rate().tolist()
-                threshold = model.get_threshold()
-                threshold_str = ['{:.3f}'.format(i) for i in threshold]
-                spike_rate_avg_layer_str = ['{:.3f}'.format(i) for i in spike_rate_avg_layer]
-                tot_spike = model.get_tot_spike()
 
             if args.distributed:
                 reduced_loss = reduce_tensor(loss.data, args.world_size)
@@ -988,80 +967,51 @@ def validate(epoch, model, loader, loss_fn, args, amp_autocast=suppress,
             losses_m.update(reduced_loss.item(), inputs.size(0))
             top1_m.update(acc1.item(), output.size(0))
             top5_m.update(acc5.item(), output.size(0))
-            closses_m.update(closs.item(), inputs.size(0))
+            # closses_m.update(closs, inputs.size(0))
 
             batch_time_m.update(time.time() - end)
             end = time.time()
+
+            if args.local_rank == 0:
+                summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'batch/val/top1'), acc1.item(), epoch * iters_per_epoch + batch_idx)
+                summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'batch/val/top5'), acc5.item(), epoch * iters_per_epoch + batch_idx)
+                summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'batch/val/loss'), loss.item(), epoch * iters_per_epoch + batch_idx)
+
             if args.local_rank == 0 and (last_batch or batch_idx % args.log_interval == 0):
                 log_name = 'Test' + log_suffix
 
-                mu_str = ''
-                sigma_str = ''
-                if not args.distributed:
-                    if 'Noise' in args.node_type:
-                        mu, sigma = model.get_noise_param()
-                        mu_str = ['{:.3f}'.format(i.detach()) for i in mu]
-                        sigma_str = ['{:.3f}'.format(i.detach()) for i in sigma]
+            if not args.distributed and spike_rate:
+                spike_m.update(model.get_tot_spike() / output.size(0), output.size(0))
 
-                if args.distributed:
+                if not args.distributed and spike_rate:
                     _logger.info(
-                        '{0}: [{1:>4d}/{2}]  '
-                        'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})  '
-                        'Loss: {loss.val:>7.4f} ({loss.avg:>6.4f})  '
-                        'cLoss: {closs.val:>7.4f} ({closs.avg:>6.4f})  '
-                        'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})'
-                        'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})'.format(
-                            log_name,
-                            batch_idx,
-                            last_idx,
-                            batch_time=batch_time_m,
-                            loss=losses_m,
-                            closs=closses_m,
-                            top1=top1_m,
-                            top5=top5_m,
-                            ))
-                else:
-                    _logger.info(
-                        '{0}: [{1:>4d}/{2}]  '
-                        'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})  '
-                        'Loss: {loss.val:>7.4f} ({loss.avg:>6.4f})  '
-                        'cLoss: {closs.val:>7.4f} ({closs.avg:>6.4f})  '
-                        'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})'
-                        'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})\n'
-                        'Fire_rate: {spike_rate}\n'
-                        'Tot_spike: {tot_spike}\n'
-                        'Thres: {threshold}\n'
-                        'Mu: {mu_str}\n'
-                        'Sigma: {sigma_str}\n'.format(
-                            log_name,
-                            batch_idx,
-                            last_idx,
-                            batch_time=batch_time_m,
-                            loss=losses_m,
-                            closs=closses_m,
-                            top1=top1_m,
-                            top5=top5_m,
-                            spike_rate=spike_rate_avg_layer_str,
-                            tot_spike=tot_spike,
-                            threshold=threshold_str,
-                            mu_str=mu_str,
-                            sigma_str=sigma_str
+                        '[Spike Info]: {spike.val} ({spike.avg})'.format(
+                            spike=spike_m
+                        )
+                    )
+            if last_batch or batch_idx % args.log_interval == 0:
+                _logger.info(
+                    'Eval : {} '
+                    'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})  '
+                    'Loss: {loss.val:>7.4f} ({loss.avg:>6.4f})  '
+                    'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})'
+                    'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})'.format(
+                        epoch,
+                        batch_idx,
+                        last_idx,
+                        batch_time=batch_time_m,
+                        loss=losses_m,
+                        top1=top1_m,
+                        top5=top5_m,
                         ))
 
     # metrics = OrderedDict([('loss', losses_m.avg), ('top1', top1_m.avg), ('top5', top5_m.avg)])
     metrics = OrderedDict([('loss', losses_m.avg), ('top1', top1_m.avg)])
 
-    if not args.distributed:
-        if tsne:
-            feature_vec = torch.cat(feature_vec)
-            feature_cls = torch.cat(feature_cls)
-            plot_tsne(feature_vec, feature_cls, os.path.join(args.output_dir, 't-sne-2d.eps'))
-            plot_tsne_3d(feature_vec, feature_cls, os.path.join(args.output_dir, 't-sne-3d.eps'))
-        if conf_mat:
-            logits_vec = torch.cat(logits_vec)
-            labels_vec = torch.cat(labels_vec)
-            plot_confusion_matrix(logits_vec, labels_vec, os.path.join(args.output_dir, 'confusion_matrix.eps'))
-
+    if args.local_rank == 0:
+        summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'epoch/val/top1'), top1_m.avg, epoch)
+        summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'epoch/val/top5'), top5_m.avg, epoch)
+        summary_writer.add_scalar(os.path.join(args.tensorboard_prefix, 'epoch/val/loss'), losses_m.avg, epoch)
     return metrics
 
 
