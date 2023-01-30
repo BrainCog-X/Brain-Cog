@@ -115,7 +115,7 @@ loader_train, loader_eval,_,_ = get_dvsc10_data(batch_size=128,step=10)
 * pyyaml >= 6.0
 * loris >= 0.5.3
 * pandas >= 1.4.2  
-* tonic (special)
+* tonic
 * pandas >= 1.4.2  
 * xlrd == 1.2.0
 
@@ -146,21 +146,6 @@ loader_train, loader_eval,_,_ = get_dvsc10_data(batch_size=128,step=10)
 
     > `pip install -e .`
  
-### 数据集依赖安装（可选的）
-
-如果你在算法中使用数据集，尤其是神经形态版本的数据集，你需要安装以下包：
-
-> `pip install git+https://github.com/BrainCog-X/tonic_braincog.git`
-
-你也可以下载并在本地安装：
-
-
-
->  ` git clone https://github.com/BrainCog-X/tonic_braincog.git` <br>
- `cd tonic` <br>
- `pip install -e .`
-
-
 
 ## 样例
 
