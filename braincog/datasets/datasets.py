@@ -543,8 +543,8 @@ def get_dvsc10_data(batch_size, step, **kwargs):
     test_transform = transforms.Compose([
         # tonic.transforms.Denoise(filter_time=10000),
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
-    train_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS__Cifar10'), transform=train_transform)
-    test_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS__Cifar10'), transform=test_transform)
+    train_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS_Cifar10'), transform=train_transform)
+    test_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS_Cifar10'), transform=test_transform)
 
     train_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
