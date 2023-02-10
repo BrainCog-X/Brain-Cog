@@ -159,17 +159,18 @@ def plot_tsne_3d(x, colors,output_dir="", num_classes=None):
     sns.set_context("notebook", font_scale=1.5,
                     rc={"lines.linewidth": 2.5})
     fig = plt.figure(figsize=(8, 8))
+
     palette = np.array(sns.color_palette("hls", num_classes))
-    ax = Axes3D(fig)
+    ax = fig.add_subplot(111, projection='3d')
+
     sc = ax.scatter(x[:, 0], x[:, 1], x[:, 2], lw=0, s=20, alpha=0.8,
                     c=palette[colors.astype(np.int)])
-    ax.view_init(elev=15, azim=30)
-    # plt.xlim(-25, 25)
-    # plt.ylim(-25, 25)
-    # ax.axis('off')
-    # ax.axis('tight')
-    # plt.grid('off')
 
+    # ax.set_xlabel('X')
+    # ax.set_ylabel('Y')
+    # ax.set_zlabel('Z')
+    # ax.view_init(20, -120)
+    ax.axis('tight')
     plt.savefig(output_dir, facecolor=fig.get_facecolor(), bbox_inches='tight')
     #plt.show()
 
