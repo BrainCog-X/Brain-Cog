@@ -35,6 +35,9 @@ Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian 
 
 ## 学习资源
 ### 视频
+- [[智脉说] 第20期 用BrainCog实现发育可塑性的脉冲神经网络自适应剪枝](https://www.bilibili.com/video/BV1iD4y1P7XE/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第19期 用BrainCog实现多脑区协同类脑情感共情脉冲神经网络](https://www.bilibili.com/video/BV16Y411q7b2/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
+- [[智脉说] 第18期 用BrainCog实现前额叶功能柱模型在工作记忆任务中的应用](https://www.bilibili.com/video/BV1As4y1t7wF/?vd_source=ac84fc93f3c82d1cd96648079077afd3)
 - [[智脉说] 第17期 基于BrainCog的类脑心理揣测模型以及在帮助其他智能体避免安全风险任务中的应用](https://www.bilibili.com/video/BV12A411f74Q/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 - [[智脉说] 第16期 用BrainCog实现基于脉冲神经网络的类脑身体自我感知模型](https://www.bilibili.com/video/BV1pK411i7Jk/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
 - [[智脉说] 第15期 用BrainCog实现基于脉冲神经网络的音乐记忆与创作模型](https://www.bilibili.com/video/BV1M3411X7C2/?spm_id_from=333.788&vd_source=ac84fc93f3c82d1cd96648079077afd3)
@@ -69,6 +72,11 @@ Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian 
 - [用智脉实现基于群体编码机制启发的符号表征与推理](https://mp.weixin.qq.com/s/UXc5QDbg8tUKVU3L6dhvxw)
 - [用智脉实现基于脉冲神经网络的多感觉融合概念学习](https://mp.weixin.qq.com/s/s9gXF5NkPUGXkcFAFtsCMw)
 - [用Braincog实现基于脉冲神经网络的音乐记忆与创作模型](https://mp.weixin.qq.com/s/y-t9rFEXYSmI_-rnVk_usw)
+- [用BrainCog实现基于脉冲神经网络的类脑身体自我感知模型](https://mp.weixin.qq.com/s/RLbS3GmhE8ScyZTKJKl_SQ)
+- [基于BrainCog的类脑心理揣测模型以及在帮助其他智能体避免安全风险任务中的应用](https://mp.weixin.qq.com/s/xzFF6IK86W4h2CMs7jt7Xw)
+- [用BrainCog实现前额叶功能柱模型在工作记忆任务中的应用](https://mp.weixin.qq.com/s/E6pb5W0Q4noK72NGf4SNGQ)
+- [用BrainCog实现多脑区协同类脑情感共情脉冲神经网络](https://mp.weixin.qq.com/s/xUnal4I5tM-Rl49fu0ZRVw)
+
 
 
 ## 智脉数据引擎
