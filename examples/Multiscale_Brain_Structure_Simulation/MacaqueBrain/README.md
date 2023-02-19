@@ -23,6 +23,8 @@ Macaque Brain Simulation is a large scale brain modeling framework depending on 
 ## Input:
 Data is obtained from the following link:
 https://drive.google.com/drive/folders/1WieGUftdubKYeYejhvH-gpakia4MP5fl?usp=sharing
+The binary connectivity matrix can be obtained from the following link:
+https://drive.google.com/file/d/1LsNupIx3Nk-Cn_MowF6O-SCY27wdRYas/view?usp=sharing
 
 
 ## Example:
