@@ -21,10 +21,12 @@ Macaque Brain Simulation is a large scale brain modeling framework depending on 
 * pandas >= 1.4.2  
 
 ## Input:
-Data is obtained from the following link:
-https://drive.google.com/drive/folders/1WieGUftdubKYeYejhvH-gpakia4MP5fl?usp=sharing
+
 The binary connectivity matrix can be obtained from the following link:
 https://drive.google.com/file/d/1LsNupIx3Nk-Cn_MowF6O-SCY27wdRYas/view?usp=sharing
+
+The brain region's name can be obained from the following link:
+https://drive.google.com/file/d/1iNI0HR3teUj4yshK8RlSJq6gIWbRdBI1/view?usp=sharing
 
 
 ## Example:
