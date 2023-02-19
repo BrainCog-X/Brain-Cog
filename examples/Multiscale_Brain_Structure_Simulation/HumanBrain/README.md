@@ -23,6 +23,8 @@ Human Brain Simulation is a large scale brain modeling framework depending on br
 ## Input:
 Data is obtained from the following link:
 https://drive.google.com/drive/folders/1eEQRqW_YsXjh1-jCYfrz3TZjn6kNdezh?usp=sharing
+The binary connectivity matrix can be obtained from the following link:
+https://drive.google.com/file/d/1f8fpXgR8X07HrJ7G9DwMAl8K0naPcxJC/view?usp=sharing
 
 ## Example:
 
