@@ -2,11 +2,9 @@ import os, warnings
 
 import braincog
 
-try:
-    import tonic
-    from tonic import DiskCachedDataset
-except:
-    warnings.warn("tonic should be installed, 'pip install git+https://github.com/BrainCog-X/tonic_braincog.git'")
+import tonic
+from tonic import DiskCachedDataset
+
 import torch
 import torch.nn.functional as F
 import torch.utils
