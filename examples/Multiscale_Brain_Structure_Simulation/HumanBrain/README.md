@@ -21,8 +21,12 @@ Human Brain Simulation is a large scale brain modeling framework depending on br
 * pandas >= 1.4.2  
 
 ## Input:
-Data is obtained from the following link:
-https://drive.google.com/drive/folders/1eEQRqW_YsXjh1-jCYfrz3TZjn6kNdezh?usp=sharing
+
+The binary connectivity matrix can be obtained from the following link:
+https://drive.google.com/file/d/1f8fpXgR8X07HrJ7G9DwMAl8K0naPcxJC/view?usp=sharing
+
+The brain region's name corresponding to the label in the connectivity matrix can be obtained from the following link:
+https://docs.google.com/spreadsheets/d/1C8r6T76gogUPYg4HjqlSAV4zJlE5KN1u/edit?usp=share_link&ouid=110014718433166441807&rtpof=true&sd=true
 
 ## Example:
 
