@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../../../../')
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,36 +10,21 @@ import math
 from tqdm import tqdm
 import numpy as np
 from braincog.datasets.datasets import get_mnist_data
+from braincog.base.node import LIFNode
 from braincog.utils import setup_seed
 
+
 setup_seed(1111)
-os.environ['CUDA_VISIBLE_DEVICES'] = "2"
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-batch_size = 100
-
-thresh, lens, decay, if_bias = (0.5, 0.5, 0.2, True)
-class ActFun(torch.autograd.Function):
-
-    @staticmethod
-    def forward(ctx, input):
-        ctx.save_for_backward(input)
-        return input.gt(thresh).float()
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        input, = ctx.saved_tensors
-        grad_input = grad_output.clone()
-        temp = abs(input - thresh) < lens
-        return grad_input * temp.float()
+os.environ['CUDA_VISIBLE_DEVICES'] = "4"
 
 
-act_fun = ActFun.apply
+class myLIFnode(LIFNode):
+    def __init__(self, threshold=0.5, tau=2., *args, **kwargs):
+        super().__init__(threshold, tau, *args, **kwargs)
 
-
-def mem_update(ops, x, mem, spike):
-    mem = (mem - spike * thresh) * decay + ops(x)
-    spike = act_fun(mem)
-    return mem, spike
+    def integral(self, inputs):
+        # self.mem = self.mem + (inputs - self.mem) / self.tau
+        self.mem = self.mem / self.tau + inputs
 
 
 class ConvLayer(nn.Module):
@@ -114,6 +101,7 @@ class Decoder(nn.Module):
 
     def forward(self, x):
         classes = torch.sqrt((x ** 2).sum(2))
+        # classes = self.linear(x)
         return classes
 
 
@@ -125,57 +113,52 @@ class CapsNet(nn.Module):
         self.digit_capsules = DigitCaps()
         self.digit_capsules2 = DigitCaps2()
         self.decoder = Decoder()
-        self.mse_loss = nn.MSELoss()
 
-        self.conv_mem = self.conv_spike = torch.zeros(batch_size, 256, 20, 20, device=device)
-        self.primarycaps_mem = self.primarycaps_spike = torch.zeros(batch_size, 1152, 8, device=device)
-        self.digitalcaps_mem = self.digitalcaps_spike = torch.zeros(batch_size, 1152, 10, 16, 1, device=device)
-        self.digitalcaps_mem2 = self.digitalcaps_spike2 = torch.zeros(batch_size, 10, 16, 1, device=device)
-        self.out_mem = torch.zeros(batch_size, 10, 16, device=device)
-
-        self.trace_u = torch.zeros(batch_size, 1152, 10, 16, 1, device=device)
+        self.conv_node = myLIFnode(tau=5)
+        self.primary_node = myLIFnode(tau=5)
+        self.digit_node = myLIFnode(tau=5)
+        self.digit2_node = myLIFnode(tau=5)
 
     def forward(self, data, time_window=5, train=True):
         self.init()
+        out_mem = 0.
         self.digit_capsules2.init_bij()
         self.trace_u = torch.zeros(batch_size, 1152, 10, 16, 1, device=device)
 
         for step in range(time_window):
             x = data
-            self.conv_mem, self.conv_spike = mem_update(self.conv_layer, x.float(), self.conv_mem, self.conv_spike)
-            self.primarycaps_mem, self.primarycaps_spike = mem_update(self.primary_capsules, self.conv_spike.float(), self.primarycaps_mem,
-                                                            self.primarycaps_spike)
-            self.digitalcaps_mem, self.digitalcaps_spike = mem_update(self.digit_capsules, self.primarycaps_spike.float(),
-                                                            self.digitalcaps_mem, self.digitalcaps_spike)
-            self.digitalcaps_mem2, self.digitalcaps_spike2 = mem_update(self.digit_capsules2, self.digitalcaps_spike.float(),
-                                                                        self.digitalcaps_mem2, self.digitalcaps_spike2)
-            self.out_mem += self.digit_capsules2(self.digitalcaps_spike.float()).squeeze(3)
+
+            x = self.conv_node(self.conv_layer(x))
+            x = self.primary_node(self.primary_capsules(x))
+            x1 = self.digit_node(self.digit_capsules(x))
+            x = self.digit_capsules2(x1)
+            out_mem += x.squeeze(3)
+            y = self.digit2_node(x)
 
             if train:
                 with torch.no_grad():
                     self.digit_capsules2.b_ij = torch.clamp(self.digit_capsules2.b_ij, -0.05, 1)
                     self.trace_u *= torch.exp(-1 / torch.tensor(1.5))
-                    self.trace_u.masked_fill_(self.digitalcaps_spike != 0, 1)
+                    self.trace_u.masked_fill_(x1 != 0, 1)
                     self.digit_capsules2.b_ij += 0.0008 * torch.matmul(
                         self.trace_u.transpose(3, 4) - 0.1,
-                        torch.stack([self.digitalcaps_spike2] * 1152, dim=1)).squeeze(4).mean(dim=0,keepdim=True)
+                        torch.stack([y] * 1152, dim=1)).squeeze(4).mean(dim=0, keepdim=True)
 
-        output = self.out_mem / time_window
+        output = out_mem / time_window
         output = self.decoder(output)
         return output
 
-    def init(self):
-        self.conv_mem = self.conv_spike = torch.zeros(batch_size, 256, 20, 20, device=device)
-        self.primarycaps_mem = self.primarycaps_spike = torch.zeros(batch_size, 1152, 8, device=device)
-        self.digitalcaps_mem = self.digitalcaps_spike = torch.zeros(batch_size, 1152, 10, 16, 1, device=device)
-        self.digitalcaps_mem2 = self.digitalcaps_spike2 = torch.zeros(batch_size, 10, 16, 1, device=device)
-        self.out_mem = torch.zeros(batch_size, 10, 16, device=device)
 
-    def loss(self, x, target):
-        return self.mse_loss(x, target)
+    def init(self):
+        self.conv_node.n_reset()
+        self.primary_node.n_reset()
+        self.digit_node.n_reset()
+        self.digit2_node.n_reset()
 
 
 def evaluate(test_iter, net, device):
+    net.eval()
+
     test_loss, test_acc, n_test = 0, 0.0, 0
     for batch_id, (data, target) in tqdm(enumerate(test_iter)):
         target = torch.sparse.torch.eye(10).index_select(dim=0, index=target)
@@ -186,16 +169,21 @@ def evaluate(test_iter, net, device):
 
         test_acc += sum(np.argmax(classes.data.cpu().numpy(), 1) == np.argmax(target.data.cpu().numpy(), 1))
         n_test += data.shape[0]
+    net.train()
 
     return test_acc / n_test
 
 
 if __name__ == '__main__':
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    batch_size = 100
+
     train_loader, test_loader, _, _ = get_mnist_data(batch_size)
     capsule_net = CapsNet().to(device)
     optimizer = Adam(capsule_net.parameters(), lr=0.0005)
+    loss_fn = nn.MSELoss()
 
-    n_epochs = 30
+    n_epochs = 50
     best, losses = 0, []
 
     for epoch in range(n_epochs):
@@ -206,7 +194,6 @@ if __name__ == '__main__':
         train_loss, correct, n = 0, 0, 0
         loss_rec = []
         for batch_id, (data, target) in enumerate(train_loader):
-
             target = torch.sparse.torch.eye(10).index_select(dim=0, index=target)
             data, target = Variable(data), Variable(target)
 
@@ -214,7 +201,7 @@ if __name__ == '__main__':
 
             optimizer.zero_grad()
             classes = capsule_net(data)
-            loss = capsule_net.loss(classes, target)
+            loss = loss_fn(classes, target)
             loss.backward()
             loss_rec.append(loss.item())
             optimizer.step()
