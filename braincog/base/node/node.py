@@ -1121,33 +1121,82 @@ class adth(BaseNode):
 class aEIF(BaseNode):
     """
         The adaptive Exponential Integrate-and-Fire model (aEIF)
+        This class define the membrane, spike, current and parameters of a neuron group of a specific type
         :param args: Other parameters
         :param kwargs: Other parameters
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(requires_fp=False, *args, **kwargs)
+    def __init__(self, p, neuron_num, W, type_index, *args, **kwargs):
+        """
+            p:[threshold, c_m, alpha_w, beta_ad, mu, sig, if_IN]
+            c_m: Membrane capacitance
+            alpha_w: Coupling of the adaptation variable
+            beta_ad: Conductance of the adaptation variable
+            mu: Mean of back current
+            sig: Variance of back current
+            if_IN: if the neuron type is inhibitory neuron, it has gap-junction
 
-    def aEIFNode(self, v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap,
-                 tau_ad, beta_ad, Delta_T, vt, vr, refrac, ref):
+            neuron_num: number of neurons in this group
+            W: connection weight for the neuron groups connected to this group
+            type_index: the index of this type of neuron group in the brain region
         """
-                Calculate the neurons that discharge after the current threshold is reached
-                :param v: Current neuron voltage
-                :param dt: time step
-                :param ad:Adaptive variable
-                :param vv:Spike, if the voltage exceeds the threshold from below
-        """
-        v = v + (ref>refrac) * dt / c_m * (-g_m * v + g_m * Delta_T * np.exp((v - vt)/Delta_T)
-                            + alpha_w * ad + Ieff + Ichem + Igap)
-        ad = ad + (ref>refrac) * dt / tau_ad * (-ad + beta_ad * v)
-        vv = (v >= vt).astype(int)
-        ref = ref * (1 - vv) + 1
-        ad = ad + vv * 30
-        v = (v >= vt).astype(int) * vr + (v < vt) * v
-        return v, ad, vv, ref
+        super().__init__(threshold=p[0], requires_fp=False, *args, **kwargs)
+        self.neuron_num = neuron_num
+        self.type_index = type_index
+        self.g_m = 1  # neuron conduction
+        self.dt = 1
+        self.tau_I = 3  # Time constant to filter the synaptic inputs
+        self.tau_ad = 6  # Time constant of adaption coupling
+        self.Delta_T = 0.5  # parameter
+        gamma_c = 0.1
+        self.Gama_c = self.g_m * gamma_c / (1 - gamma_c)  # gap-junction parameter
+        self.v_reset = -15  # membrane potential reset to v_reset after fire spike
+        self.if_IN = p[6]
+        self.beta_ad = p[3]
+        if self.if_IN:
+            self.c_m = p[1] * (self.g_m + self.Gama_c)  # neuron membrane time constant
+            self.alpha_w = p[2] * (self.g_m + self.Gama_c)  # effective adaption coupling
+            self.mu = p[4] * (self.g_m + self.Gama_c)
+            self.sig = p[5] * (self.g_m + self.Gama_c)  # effective mean and variance of back current
+        else:
+            self.c_m = p[1] * self.g_m
+            self.alpha_w = p[2] * self.g_m
+            self.mu = p[4] * self.g_m
+            self.sig = p[5] * self.g_m
+        self.W = W * self.c_m / self.dt
+        self.refrac = 5 / self.dt  # refractory period
+        self.dt_over_tau = self.dt / self.tau_I
+        self.sqrt_coeff = math.sqrt(1 / (2 * (1 / self.dt_over_tau)))
+        self.mem = self.v_reset * torch.ones(neuron_num)
+        self.spike = torch.zeros(neuron_num)
+        self.ad = torch.zeros(neuron_num)
+        self.ref = torch.randint(0, int(self.refrac + 1), (1, neuron_num)).squeeze(0)  # refractory counter
+        self.Iback = torch.zeros(neuron_num)
+        self.Ieff = torch.zeros(neuron_num)
+        self.Ichem = torch.zeros(neuron_num)
+        if self.if_IN:
+            self.Igap = torch.zeros(neuron_num)
+
+    def integral(self, inputs):
+
+        self.mem = self.mem + (self.ref > self.refrac) * self.dt / self.c_m * \
+                   (-self.g_m * (self.mem - self.v_reset) + self.g_m * self.Delta_T *
+                    torch.exp((self.mem - self.threshold) / self.Delta_T) +
+                    self.alpha_w * self.ad + inputs)
+
+        self.ad = self.ad + (self.ref > self.refrac) * self.dt / self.tau_ad * \
+                  (-self.ad + self.beta_ad * (self.mem - self.v_reset))
 
     def calc_spike(self):
-        pass
+        self.spike = (self.mem > self.threshold).float()
+        self.ref = self.ref * (1 - self.spike) + 1
+        self.ad = self.ad + self.spike * 30
+        self.mem = self.spike * self.v_reset + (1 - self.spike.detach()) * self.mem
+
+    def forward(self, inputs):
+        self.integral(inputs)
+        self.calc_spike()
+        return self.spike, self.mem
     
 class LIAFNode(BaseNode):
     """
