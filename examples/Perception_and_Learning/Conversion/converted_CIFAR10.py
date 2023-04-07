@@ -35,6 +35,7 @@ parser.add_argument('--model_name', default='vgg16', type=str, help='model name.
 parser.add_argument('--merge', default=True, type=bool, help='merge conv and bn')
 parser.add_argument('--train_batch', default=100, type=int, help='batch size for get max')
 parser.add_argument('--batch_num', default=1, type=int, help='number of train batch')
+parser.add_argument('--spicalib', default=0, type=int, help='allowance for spicalib')
 parser.add_argument('--batch_size', default=128, type=int, help='batch size for testing')
 parser.add_argument('--seed', default=42, type=int, help='seed')
 args = parser.parse_args()
@@ -100,7 +101,8 @@ if __name__ == '__main__':
                           gamma=args.gamma,
                           soft_mode=args.soft_mode,
                           merge=args.merge,
-                          batch_num=args.batch_num
+                          batch_num=args.batch_num,
+                          spicalib=args.spicalib
                           )
     snn = converter(net)
 

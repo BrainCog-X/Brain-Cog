@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from braincog.base.connection.layer import SMaxPool, LIPool
 from .merge import mergeConvBN
+from .spicalib import SpiCalib
 import types
 
 
@@ -117,6 +118,7 @@ class Convertor(nn.Module):
                  soft_mode=True,
                  merge=True,
                  batch_num=1,
+                 spicalib=0
                  ):
         super(Convertor, self).__init__()
         self.dataloader = dataloader
@@ -128,13 +130,14 @@ class Convertor(nn.Module):
         self.soft_mode = soft_mode
         self.merge = merge
         self.batch_num = batch_num
+        self.spicalib = spicalib
 
     def forward(self, model):
         model.eval()
         model = Convertor.register_hook(model, self.p, self.channelnorm, self.gamma)
         model = Convertor.get_percentile(model, self.dataloader, self.device, batch_num=self.batch_num)
         model = mergeConvBN(model) if self.merge else model
-        model = Convertor.replace_for_spike(model, self.lipool, self.soft_mode, self.gamma)
+        model = Convertor.replace_for_spike(model, self.lipool, self.soft_mode, self.gamma, self.spicalib)
         model.reset = types.MethodType(reset, model)
         return model
 
@@ -166,7 +169,7 @@ class Convertor(nn.Module):
         return model
 
     @staticmethod
-    def replace_for_spike(model, lipool=True, soft_mode=True, gamma=1):
+    def replace_for_spike(model, lipool=True, soft_mode=True, gamma=1, spicalib=0):
         """
         该函数用于将定义好的ANN模型转换为SNN模型
         ReLU单元将被替换为脉冲神经元，
@@ -178,6 +181,7 @@ class Convertor(nn.Module):
                 model._modules[name] = nn.Sequential(
                     Scale(1.0 / child[1].scale),
                     SNode(soft_mode, gamma),
+                    SpiCalib(spicalib),
                     Scale(child[1].scale)
                 )
             if isinstance(child, nn.MaxPool2d):

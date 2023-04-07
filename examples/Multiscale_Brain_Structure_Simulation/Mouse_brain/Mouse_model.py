@@ -1,364 +1,238 @@
-import xlrd
-import numpy as np
-
-import random
-import math
+import time
 import scipy.io as scio
+import torch
 from braincog.base.node.node import *
+from braincog.base.brainarea.BrainArea import *
+import pandas as pd
 import matplotlib.pyplot as plt
 
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
-class Mouse_brain():
-    """
-    Rat brain model
-    :param tau_ad: Suppress the time constant of the adaptive variable [ms]
-    :param tau_I: Time constant for filtering synaptic input [ms]
-    :param GammaII:  I to I Connectivity
-    :param GammaIE: I to E Connectivity
-    :param GammaEE: E to E Connectivity
-    :param GammaEI: E to I Connectivity
-    :param TEmean: Average current of excitatory neurons
-    """
-
-    def __init__(self):
-        self.p = [[-5, -4, -5, -5, -5, -5],  # vth     : Spiking threshold for  neurons [mV]
-                  [100, 100, 85, 200, 20, 40],  # tau_v   : Membrane capacitance for inhibitory neurons [pf];
-                  [12, 10, 10, 12, 10, 10],  # Tsig     : Variance of current in the inhibitory neurons
-                  [0, 4.5, 4.5, 0, 4.5, 4.5],  # beta_ad : Conductance of the adaptation variable variable of neurons
-                  [0, - 2, - 2, 0, -2, -2],  # alpha_ad: Coupling of the adaptation variable variable of  neurons
-                  [-20, -20, -20, -20, -20, -20]]  # vr       :rest voltage for neurons [mV]
-        self.tau_ad = 20
-        self.tau_I = 10
-        self.GammaII = 15
-        self.GammaIE = -10
-        self.GammaEE = 15
-        self.GammaEI = 15
-        self.TEmean = 5
-        self.TTCmean = 5
-        self.NCR = 177
-        self.NTN = 36
-        self.NN = 500
-        self.NType = [0.60, 0.16, 0.08, 0.1, 0.02, 0.04]
-        self.Ncycle = 1
-        self.dt = 1
-        self.T = 200
-        self.gamma_c = 0.1
-        self.g_m = 1
-
-    def plot(self, path=None):
-        data = scio.loadmat(path)
-        Iraster = data['Iraster']
-        t = []
-        neuron = []
-        for i in Iraster:
-            t.append(i[0])
-            neuron.append(i[1])
-        plt.scatter(t, neuron, c='k', marker='.', s=0.1)
-        plt.savefig('500mouse.jpg')
-
-    def Mouse_model(self, w):
+class brain_region(BrainArea):
+    def __init__(self, name, num_neuron, neuron_type_ratio, neuron_type_p, neuron_type_index, W):
         """
-        Calculation of rat brain model
+        num_neuron: neuron number of this brain region
+        neuron_type_ratio: the ratio of different neuron type in this brain region
+        neuron_type_p: the neuron parameter of different neuron type in this brain region
+        W: connection weight for different neuron type
+        neuron_type_index: neuron type index of the neuron type in this brain region
         """
-        p = self.p
-        tau_ad = self.tau_ad
-        tau_I = self.tau_I
-        GammaII = self.GammaII
-        GammaIE = self.GammaIE
-        GammaEE = self.GammaEE
-        GammaEI = self.GammaEI
-        TEmean = self.TEmean
-        TTCmean = self.TTCmean
-        NR = len(w)
-        NCR = self.NCR
-        NTN = self.NTN
-        NN = self.NN
-        NType = self.NType
-        for i in range(len(NType)):
-            NType[i] = NType[i] * NN
-        NE = int(NType[0])
-        NI_BC = int(NType[1])
-        NI_MC = int(NType[2])
-        NTC = int(NType[3])
-        NTI = int(NType[4])
-        NTRN = int(NType[5])
-        NC = int(NE + NI_BC + NI_MC)
-        NT = int(NTC + NTI + NTRN)
-        NSum = int(NCR * (NE + NI_BC + NI_MC) + NTN * (NTC + NTI + NTRN))
-        Ncycle = self.Ncycle
-        dt = self.dt
-        T = self.T
-        Delta_T = 0.5  # exponential parameter
-        refrac = 5 / self.dt  # refractory period [ms]
-        ref = np.zeros((NSum))  # refractory counter
-
-        gamma_c = self.gamma_c
-        TI_BCmean = -20
-        TI_MCmean = -20
-        TTImean = -20
-        TTRNmean = -20
-
-        g_m = self.g_m
-        Gama_c = g_m * gamma_c / (1 - gamma_c)
-        c_mE = p[1][0] * g_m
-        c_mTC = p[1][3] * g_m
-        alpha_wE = p[4][0] * g_m
-        alpha_wTC = p[4][3] * g_m
-
-        c_mI_BC = p[1][1] * (g_m + Gama_c)
-        c_mI_MC = p[1][2] * (g_m + Gama_c)
-        c_mTI = p[1][4] * (g_m + Gama_c)
-        c_mTRN = p[1][5] * (g_m + Gama_c)
-        alpha_wI_BC = p[4][1] * (g_m + Gama_c)
-        alpha_wI_MC = p[4][2] * (g_m + Gama_c)
-
-        alpha_wTI = p[4][4] * (g_m + Gama_c)
-        alpha_wTRN = p[4][5] * (g_m + Gama_c)
-
-        NEmean = TEmean * g_m
-        NTCmean = TTCmean * g_m
-
-        NI_BCmean = TI_BCmean * (g_m + Gama_c)
-
-        NI_MCmean = TI_MCmean * (g_m + Gama_c)
-
-        NTImean = TTImean * (g_m + Gama_c)
-        NTRNmean = TTRNmean * (g_m + Gama_c)
-
-        NEsig = p[2][0] * g_m
-        NTCsig = p[2][3] * g_m
-
-        NI_BCsig = p[2][1] * (g_m + Gama_c)
-
-        NI_MCsig = p[2][2] * (g_m + Gama_c)
-
-        NTIsig = p[2][4] * (g_m + Gama_c)
-        NTRNsig = p[2][5] * (g_m + Gama_c)
-        Vgap = Gama_c / NType[1]
-
-        I_total = np.zeros((T))
-        V_total = np.zeros((T))
-
-        V_E = np.zeros((NR, T))
-        V_I_BC = np.zeros((NR, T))
-        V_I_MC = np.zeros((NR, T))
-        V_TC = np.zeros((NR, T))
-        V_TI = np.zeros((NR, T))
-        V_TRN = np.zeros((NR, T))
-
-        v = -20 * np.ones((NSum))
-
-        vt = np.zeros((NSum))
-        vr = np.zeros((NSum))
-        vm1 = np.zeros((NSum))
-        c_m = np.zeros((NSum))
-        alpha_w = np.zeros((NSum))
-        beta_ad = np.zeros((NSum))
-        ad = np.zeros((NSum))
-        vv = np.zeros((NSum))
-        Iback = np.zeros((NSum))
-        Istimu = np.zeros((NSum))
-        Im_sp = 0
-        Igap = np.zeros((NSum))
-        Ichem = np.zeros((NSum))
-        Ieff = np.zeros((NSum))
-
-
-        va = np.zeros((NR, T))
-        vb = np.zeros((NR, T))
-        vc = np.zeros((NR, T))
-        vd = np.zeros((NR, T))
-        ve = np.zeros((NR, T))
-        vf = np.zeros((NR, T))
-
-        I = np.zeros((T))
-
-        V = np.zeros((T))
-        Isubregion = np.zeros((NR, T))
-        Vsubregion = np.zeros((NR, T))
-
-        weight_matrix = w
-        for m in range(NR):
-            tau_vI = 10
-            GammaII = 15
-            GammaIE = -10
-            c_mI_BC = tau_vI * (g_m + Gama_c)
-            WII = GammaII * c_mI_BC / NI_BC / dt
-            WEE = GammaEE * c_mE / NE / dt
-            WEI = GammaEI * c_mI_BC / NE / dt
-            WIE = GammaIE * c_mE / NI_BC / dt
-            if m < NCR:
-                c_m[m * NC: m * NC + NE] = c_mE
-                c_m[m * NC + NE: m * NC + NE + NI_BC] = c_mI_BC
-                c_m[m * NC + NE + NI_BC: m * NC +
-                                         NE + NI_BC + NI_MC] = c_mI_MC
-
-                alpha_w[m * NC: m * NC + NE] = alpha_wE
-                alpha_w[m * NC + NE: m * NC + NE + NI_BC] = alpha_wI_BC
-                alpha_w[m * NC + NE + NI_BC: m * NC +
-                                             NE + NI_BC + NI_MC] = alpha_wI_MC
-
-                vt[m * NC: m * NC + NE] = p[0][0]
-                vt[m * NC + NE: m * NC + NE + NI_BC] = p[0][1]
-                vt[m * NC + NE + NI_BC: m * NC +
-                                        NE + NI_BC + NI_MC] = p[0][2]
-
-                vr[m * NC: m * NC + NE] = p[5][0]
-                vr[m * NC + NE: m * NC + NE + NI_BC] = p[5][1]
-                vr[m * NC + NE + NI_BC: m * NC +
-                                        NE + NI_BC + NI_MC] = p[5][2]
-
-                beta_ad[m * NC: m * NC + NE] = p[3][0]
-                beta_ad[m * NC + NE: m * NC + NE + NI_BC] = p[3][1]
-                beta_ad[m * NC + NE + NI_BC: m *
-                                             NC + NE + NI_BC + NI_MC] = p[3][2]
+        super(brain_region, self).__init__()
+        self.name = name
+        self.EX = []  # excitatory neuron index set
+        self.IN = []  # inhibitory neuron index set
+        for i in range(len(neuron_type_p)):
+            if neuron_type_p[i][6]:
+                self.IN.append(i)
             else:
-                c_m[NCR * NC + (m - NCR) * NT: NCR * NC +
-                                               (m - NCR) * NT + NTC] = c_mTC
-                c_m[NCR * NC + (m - NCR) * NT + NTC: NCR *
-                                                     NC + (m - NCR) * NT + NTC + NTI] = c_mTI
-                c_m[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
-                                                           NC + (m - NCR) * NT + NTC + NTI + NTRN] = c_mTRN
+                self.EX.append(i)
+        self.W = W[neuron_type_index]
+        self.num_neuron_per_type = torch.tensor([int(num_neuron * neuron_type_ratio[i])
+                                                 for i in range(len(neuron_type_ratio))])
+        self.neuron = [aEIF(neuron_type_p[i], self.num_neuron_per_type[i], self.W[i][neuron_type_index], i)
+                       for i in range(len(neuron_type_ratio))]
+        self.num_neuron = torch.sum(self.num_neuron_per_type)
+        # the index of neuron who receive the input from brain regions
+        self.input_neuron = [torch.randint(0, self.num_neuron_per_type[i],
+                                           (1, int(self.num_neuron_per_type[i] * 0.1) + 1)).squeeze(0)
+                             for i in range(len(neuron_type_ratio))]
+        # the index of output neuron
+        self.output_neuron = [torch.randint(0, self.num_neuron_per_type[i],
+                                            (1, int(self.num_neuron_per_type[i] * 0.1) + 1)).squeeze(0)
+                              for i in range(len(neuron_type_ratio))]
 
-                alpha_w[NCR * NC + (m - NCR) * NT: NCR * NC + (m - NCR) * NT + NTC] = alpha_wTC
-                alpha_w[NCR * NC + (m - NCR) * NT + NTC: NCR * NC + (m - NCR) * NT + NTC + NTI] = alpha_wTI
-                alpha_w[
-                NCR * NC + (m - NCR) * NT + NTC + NTI: NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN] = alpha_wTRN
+        self.spike = [self.neuron[i].spike for i in range(len(neuron_type_ratio))]
+        self.mem = [self.neuron[i].mem for i in range(len(neuron_type_ratio))]
+        self.internal_connection = []
+        self.init_internal_connection()
 
-                vt[NCR * NC + (m - NCR) * NT: NCR * NC +
-                                              (m - NCR) * NT + NTC] = p[0][3]
-                vt[NCR * NC + (m - NCR) * NT + NTC: NCR *
-                                                    NC + (m - NCR) * NT + NTC + NTI] = p[0][4]
-                vt[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
-                                                          NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[0][5]
+    def init_internal_connection(self):
+        for i in range(len(self.neuron)):  # input connection of neuron type i
+            connection = []
+            for j in range(len(self.neuron)):  # connection from neuron type j
 
-                vr[NCR * NC + (m - NCR) * NT: NCR * NC +
-                                              (m - NCR) * NT + NTC] = p[5][3]
-                vr[NCR * NC + (m - NCR) * NT + NTC: NCR *
-                                                    NC + (m - NCR) * NT + NTC + NTI] = p[5][4]
-                vr[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR *
-                                                          NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[5][5]
+                connection.append([torch.randint(0, self.num_neuron_per_type[j],
+                                                 (1, int(self.num_neuron_per_type[j] * 0.1) + 1)).squeeze(0)
+                                   for _ in range(self.num_neuron_per_type[i])])
+                # continue
 
-                beta_ad[NCR * NC + (m - NCR) * NT: NCR *
-                                                   NC + (m - NCR) * NT + NTC] = p[3][3]
-                beta_ad[NCR * NC + (m - NCR) * NT + NTC: NCR *
-                                                         NC + (m - NCR) * NT + NTC + NTI] = p[3][4]
-                beta_ad[NCR * NC + (m - NCR) * NT + NTC + NTI: NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN] = p[3][
-                    5]
-        Iraster = []
-        for t in range(T):
-            Iback = Iback + dt / tau_I * (np.random.randn(NSum) - Iback)
-            for m in range(NR):
-                for n in range(NCR):
-                    va[n][t] = weight_matrix[m][n] * \
-                               (np.sum(vv[n * NC:n * NC + NE]))
-                    vb[n][t] = weight_matrix[m][n] * \
-                               (np.sum(vv[n * NC + NE:n * NC + NE + NI_BC]))
-                    vc[n][t] = weight_matrix[m][n] * \
-                               (np.sum(vv[n * NC + NE + NI_BC:n * NC + NE + NI_BC + NI_MC]))
+            self.internal_connection.append(connection)
 
+    def get_output_fire_rate(self):
+        fire_rate = []
+        for j in range(len(self.neuron)):
+            fire_rate.append(torch.mean(self.spike[j][self.output_neuron[j]]))
+        return fire_rate
 
-                for n in range(NCR, NCR + NTN):
-                    vd[n][t] = weight_matrix[m][n] * \
-                               np.sum(vv[NCR * NC + (n - NCR) * NT:NCR * NC + (n - NCR) * NT + NTC])
-                    ve[n][t] = weight_matrix[m][n] * np.sum(vv[NCR * NC + (
-                            n - NCR) * NT + NTC:NCR * NC + (n - NCR) * NT + NTC + NTI])
-                    vf[n][t] = weight_matrix[m][n] * np.sum(vv[NCR * NC + (
-                            n - NCR) * NT + NTC + NTI:NCR * NC + (n - NCR) * NT + NTC + NTI + NTRN])
+    def cal_current(self, neuron, connection, input_neuron, external_input):
+        """
+        connection[i][j] contains an array of index, the index means the neuron of group i connect to neuron j in
+        this group
+        spike[i] and mem[i] are the brain region's i-th neuron group's spike and membrane at the last
+        IN means the inhibitory neuron group's index set
+        input_neuron are the neuron who receive the input from other brain region
+        external_input are the input from other brain region
+        """
 
-                v_e = np.sum(va, axis=0)[t] + np.sum(vd, axis=0)[t]
-                v_i = np.sum(vb, axis=0)[t] + np.sum(vc, axis=0)[t] + np.sum(ve, axis=0)[t] + np.sum(vf, axis=0)[t]
+        neuron.Iback = neuron.dt_over_tau * (torch.randn(neuron.neuron_num) - neuron.Iback)
+        neuron.Ieff = neuron.Iback / neuron.sqrt_coeff * neuron.sig + neuron.mu
+        # #
+        for j in range(neuron.neuron_num):  # j-th neuron in the group
+            dIchem = -neuron.Ichem[j]
+            for i in range(len(neuron.W)):
+                dIchem = dIchem + neuron.W[i] * torch.mean(self.spike[i][connection[i][j]])
+            if j in input_neuron:
+                dIchem = dIchem + external_input
+            neuron.Ichem[j] = neuron.Ichem[j] + neuron.dt_over_tau * dIchem
+            if neuron.if_IN:
+                Vgap = -self.mem[neuron.type_index][j]
+                for i in self.IN:
+                    Vgap = Vgap + torch.mean(self.mem[i][connection[i][j]])
+                neuron.Igap[j] = neuron.Gama_c * Vgap
+        if neuron.if_IN:
+            current = neuron.Ieff + neuron.Ichem + neuron.Igap
 
-                vg = np.sum(va, axis=0)[t]
-                vh = np.sum(vb, axis=0)[t]
-                vi = np.sum(vc, axis=0)[t]
-                vj = np.sum(vd, axis=0)[t]
-                vk = np.sum(ve, axis=0)[t]
-                vl = np.sum(vf, axis=0)[t]
+        else:
+            current = neuron.Ieff + neuron.Ichem
 
-                if m < NCR:
-                    midv1 = np.sum(v[m * NC + NE:m * NC + NE + NI_BC])
-                    midv2 = np.sum(
-                        v[m * NC + NE + NI_MC:m * NC + NE + NI_BC + NI_MC])
+        return current
 
-                    k = range(m * NC, m * NC + NE)
-                    Ieff[k] = Iback[k] / \
-                            math.sqrt(1 / (2 * (tau_I / dt))) * NEsig + NEmean
-                    Ichem[k] = Ichem[k] + dt / tau_I * (-Ichem[k] + WEE * (
-                            vg + vj - vv[k]) + WIE * (vh + vi + vk + vl))
+    def forward(self, external_input):
 
-                    k = range(m * NC + NE, m * NC + NE + NI_BC)
-                    Ieff[k] = Iback[k] / math.sqrt(1 / (2 * (tau_I / dt))) * NI_BCsig + NI_BCmean
-                    Ichem[k] = Ichem[k] + \
-                               dt / tau_I * (-Ichem[k] + WII * (vh - vv[k]) + WEI * vg)
-                    Igap[k] = Vgap * (midv1 - NI_BC * v[k])
+        for i in range(len(self.neuron)):
+            external_input_i = torch.sum(self.W[i] * external_input)
+            # print(external_input)
+            current = self.cal_current(self.neuron[i], self.internal_connection[i],
+                                       self.input_neuron[i], external_input_i)
+            self.neuron[i](current)
+        fire_rate = []
+        for i in range(len(self.neuron)):
+            self.spike[i] = self.neuron[i].spike
+            self.mem[i] = self.neuron[i].mem
+            fire_rate.append(torch.mean(self.spike[i]))
+        print(f'neuron group fire-rate of region {self.name}:\n'
+              f'{fire_rate}')
 
-                    k = range(
-                            m * NC + NE + NI_BC,
-                            m * NC + NE + NI_BC + NI_MC)
-                    Ieff[k] = Iback[k] / math.sqrt(1 / (2 * (tau_I / dt))) * NI_MCsig + NI_MCmean
-                    Ichem[k] = Ichem[k] + \
-                               dt / tau_I * (-Ichem[k] + WII * (vi - vv[k]) + WEI * vg)
-                    Igap[k] = Vgap * (midv2 - NI_MC * v[k])
-
-                else:
-                    midv1 = np.sum(v[NCR * NC + (m - NCR) * NT +
-                                  NTC:NCR * NC + (m - NCR) * NT + NTC + NTI])
-                    midv2 = np.sum(v[NCR * NC + (m - NCR) * NT + NTC + \
-                                  NTI:NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN])
-
-                    k = range(NCR * NC + (m - NCR) * NT,
-                                   NCR * NC + (m - NCR) * NT + NTC)
-                    Ieff[k] = Iback[k] / \
-                              math.sqrt(1 / (2 * (tau_I / dt))) * NTCsig + NTCmean
-                    Ichem[k] = Ichem[k] + dt / tau_I * (-Ichem[k] + WEE * (vg - vv[k])) + WIE * (vh + vj + vk + vl)
-                    k = range(NCR * NC + (m - NCR) * NT + NTC,
-                                NCR * NC + (m - NCR) * NT + NTC + NTI)
-                    Ieff[k] = Iback[k] / \
-                              math.sqrt(1 / (2 * (tau_I / dt))) * NTIsig + NTImean
-                    Ichem[k] = Ichem[k] + \
-                               dt / tau_I * (-Ichem[k] + WII * (vk - vv[k]) + WEI * vj)
-                    Igap[k] = Vgap * (midv1 - NTI * v[k])
-
-                    k = range(NCR * NC + (m - NCR) * NT + NTC + NTI,
-                                NCR * NC + (m - NCR) * NT + NTC + NTI + NTRN)
-                    Ieff[k] = Iback[k] / \
-                              math.sqrt(1 / (2 * (tau_I / dt))) * NTRNsig + NTRNmean
-                    Ichem[k] = Ichem[k] + \
-                               dt / tau_I * (-Ichem[k] + WII * (vl - vv[k]) + WEI * vj)
-                    Igap[k] = Vgap * (midv2 - NTRN * v[k])
-
-            v, ad, vv, vm1 = adth().adthNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap, tau_ad, beta_ad, vt, vm1)
-            # v, ad, vv, ref = aEIF().aEIFNode(v, dt, c_m, g_m, alpha_w, ad, Ieff, Ichem, Igap,
-            #      tau_ad, beta_ad, Delta_T, vt, vr, refrac, ref)
-
-            Isp = np.nonzero(vv)
-            Isp = np.array(Isp[0])
-            if (len(Isp) != 0):
-                Isp = Isp.reshape(len(Isp), 1)
-                left = [t] * len(Isp)
-                left = np.array(left)
-                left = left.reshape(len(left), 1)
-                mide = np.concatenate((left, Isp), axis=1)
-            if (len(Isp) != 0) and (len(Iraster) != 0):
-                Iraster = np.concatenate((Iraster, mide), axis=0)
-                print('here')
-            if (len(Iraster) == 0) and (len(Isp) != 0):
-                Iraster = mide
-                print('first')
-
-            print(Iraster)
-
-            I = Ieff + Ichem + Igap
-            V[t] = np.sum(v) / NSum
-            print(t)
-
-        scio.savemat('./200ms-.mat', mdict={'Iraster': Iraster})
+        return self.spike, self.mem
 
 
 if __name__ == '__main__':
-    W = np.array(scio.loadmat('./W_213.mat')['W'])
-    test = Mouse_brain()
-    test.Mouse_model(W)
-    path = '200ms-.mat'
-    test.plot(path)
+    weight_matrix = torch.tensor(scio.loadmat('./mouse.mat')['W']).to(torch.float32)
+    data = pd.read_excel('./mouse_brain_region.xlsx', sheet_name='Sheet1', header=None)
+
+    # p: [threshold, c_m, alpha_w, beta_ad, mu, sig, if_IN]
+    p_E = [5, 1, 0, 0, 20, 12, 0]
+    p_I_BC = [4, 1, -2, 4.5, 5, 10, 1]
+    p_I_MC = [4, 0.8, -2, 4.5, 5, 10, 1]
+    p_TC = [5, 2, 0, 0, 20, 12, 0]
+    p_TI = [4, 0.2, -2, 4.5, 5, 10, 1]
+    p_TRN = [4, 0.4, -2, 4.5, 5, 10, 1]
+
+    CR_neuron_ratio = [0.7, 0.2, 0.1]
+    CR_neuron_p = [p_E, p_I_BC, p_I_MC]
+    TN_neuron_ratio = [0.6, 0.15, 0.25]
+    TN_neuron_p = [p_TC, p_TI, p_TRN]
+
+    # connection weight between neuron type
+    #                  E, I_BC, I_MC, TC, TI, TRN
+    W = torch.tensor([[30, -20, -20, 30, -20, -20],  # E
+                      [30, 30, 30, 30, 30, 30],  # I_BC
+                      [30, 30, 30, 30, 30, 30],  # I_MC
+                      [30, -20, -20, 30, -20, -20],  # TC
+                      [30, 30, 30, 30, 30, 30],  # TI
+                      [30, 30, 30, 30, 30, 30]])  # TRN
+
+    NR = len(weight_matrix)
+    NCR = 177
+    NTN = 36
+    # Scale down proportionally, if scale=1, the model has about 50341200 neurons in total
+    # the range of parameter scale is 0.01 <= scale <= 1
+    scale = 0.01  
+    T = 120
+    start = time.time()
+    # initialize brain regions
+    brain_regions = []
+    neuron = 0
+    for i in range(NCR):
+        brain_regions.append(brain_region(data[i][0], data[i][1] * scale,
+                                          CR_neuron_ratio, CR_neuron_p, [0, 1, 2], W))
+        neuron = neuron + brain_regions[i].num_neuron
+    for i in range(NCR, NCR + NTN):
+        brain_regions.append(brain_region(data[i][0], data[i][1] * scale,
+                                          TN_neuron_ratio, TN_neuron_p, [3, 4, 5], W))
+        neuron = neuron + brain_regions[i].num_neuron
+    print(neuron)
+    end = time.time()
+    ms = (end - start) * 10 ** 3
+    print(f"spend {ms:.03f} ms.")
+    print('Finish initialization')
+
+    CR_Matrix = weight_matrix[:, 0:NCR]
+    TN_Matrix = weight_matrix[:, NCR:NCR + NTN]
+
+    output_E = torch.zeros(NCR)
+    output_I_BC = torch.zeros(NCR)
+    output_I_MC = torch.zeros(NCR)
+
+    output_TC = torch.zeros(NTN)
+    output_TI = torch.zeros(NTN)
+    output_TRN = torch.zeros(NTN)
+    Iraster = []
+
+    # start stimulation
+    for t in range(T):
+        start = time.time()
+        # fire-rate of neuron groups of different brain regions
+        for n in range(NCR):
+            output = brain_regions[n].get_output_fire_rate()
+            output_E[n] = output[0]
+            output_I_BC[n] = output[1]
+            output_I_MC[n] = output[2]
+
+        for n in range(NCR, NCR + NTN):
+            output = brain_regions[n].get_output_fire_rate()
+            output_TC[n - NCR] = output[0]
+            output_TI[n - NCR] = output[1]
+            output_TRN[n - NCR] = output[2]
+        # cross-brain-region input
+        input_E = torch.matmul(CR_Matrix, output_E)
+        input_I_BC = torch.matmul(CR_Matrix, output_I_BC)
+        input_I_MC = torch.matmul(CR_Matrix, output_I_MC)
+
+        input_TC = torch.matmul(TN_Matrix, output_TC)
+        input_TI = torch.matmul(TN_Matrix, output_TI)
+        input_TRN = torch.matmul(TN_Matrix, output_TRN)
+
+        spike = []
+        for n in range(NR):
+            external_input = torch.tensor([input_E[n], input_I_BC[n], input_I_MC[n],
+                                           input_TC[n], input_TI[n], input_TRN[n]])
+            brain_regions[n](external_input)
+            spike.extend(brain_regions[n].spike)
+
+        spike = torch.concatenate(spike)
+        Isp = torch.nonzero(spike)
+        print(len(Isp))
+        if (len(Isp) != 0):
+            left = t * torch.ones((len(Isp)))
+            left = left.reshape(len(left), 1)
+            mide = torch.concatenate((left, Isp), dim=1)
+        if (len(Isp) != 0) and (len(Iraster) != 0):
+            Iraster = torch.concatenate((Iraster, mide), dim=0)
+            print('here')
+        if (len(Iraster) == 0) and (len(Isp) != 0):
+            Iraster = mide
+            print('first')
+
+        print(t)
+        end = time.time()
+        ms = (end - start) * 10 ** 3
+        print(f"Elapsed {ms:.03f} ms.")
+
+    Iraster = torch.tensor(Iraster).transpose(0, 1)
+    torch.save(Iraster, "./mouse2.pt")
+    plt.figure(figsize=(10, 10))
+    plt.scatter(Iraster[0], Iraster[1], c='k', marker='.', s=0.001)
+    plt.savefig('mouse2.jpg')
+    plt.show()
+
