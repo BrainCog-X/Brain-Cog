@@ -14,7 +14,7 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 import time
 import os
-from CIFAR10_VGG16 import VGG16
+from examples.Perception_and_Learning.Conversion.burst_conversion.CIFAR10_VGG16 import VGG16
 from braincog.utils import setup_seed
 from braincog.datasets.datasets import get_cifar10_data
 from braincog.base.conversion import Convertor
