@@ -1,10 +1,8 @@
 import os, warnings
 
-import braincog
-
 import tonic
 from tonic import DiskCachedDataset
-
+ 
 import torch
 import torch.nn.functional as F
 import torch.utils
@@ -174,7 +172,7 @@ class MNISTData(object):
         return self.get_data_loaders()
 
 
-def get_mnist_data(batch_size, num_workers=8, same_da=False, **kwargs):
+def get_mnist_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, **kwargs):
     """
     获取MNIST数据
     http://data.pymvpa.org/datasets/mnist/
@@ -185,6 +183,7 @@ def get_mnist_data(batch_size, num_workers=8, same_da=False, **kwargs):
     """
     MNIST_MEAN = 0.1307
     MNIST_STD = 0.3081
+    if 'root' in kwargs:root=kwargs["root"]
     if 'skip_norm' in kwargs and kwargs['skip_norm'] is True:
         train_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -203,9 +202,9 @@ def get_mnist_data(batch_size, num_workers=8, same_da=False, **kwargs):
                                              transforms.Normalize((MNIST_MEAN,), (MNIST_STD,))])
 
     train_datasets = datasets.MNIST(
-        root=DATA_DIR, train=True, transform=test_transform if same_da else train_transform, download=True)
+        root=root, train=True, transform=test_transform if same_da else train_transform, download=True)
     test_datasets = datasets.MNIST(
-        root=DATA_DIR, train=False, transform=test_transform, download=True)
+        root=root, train=False, transform=test_transform, download=True)
 
     train_loader = torch.utils.data.DataLoader(
         train_datasets, batch_size=batch_size,
@@ -220,7 +219,7 @@ def get_mnist_data(batch_size, num_workers=8, same_da=False, **kwargs):
     return train_loader, test_loader, False, None
 
 
-def get_fashion_data(batch_size, num_workers=8, same_da=False, **kwargs):
+def get_fashion_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, **kwargs):
     """
     获取fashion MNIST数据
     http://arxiv.org/abs/1708.07747
@@ -236,9 +235,9 @@ def get_fashion_data(batch_size, num_workers=8, same_da=False, **kwargs):
     test_transform = transforms.Compose([transforms.ToTensor()])
 
     train_datasets = datasets.FashionMNIST(
-        root=DATA_DIR, train=True, transform=test_transform if same_da else train_transform, download=True)
+        root=root, train=True, transform=test_transform if same_da else train_transform, download=True)
     test_datasets = datasets.FashionMNIST(
-        root=DATA_DIR, train=False, transform=test_transform, download=True)
+        root=root, train=False, transform=test_transform, download=True)
 
     train_loader = torch.utils.data.DataLoader(
         train_datasets, batch_size=batch_size,
@@ -253,7 +252,7 @@ def get_fashion_data(batch_size, num_workers=8, same_da=False, **kwargs):
     return train_loader, test_loader, False, None
 
 
-def get_cifar10_data(batch_size, num_workers=8, same_da=False, **kwargs):
+def get_cifar10_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, **kwargs):
     """
     获取CIFAR10数据
      https://www.cs.toronto.edu/~kriz/cifar.html
@@ -261,8 +260,8 @@ def get_cifar10_data(batch_size, num_workers=8, same_da=False, **kwargs):
     :param kwargs:
     :return: (train loader, test loader, mixup_active, mixup_fn)
     """
-    train_datasets, _ = build_dataset(True, 32, 'CIFAR10', DATA_DIR, same_da)
-    test_datasets, _ = build_dataset(False, 32, 'CIFAR10', DATA_DIR, same_da)
+    train_datasets, _ = build_dataset(True, 32, 'CIFAR10', root, same_da)
+    test_datasets, _ = build_dataset(False, 32, 'CIFAR10', root, same_da)
 
     train_loader = torch.utils.data.DataLoader(
         train_datasets, batch_size=batch_size,
@@ -278,7 +277,7 @@ def get_cifar10_data(batch_size, num_workers=8, same_da=False, **kwargs):
     return train_loader, test_loader, None, None
 
 
-def get_cifar100_data(batch_size, num_workers=8, same_data=False, *args, **kwargs):
+def get_cifar100_data(batch_size, num_workers=8, same_data=False,root=DATA_DIR, *args, **kwargs):
     """
     获取CIFAR100数据
     https://www.cs.toronto.edu/~kriz/cifar.html
@@ -286,8 +285,8 @@ def get_cifar100_data(batch_size, num_workers=8, same_data=False, *args, **kwarg
     :param kwargs:
     :return: (train loader, test loader, mixup_active, mixup_fn)
     """
-    train_datasets, _ = build_dataset(True, 32, 'CIFAR100', DATA_DIR, same_data)
-    test_datasets, _ = build_dataset(False, 32, 'CIFAR100', DATA_DIR, same_data)
+    train_datasets, _ = build_dataset(True, 32, 'CIFAR100', root, same_data)
+    test_datasets, _ = build_dataset(False, 32, 'CIFAR100', root, same_data)
 
     train_loader = torch.utils.data.DataLoader(
         train_datasets, batch_size=batch_size,
@@ -300,7 +299,7 @@ def get_cifar100_data(batch_size, num_workers=8, same_data=False, *args, **kwarg
     )
     return train_loader, test_loader, False, None
 
-def get_TinyImageNet_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+def get_TinyImageNet_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, *args, **kwargs):
     size=kwargs["size"] if "size" in kwargs else 224
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(size),
@@ -314,7 +313,7 @@ def get_TinyImageNet_data(batch_size, num_workers=8, same_da=False, *args, **kwa
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-    root=os.path.join(DATA_DIR, 'TinyImageNet')
+    root=os.path.join(root, 'TinyImageNet')
     train_datasets = TinyImageNet(
         root=root, split="train", transform=test_transform if same_da else train_transform, download=True)
     test_datasets = TinyImageNet(
@@ -333,7 +332,7 @@ def get_TinyImageNet_data(batch_size, num_workers=8, same_da=False, *args, **kwa
     return train_loader, test_loader, False, None
 
 
-def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
+def get_imnet_data(args, _logger, data_config, num_aug_splits,root=DATA_DIR, **kwargs):
     """
     获取ImageNet数据集
     http://arxiv.org/abs/1409.0575
@@ -344,7 +343,7 @@ def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
     :param kwargs:
     :return: (train loader, test loader, mixup_active, mixup_fn)
     """
-    train_dir = os.path.join(DATA_DIR, 'ILSVRC2012/train')
+    train_dir = os.path.join(root, 'ILSVRC2012/train')
     if not os.path.exists(train_dir):
         _logger.error(
             'Training folder does not exist at: {}'.format(train_dir))
@@ -397,9 +396,9 @@ def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
         #collate_fn=collate_fn,
         pin_memory=args.pin_mem,
         use_multi_epochs_loader=args.use_multi_epochs_loader)
-    eval_dir = os.path.join(DATA_DIR, 'ILSVRC2012/val')
+    eval_dir = os.path.join(root, 'ILSVRC2012/val')
     if not os.path.isdir(eval_dir):
-        eval_dir = os.path.join(DATA_DIR, 'ILSVRC2012/validation')
+        eval_dir = os.path.join(root, 'ILSVRC2012/validation')
         if not os.path.isdir(eval_dir):
             _logger.error(
                 'Validation folder does not exist at: {}'.format(eval_dir))
@@ -423,7 +422,7 @@ def get_imnet_data(args, _logger, data_config, num_aug_splits, **kwargs):
     return loader_train, loader_eval, False, None
 
 
-def get_dvsg_data(batch_size, step, **kwargs):
+def get_dvsg_data(batch_size, step,root=DATA_DIR, **kwargs):
     """
     获取DVS Gesture数据
     DOI: 10.1109/CVPR.2017.781
@@ -445,9 +444,9 @@ def get_dvsg_data(batch_size, step, **kwargs):
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
     ])
 
-    train_dataset = tonic.datasets.DVSGesture(os.path.join(DATA_DIR, 'DVS/DVSGesture'),
+    train_dataset = tonic.datasets.DVSGesture(os.path.join(root, 'DVS/DVSGesture'),
                                               transform=train_transform, train=True)
-    test_dataset = tonic.datasets.DVSGesture(os.path.join(DATA_DIR, 'DVS/DVSGesture'),
+    test_dataset = tonic.datasets.DVSGesture(os.path.join(root, 'DVS/DVSGesture'),
                                              transform=test_transform, train=False)
 
     train_transform = transforms.Compose([
@@ -475,10 +474,10 @@ def get_dvsg_data(batch_size, step, **kwargs):
     #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
 
     train_dataset = DiskCachedDataset(train_dataset,
-                                      cache_path=os.path.join(DATA_DIR, 'DVS/DVSGesture/train_cache_{}'.format(step)),
+                                      cache_path=os.path.join(root, 'DVS/DVSGesture/train_cache_{}'.format(step)),
                                       transform=train_transform, num_copies=3)
     test_dataset = DiskCachedDataset(test_dataset,
-                                     cache_path=os.path.join(DATA_DIR, 'DVS/DVSGesture/test_cache_{}'.format(step)),
+                                     cache_path=os.path.join(root, 'DVS/DVSGesture/test_cache_{}'.format(step)),
                                      transform=test_transform, num_copies=3)
 
     mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
@@ -523,7 +522,7 @@ def get_dvsg_data(batch_size, step, **kwargs):
     return train_loader, test_loader, mixup_active, None
 
 
-def get_dvsc10_data(batch_size, step, **kwargs):
+def get_dvsc10_data(batch_size, step,root=DATA_DIR, **kwargs):
     """
     获取DVS CIFAR10数据
     http://journal.frontiersin.org/article/10.3389/fnins.2017.00309/full
@@ -541,8 +540,8 @@ def get_dvsc10_data(batch_size, step, **kwargs):
     test_transform = transforms.Compose([
         # tonic.transforms.Denoise(filter_time=10000),
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
-    train_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS_Cifar10'), transform=train_transform)
-    test_dataset = tonic.datasets.CIFAR10DVS(os.path.join(DATA_DIR, 'DVS/DVS_Cifar10'), transform=test_transform)
+    train_dataset = tonic.datasets.CIFAR10DVS(os.path.join(root, 'DVS/DVS_Cifar10'), transform=train_transform)
+    test_dataset = tonic.datasets.CIFAR10DVS(os.path.join(root, 'DVS/DVS_Cifar10'), transform=test_transform)
 
     train_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
@@ -581,10 +580,10 @@ def get_dvsc10_data(batch_size, step, **kwargs):
     #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
 
     train_dataset = DiskCachedDataset(train_dataset,
-                                      cache_path=os.path.join(DATA_DIR, 'DVS/DVS_Cifar10/train_cache_{}'.format(step)),
+                                      cache_path=os.path.join(root, 'DVS/DVS_Cifar10/train_cache_{}'.format(step)),
                                       transform=train_transform)
     test_dataset = DiskCachedDataset(test_dataset,
-                                     cache_path=os.path.join(DATA_DIR, 'DVS/DVS_Cifar10/test_cache_{}'.format(step)),
+                                     cache_path=os.path.join(root, 'DVS/DVS_Cifar10/test_cache_{}'.format(step)),
                                      transform=test_transform)
 
     num_train = len(train_dataset)
@@ -644,7 +643,7 @@ def get_dvsc10_data(batch_size, step, **kwargs):
     return train_loader, test_loader, mixup_active, None
 
 
-def get_NCALTECH101_data(batch_size, step, **kwargs):
+def get_NCALTECH101_data(batch_size, step,root=DATA_DIR, **kwargs):
     """
     获取NCaltech101数据
     http://journal.frontiersin.org/Article/10.3389/fnins.2015.00437/abstract
@@ -653,9 +652,9 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
     :param kwargs:
     :return: (train loader, test loader, mixup_active, mixup_fn)
     """
-    sensor_size = braincog.datasets.ncaltech101.NCALTECH101.sensor_size
-    cls_count = braincog.datasets.ncaltech101.NCALTECH101.cls_count
-    dataset_length = braincog.datasets.ncaltech101.NCALTECH101.length
+    sensor_size = tonic.datasets.NCALTECH101.sensor_size
+    cls_count = tonic.datasets.NCALTECH101.cls_count
+    dataset_length = tonic.datasets.NCALTECH101.length
     portion = kwargs['portion'] if 'portion' in kwargs else .9
     size = kwargs['size'] if 'size' in kwargs else 48
     # print('portion', portion)
@@ -694,8 +693,8 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
         # tonic.transforms.Denoise(filter_time=10000),
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
 
-    train_dataset = braincog.datasets.ncaltech101.NCALTECH101(os.path.join(DATA_DIR, 'DVS/NCALTECH101'), transform=train_transform)
-    test_dataset = braincog.datasets.ncaltech101.NCALTECH101(os.path.join(DATA_DIR, 'DVS/NCALTECH101'), transform=test_transform)
+    train_dataset = tonic.datasets.NCALTECH101(os.path.join(root, 'DVS/NCALTECH101'), transform=train_transform)
+    test_dataset = tonic.datasets.NCALTECH101(os.path.join(root, 'DVS/NCALTECH101'), transform=test_transform)
 
     train_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
@@ -703,7 +702,7 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
         lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
         # transforms.RandomCrop(size, padding=size // 12),
         # transforms.RandomHorizontalFlip(),
-        # transforms.RandomRotation(15)
+        #transforms.RandomRotation(15)
     ])
     test_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
@@ -722,244 +721,10 @@ def get_NCALTECH101_data(batch_size, step, **kwargs):
     #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
 
     train_dataset = DiskCachedDataset(train_dataset,
-                                      cache_path=os.path.join(DATA_DIR, 'DVS/NCALTECH101/train_cache_{}'.format(step)),
+                                      cache_path=os.path.join(root, 'DVS/NCALTECH101/train_cache_{}'.format(step)),
                                       transform=train_transform, num_copies=3)
     test_dataset = DiskCachedDataset(test_dataset,
-                                     cache_path=os.path.join(DATA_DIR, 'DVS/NCALTECH101/test_cache_{}'.format(step)),
-                                     transform=test_transform, num_copies=3)
-
-    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
-    mixup_active = cut_mix | event_mix | mix_up
-
-    if cut_mix:
-        train_dataset = CutMix(train_dataset,
-                               beta=beta,
-                               prob=prob,
-                               num_mix=num,
-                               num_class=num_classes,
-                               indices=train_sample_index,
-                               noise=noise)
-
-    if event_mix:
-        train_dataset = EventMix(train_dataset,
-                                 beta=beta,
-                                 prob=prob,
-                                 num_mix=num,
-                                 num_class=num_classes,
-                                 indices=train_sample_index,
-                                 noise=noise,
-                                 gaussian_n=gaussian_n)
-    if mix_up:
-        train_dataset = MixUp(train_dataset,
-                              beta=beta,
-                              prob=prob,
-                              num_mix=num,
-                              num_class=num_classes,
-                              indices=train_sample_index,
-                              noise=noise)
-
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=batch_size,
-        sampler=train_sampler,
-        pin_memory=True, drop_last=True, num_workers=8
-    )
-
-    test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=batch_size,
-        sampler=test_sampler,
-        pin_memory=True, drop_last=False, num_workers=2
-    )
-
-    return train_loader, test_loader, mixup_active, None
-
-def get_UCF101DVS_data(batch_size, step, **kwargs):
-    """
-    获取DVS CIFAR10数据
-    http://journal.frontiersin.org/article/10.3389/fnins.2017.00309/full
-    :param batch_size: batch size
-    :param step: 仿真步长
-    :param kwargs:
-    :return: (train loader, test loader, mixup_active, mixup_fn)
-    """
-    size = kwargs['size'] if 'size' in kwargs else 48
-    sensor_size = braincog.datasets.ucf101_dvs.UCF101DVS.sensor_size
-    train_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
-        # tonic.transforms.DropEvent(p=0.1),
-        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
-    test_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
-        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
-    train_dataset = braincog.datasets.ucf101_dvs.UCF101DVS(os.path.join(DATA_DIR, 'UCF101DVS'), train=True, transform=train_transform)
-    test_dataset = braincog.datasets.ucf101_dvs.UCF101DVS(os.path.join(DATA_DIR, 'UCF101DVS'), train=False, transform=test_transform)
-
-    train_transform = transforms.Compose([
-        lambda x: torch.tensor(x, dtype=torch.float),
-        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
-        # lambda x: TemporalShift(x, .01),
-        # lambda x: drop(x, 0.15),
-        # lambda x: ShearX(x, 15),
-        # lambda x: ShearY(x, 15),
-        # lambda x: TranslateX(x, 0.225),
-        # lambda x: TranslateY(x, 0.225),
-        # lambda x: Rotate(x, 15),
-        # lambda x: CutoutAbs(x, 0.25),
-        # lambda x: CutoutTemporal(x, 0.25),
-        # lambda x: GaussianBlur(x, 0.5),
-        # lambda x: SaltAndPepperNoise(x, 0.1),
-        # transforms.Normalize(DVSCIFAR10_MEAN_16, DVSCIFAR10_STD_16),
-        # transforms.RandomCrop(size, padding=size // 12),
-        transforms.RandomHorizontalFlip(),
-        # transforms.RandomRotation(15)
-    ])
-    test_transform = transforms.Compose([
-        lambda x: torch.tensor(x, dtype=torch.float),
-        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
-    ])
-
-    if 'rand_aug' in kwargs.keys():
-        if kwargs['rand_aug'] is True:
-            n = kwargs['randaug_n']
-            m = kwargs['randaug_m']
-            # print('randaug', m, n)
-            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
-
-    # if 'temporal_flatten' in kwargs.keys():
-    #     if kwargs['temporal_flatten'] is True:
-    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
-    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
-
-    train_dataset = DiskCachedDataset(train_dataset,
-                                      cache_path=os.path.join(DATA_DIR, 'UCF101DVS/train_cache_{}'.format(step)),
-                                      transform=train_transform)
-    test_dataset = DiskCachedDataset(test_dataset,
-                                     cache_path=os.path.join(DATA_DIR, 'UCF101DVS/test_cache_{}'.format(step)),
-                                     transform=test_transform)
-
-    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
-    mixup_active = cut_mix | event_mix | mix_up
-
-    if cut_mix:
-        # print('cut_mix', beta, prob, num, num_classes)
-        train_dataset = CutMix(train_dataset,
-                               beta=beta,
-                               prob=prob,
-                               num_mix=num,
-                               num_class=num_classes,
-                               noise=noise)
-
-    if event_mix:
-        train_dataset = EventMix(train_dataset,
-                                 beta=beta,
-                                 prob=prob,
-                                 num_mix=num,
-                                 num_class=num_classes,
-                                 noise=noise,
-                                 gaussian_n=gaussian_n)
-
-    if mix_up:
-        train_dataset = MixUp(train_dataset,
-                              beta=beta,
-                              prob=prob,
-                              num_mix=num,
-                              num_class=num_classes,
-                              noise=noise)
-
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True,
-        pin_memory=True, drop_last=True, num_workers=8
-    )
-
-    test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=batch_size, shuffle=False,
-        pin_memory=True, drop_last=False, num_workers=2
-    )
-
-    return train_loader, test_loader, mixup_active, None
-
-
-def get_HMDBDVS_data(batch_size, step, **kwargs):
-    sensor_size = braincog.datasets.hmdb_dvs.HMDBDVS.sensor_size
-
-    train_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
-        # tonic.transforms.DropEvent(p=0.1),
-        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
-    test_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
-        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
-
-    train_dataset = braincog.datasets.hmdb_dvs.HMDBDVS(os.path.join(DATA_DIR, 'HMDBDVS'), transform=train_transform)
-    test_dataset = braincog.datasets.hmdb_dvs.HMDBDVS(os.path.join(DATA_DIR, 'HMDBDVS'), transform=test_transform)
-
-    cls_count = train_dataset.cls_count
-    dataset_length = train_dataset.length
-
-    portion = .5
-    # portion = kwargs['portion'] if 'portion' in kwargs else .9
-    size = kwargs['size'] if 'size' in kwargs else 48
-    # print('portion', portion)
-    train_sample_weight = []
-    train_sample_index = []
-    train_count = 0
-    test_sample_index = []
-    idx_begin = 0
-    for count in cls_count:
-        sample_weight = dataset_length / count
-        train_sample = round(portion * count)
-        test_sample = count - train_sample
-        train_count += train_sample
-        train_sample_weight.extend(
-            [sample_weight] * train_sample
-        )
-        train_sample_weight.extend(
-            [0.] * test_sample
-        )
-        lst = list(range(idx_begin, idx_begin + train_sample + test_sample))
-        random.seed(0)
-        random.shuffle(lst)
-        train_sample_index.extend(
-            lst[:train_sample]
-            # list((range(idx_begin, idx_begin + train_sample)))
-        )
-        test_sample_index.extend(
-            lst[train_sample:train_sample + test_sample]
-            # list(range(idx_begin + train_sample, idx_begin + train_sample + test_sample))
-        )
-        idx_begin += count
-
-    train_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_sample_weight, train_count)
-    test_sampler = torch.utils.data.sampler.SubsetRandomSampler(test_sample_index)
-
-    train_transform = transforms.Compose([
-        lambda x: torch.tensor(x, dtype=torch.float),
-        # lambda x: print(x.shape),
-        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
-        # transforms.RandomCrop(size, padding=size // 12),
-        # transforms.RandomHorizontalFlip(),
-        # transforms.RandomRotation(15)
-    ])
-    test_transform = transforms.Compose([
-        lambda x: torch.tensor(x, dtype=torch.float),
-        # lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
-        # lambda x: temporal_flatten(x),
-    ])
-    if 'rand_aug' in kwargs.keys():
-        if kwargs['rand_aug'] is True:
-            n = kwargs['randaug_n']
-            m = kwargs['randaug_m']
-            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
-
-    # if 'temporal_flatten' in kwargs.keys():
-    #     if kwargs['temporal_flatten'] is True:
-    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
-    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
-
-    train_dataset = DiskCachedDataset(train_dataset,
-                                      cache_path=os.path.join(DATA_DIR, 'HMDBDVS/train_cache_{}'.format(step)),
-                                      transform=train_transform, num_copies=3)
-    test_dataset = DiskCachedDataset(test_dataset,
-                                     cache_path=os.path.join(DATA_DIR, 'HMDBDVS/test_cache_{}'.format(step)),
+                                     cache_path=os.path.join(root, 'DVS/NCALTECH101/test_cache_{}'.format(step)),
                                      transform=test_transform, num_copies=3)
 
     mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
@@ -1007,7 +772,7 @@ def get_HMDBDVS_data(batch_size, step, **kwargs):
     return train_loader, test_loader, mixup_active, None
 
 
-def get_NCARS_data(batch_size, step, **kwargs):
+def get_NCARS_data(batch_size, step,root=DATA_DIR, **kwargs):
     """
     获取N-Cars数据
     https://ieeexplore.ieee.org/document/8578284/
@@ -1029,8 +794,8 @@ def get_NCARS_data(batch_size, step, **kwargs):
         tonic.transforms.ToFrame(sensor_size=None, n_time_bins=step),
     ])
 
-    train_dataset = tonic.datasets.NCARS(os.path.join(DATA_DIR, 'DVS/NCARS'), transform=train_transform, train=True)
-    test_dataset = tonic.datasets.NCARS(os.path.join(DATA_DIR, 'DVS/NCARS'), transform=test_transform, train=False)
+    train_dataset = tonic.datasets.NCARS(os.path.join(root, 'DVS/NCARS'), transform=train_transform, train=True)
+    test_dataset = tonic.datasets.NCARS(os.path.join(root, 'DVS/NCARS'), transform=test_transform, train=False)
 
     train_transform = transforms.Compose([
         lambda x: torch.tensor(x, dtype=torch.float),
@@ -1057,10 +822,10 @@ def get_NCARS_data(batch_size, step, **kwargs):
     #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
 
     train_dataset = DiskCachedDataset(train_dataset,
-                                      cache_path=os.path.join(DATA_DIR, 'DVS/NCARS/train_cache_{}'.format(step)),
+                                      cache_path=os.path.join(root, 'DVS/NCARS/train_cache_{}'.format(step)),
                                       transform=train_transform, num_copies=3)
     test_dataset = DiskCachedDataset(test_dataset,
-                                     cache_path=os.path.join(DATA_DIR, 'DVS/NCARS/test_cache_{}'.format(step)),
+                                     cache_path=os.path.join(root, 'DVS/NCARS/test_cache_{}'.format(step)),
                                      transform=test_transform, num_copies=3)
 
     mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
@@ -1105,7 +870,7 @@ def get_NCARS_data(batch_size, step, **kwargs):
     return train_loader, test_loader, mixup_active, None
 
 
-def get_nomni_data(batch_size, train_portion=1., **kwargs):
+def get_nomni_data(batch_size, train_portion=1.,root=DATA_DIR, **kwargs):
     """
     获取N-Omniglot数据
     :param batch_size:batch的大小
@@ -1122,15 +887,15 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
     test_transform = transforms.Compose([
         transforms.Resize((28, 28))])
     if data_mode == "full":
-        train_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=True, frames_num=frames_num,
+        train_datasets = NOmniglotfull(root=os.path.join(root, 'DVS/NOmniglot'), train=True, frames_num=frames_num,
                                        data_type=data_type,
                                        transform=train_transform)
-        test_datasets = NOmniglotfull(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), train=False, frames_num=frames_num,
+        test_datasets = NOmniglotfull(root=os.path.join(root, 'DVS/NOmniglot'), train=False, frames_num=frames_num,
                                       data_type=data_type,
                                       transform=test_transform)
 
     elif data_mode == "nkks":
-        train_datasets = NOmniglotNWayKShot(os.path.join(DATA_DIR, 'DVS/NOmniglot'),
+        train_datasets = NOmniglotNWayKShot(os.path.join(root, 'DVS/NOmniglot'),
                                             n_way=kwargs["n_way"],
                                             k_shot=kwargs["k_shot"],
                                             k_query=kwargs["k_query"],
@@ -1138,7 +903,7 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
                                             frames_num=frames_num,
                                             data_type=data_type,
                                             transform=train_transform)
-        test_datasets = NOmniglotNWayKShot(os.path.join(DATA_DIR, 'DVS/NOmniglot'),
+        test_datasets = NOmniglotNWayKShot(os.path.join(root, 'DVS/NOmniglot'),
                                            n_way=kwargs["n_way"],
                                            k_shot=kwargs["k_shot"],
                                            k_query=kwargs["k_query"],
@@ -1147,10 +912,10 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
                                            data_type=data_type,
                                            transform=test_transform)
     elif data_mode == "pair":
-        train_datasets = NOmniglotTrainSet(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), use_frame=True,
+        train_datasets = NOmniglotTrainSet(root=os.path.join(root, 'DVS/NOmniglot'), use_frame=True,
                                            frames_num=frames_num, data_type=data_type,
                                            use_npz=False, resize=105)
-        test_datasets = NOmniglotTestSet(root=os.path.join(DATA_DIR, 'DVS/NOmniglot'), time=2000, way=kwargs["n_way"],
+        test_datasets = NOmniglotTestSet(root=os.path.join(root, 'DVS/NOmniglot'), time=2000, way=kwargs["n_way"],
                                          shot=kwargs["k_shot"], use_frame=True,
                                          frames_num=frames_num, data_type=data_type, use_npz=False, resize=105)
 
@@ -1168,7 +933,7 @@ def get_nomni_data(batch_size, train_portion=1., **kwargs):
     return train_loader, test_loader, None, None
 
 
-def get_esimnet_data(batch_size, step, **kwargs):
+def get_esimnet_data(batch_size, step,root=DATA_DIR, **kwargs):
     """
     获取ES imagenet数据
     DOI: 10.3389/fnins.2021.726582
@@ -1193,21 +958,21 @@ def get_esimnet_data(batch_size, step, **kwargs):
     if reconstruct:
         assert step == 1
         train_dataset = ESImagenet2D_Dataset(mode='train',
-                                            data_set_path=os.path.join(DATA_DIR, 'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
+                                            data_set_path=os.path.join(root, 'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
                                             transform=train_transform)
 
         test_dataset = ESImagenet2D_Dataset(mode='test',
-                                            data_set_path=os.path.join(DATA_DIR, 'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
+                                            data_set_path=os.path.join(root, 'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
                                             transform=test_transform)
     else:
         assert step == 8
         train_dataset = ESImagenet_Dataset(mode='train',
-                                             data_set_path=os.path.join(DATA_DIR,
+                                             data_set_path=os.path.join(root,
                                                                         'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
                                              transform=train_transform)
 
         test_dataset = ESImagenet_Dataset(mode='test',
-                                            data_set_path=os.path.join(DATA_DIR,
+                                            data_set_path=os.path.join(root,
                                                                        'DVS/ES-imagenet-0.18/extract/ES-imagenet-0.18/'),
                                             transform=test_transform)
 
@@ -1256,7 +1021,7 @@ def get_esimnet_data(batch_size, step, **kwargs):
     return train_loader, test_loader, mixup_active, None
 
 
-def get_CUB2002011_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+def get_CUB2002011_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, *args, **kwargs):
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(), 
@@ -1269,7 +1034,7 @@ def get_CUB2002011_data(batch_size, num_workers=8, same_da=False, *args, **kwarg
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-    root=os.path.join(DATA_DIR, 'CUB2002011')
+    root=os.path.join(root, 'CUB2002011')
     train_datasets = CUB2002011(
         root=root, train=True, transform=test_transform if same_da else train_transform, download=True)
     test_datasets = CUB2002011(
@@ -1287,7 +1052,7 @@ def get_CUB2002011_data(batch_size, num_workers=8, same_da=False, *args, **kwarg
 
     return train_loader, test_loader, False, None
 
-def get_StanfordCars_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+def get_StanfordCars_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, *args, **kwargs):
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(), 
@@ -1300,7 +1065,7 @@ def get_StanfordCars_data(batch_size, num_workers=8, same_da=False, *args, **kwa
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-    root=os.path.join(DATA_DIR, 'StanfordCars')
+    root=os.path.join(root, 'StanfordCars')
     train_datasets = datasets.StanfordCars(
         root=root, split ="train", transform=test_transform if same_da else train_transform, download=True)
     test_datasets = datasets.StanfordCars(
@@ -1318,7 +1083,7 @@ def get_StanfordCars_data(batch_size, num_workers=8, same_da=False, *args, **kwa
 
     return train_loader, test_loader, False, None
 
-def get_StanfordDogs_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+def get_StanfordDogs_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, *args, **kwargs):
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(), 
@@ -1331,7 +1096,7 @@ def get_StanfordDogs_data(batch_size, num_workers=8, same_da=False, *args, **kwa
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-    root=os.path.join(DATA_DIR, 'StanfordDogs')
+    root=os.path.join(root, 'StanfordDogs')
     train_datasets = StanfordDogs(
         root=root, train=True, transform=test_transform if same_da else train_transform, download=True)
     test_datasets = StanfordDogs(
@@ -1350,7 +1115,7 @@ def get_StanfordDogs_data(batch_size, num_workers=8, same_da=False, *args, **kwa
     return train_loader, test_loader, False, None
 
 
-def get_FGVCAircraft_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+def get_FGVCAircraft_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, *args, **kwargs):
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(), 
@@ -1363,7 +1128,7 @@ def get_FGVCAircraft_data(batch_size, num_workers=8, same_da=False, *args, **kwa
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-    root=os.path.join(DATA_DIR, 'FGVCAircraft')
+    root=os.path.join(root, 'FGVCAircraft')
     train_datasets = datasets.FGVCAircraft(
         root=root, split="train", transform=test_transform if same_da else train_transform, download=True)
     test_datasets = datasets.FGVCAircraft(
@@ -1382,7 +1147,7 @@ def get_FGVCAircraft_data(batch_size, num_workers=8, same_da=False, *args, **kwa
     return train_loader, test_loader, False, None
 
 
-def get_Flowers102_data(batch_size, num_workers=8, same_da=False, *args, **kwargs):
+def get_Flowers102_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, *args, **kwargs):
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(), 
@@ -1395,7 +1160,7 @@ def get_Flowers102_data(batch_size, num_workers=8, same_da=False, *args, **kwarg
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-    root=os.path.join(DATA_DIR, 'Flowers102')
+    root=os.path.join(root, 'Flowers102')
     train_datasets = datasets.Flowers102(
         root=root, split="train", transform=test_transform if same_da else train_transform, download=True)
     test_datasets = datasets.Flowers102(
