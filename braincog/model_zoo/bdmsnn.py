@@ -42,14 +42,14 @@ class BDMSNN(nn.Module):
         # dlpfc-th
         con_matrix11 = torch.ones((num_state, num_action), dtype=torch.float)
         dm_mask.append(con_matrix11)
-        dm_connection.append(CustomLinear(0.1 * weight_exc * con_matrix11, con_matrix11))
+        dm_connection.append(CustomLinear(0.2 * weight_exc * con_matrix11, con_matrix11))
         # pm-pm
         con_matrix3 = torch.ones((num_action, num_action), dtype=torch.float)
         con_matrix4 = torch.eye((num_action), dtype=torch.float)
         con_matrix5 = con_matrix3 - con_matrix4
         con_matrix5 = con_matrix5
         dm_mask.append(con_matrix5)
-        dm_connection.append(CustomLinear(0.1 * weight_inh * con_matrix5, con_matrix5))
+        dm_connection.append(CustomLinear(5 * weight_inh * con_matrix5, con_matrix5))
         # dlpfc thalamus pm +bg
         self.weight_exc = weight_exc
         self.num_subDM = 8
@@ -69,7 +69,7 @@ class BDMSNN(nn.Module):
         self.learning_rule.append(MutliInputSTDP(self.node[6], [self.connection[11], self.connection[13]]))  # pm
         self.learning_rule.append(STDP(self.node[7], self.connection[9]))
 
-        out_shape = [self.connection[0].weight.shape[1], self.connection[1].weight.shape[1], self.connection[2].weight.shape[1], self.connection[4].weight.shape[1], self.connection[3].weight.shape[1], self.connection[10].weight.shape[1], self.connection[11].weight.shape[1], self.connection[9].weight.shape[1]]
+        out_shape=[self.connection[0].weight.shape[1],self.connection[1].weight.shape[1],self.connection[2].weight.shape[1],self.connection[4].weight.shape[1],self.connection[3].weight.shape[1],self.connection[10].weight.shape[1],self.connection[11].weight.shape[1],self.connection[9].weight.shape[1]]
         self.out = []
         self.dw = []
         for i in range(self.num_subDM):
@@ -112,7 +112,7 @@ class BDMSNN(nn.Module):
         if self.node_type == "lif":
             dw_mean = dw[s, [s * num_action, s * num_action + 1]].mean()
             dw_std = dw[s, [s * num_action, s * num_action + 1]].std()
-            dw[s, [s * num_action, s * num_action + 1]] = (dw[s, [s * num_action, s * num_action + 1]] - dw_mean) / dw_std
+            dw[s, [s * num_action, s * num_action + 1]] = (dw[s, [s * num_action,s * num_action + 1]] - dw_mean) / dw_std
             dw[s, :] = dw[s, :] * self.mask[i][s, :]
             self.connection[i].update(dw)
             self.connection[i].weight.data[s, [s * num_action, s * num_action + 1]] /= (self.connection[i].weight.data[s, [s * num_action, s * num_action + 1]].float().max() + 1e-12)
