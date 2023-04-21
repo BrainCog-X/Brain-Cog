@@ -119,9 +119,7 @@ ref= refrac*zeros(NN,1);     % refractory counter
     Iback = zeros(NSum,1);
     Istimu =zeros(NSum,1);
     Im_sp = 0;
-    Igap = zeros(NSum,1);
-    Ichem = zeros(NSum,1);
-    Ieeg = zeros(NSum,1);
+
     Ieff = zeros(NSum,1);
     vm1 = zeros(NSum,1);
     
@@ -129,8 +127,8 @@ ref= refrac*zeros(NN,1);     % refractory counter
     %Istimu(NE+1:end)=0;
     I=zeros(1,T);
     V=zeros(1,T);
-    Isubregion=zeros(NR,T);     %亚区电流
-    Vsubregion=zeros(NR,T);     %亚区电压
+    Isubregion=zeros(NR,T);     %浜氬尯鐢垫祦
+    Vsubregion=zeros(NR,T);     %浜氬尯鐢靛帇
 
     
     c_m((NR-1)*NC+1:(NR-1)*NC+NTC)=c_mTC;
@@ -152,5 +150,90 @@ ref= refrac*zeros(NN,1);     % refractory counter
     weight_matrix=W;
     % time lool
     Iraster = [];                                                       % save spike times for plotting
+        for t = 1:T
+            for m=1:NR;
+     tau_vI = 10;
+ %-------------------------------------------------------------------         
+     c_mI = tau_vI*(g_m+Gama_c);         % effective neuron time constant
+     WII = GammaII*c_mI/NI/dt;           % effective I to I coupling
+     WEE = GammaEE*c_mE/NE/dt;           % effective E to E coupling
+     WEI = GammaEI*c_mI/NE/dt;           % effective E to I coupling
+     WIE = GammaIE*c_mE/NI/dt;           % effective I to E coupling
+     %WIE = -0.6;                        % effective I to E coupling
+
+
+     va=zeros(NR,1);
+     vc=zeros(NR,1);
+            for n=1:NR-1 
+                va(n,1)=weight_matrix(m,n)*(sum(vv((n-1)*NC+1:(n-1)*NC+NE)));        %sum excictory votage from every column
+                vc(n,1)=weight_matrix(m,n)*(sum(vv((n-1)*NC+NE+1:(n-1)*NC+NE+NI)));  %sum inhibitory votage from every column
+            end
+            %------------thalamus------------
+            va(NR,1)=weight_matrix(m,NR)*sum(vv((NR-1)*NC+1:(NR-1)*NC+NTC));
+            vc(NR,1)=weight_matrix(m,NR)*sum(vv((NR-1)*NC+NTC+1:(NR-1)*NC+NTC+NTI+NTRN));
+            vb=sum(va);  
+            vd=sum(vc);
+     Iback = Iback + dt/tau_I*(-Iback +randn(NSum,1));    % generate a colored noise for the current  
+
+     %----------------------cortical connection---------------------------------------------
+ if m<NR 
+    c_m((m-1)*NC+1:(m-1)*NC+NE) = c_mE;
+    c_m((m-1)*NC+NE+1:(m-1)*NC+NE+NI) = c_mI;
+ 
+    alpha_w((m-1)*NC+1:(m-1)*NC+NE) = alpha_wE;
+    alpha_w((m-1)*NC+NE+1:(m-1)*NC+NE+NI) = alpha_wI;
+    
+    vt((m-1)*NC+1:(m-1)*NC+NE) = p(1,1);
+    vt((m-1)*NC+NE+1:(m-1)*NC+NE+NI) = p(1,2);
+    
+    beta_ad((m-1)*NC+1:(m-1)*NC+NE) = p(4,1);
+    beta_ad((m-1)*NC+NE+1:(m-1)*NC+NE+NI) = p(4,2); 
+   
+            
+                              
+    Ieff((m-1)*NC+1:(m-1)*NC+NE) = Iback((m-1)*NC+1:(m-1)*NC+NE)/sqrt(1/(2*(tau_I/dt)))*NEsig+NEmean;   % rescaling the noise current to have the correct mean and variance
+    Ieff((m-1)*NC+NE+1:(m-1)*NC+NE+NI) = Iback((m-1)*NC+NE+1:(m-1)*NC+NE+NI)/sqrt(1/(2*(tau_I/dt)))*NIsig+NImean; % rescaling for inhibitory neurons
+
+
+        %----------------------thalamus connection--------------------------------------------- 
+    else
+              
+
+            Ieff((m-1)*NC+1:(m-1)*NC+NTC) = Iback((m-1)*NC+1:(m-1)*NC+NTC)/sqrt(1/(2*(tau_I/dt)))*NTCsig+NTCmean;   % rescaling the noise current to have the correct mean and variance
+            Ieff((m-1)*NC+NTC+1:(m-1)*NC+NTC+NTI) = Iback((m-1)*NC+NTC+1:(m-1)*NC+NTC+NTI)/sqrt(1/(2*(tau_I/dt)))*NTIsig+NTImean; % rescaling for inhibitory neurons
+            Ieff((m-1)*NC+NTC+NTI+1:(m-1)*NC+NTC+NTI+NTRN) = Iback((m-1)*NC+NTC+NTI+1:(m-1)*NC+NTC+NTI+NTRN)/sqrt(1/(2*(tau_I/dt)))*NTRNsig+NTRNmean; % rescaling for inhibitory neurons
+  end
+        end
+        %%% Simulations of the network with adaptive threshold neuron model
+        v= v+ dt./c_m.*(-g_m*v +alpha_w.*ad +Ieff);      % adaptive threshold neuron model
+        ad = ad + dt/tau_ad*(-ad+beta_ad.*v);                       % adaptation variable
+        vv =(v>=vt).*(vm1<vt);                                      % spike if voltage crosses the threshold from below
+        vm1 = v;
+        %%%
+        % % If you want to simulate the network with aEIF neurons instead, comment
+        % % the 4 lines above and uncomments the lines below.
+        % v= v+ (ref>refrac).*(dt./c_m.*(-g_m*v+ g_m*Delta_T*exp((v-vt)/Delta_T) +alpha_w.*ad +Ieff+Ichem+Igap));% aEIF neuron model
+        % ad = ad + (ref>refrac).*(dt/tau_ad*(-ad+beta_ad.*v));% adaptation variable
+        % vv =(v>=vt);% spike if voltage crosses the threshold
+        % ref = ref.*(1-vv)+1; % update of the refractory period
+        % ad = ad+vv*(30); % spike-triggered adaptation
+        % v = (v<vt).*v; % reset after spike
+        %Isp = find(vv(NE+1:end)); % save spike times for plotting
+        Isp = find(vv); % save spike times for plotting
+        Iraster=[Iraster;t*ones(length(Isp),1),Isp];                % save spike times for plotting        
+        end
+
+    % Plot
+    h = figure; hold on;
+    plot(Iraster(:,1)*dt, Iraster(:,2),'.')
+%     plot([2000 2000], [0 14610],'--r','LineWidth',2.5)
+%     plot([4000 4000], [0 14610],'--r','LineWidth',2.5)
+%     plot([6000 6000], [0 14610],'--r','LineWidth',2.5)
+    
+    %xlim([0 500])
+    xlabel('time [ms]','fontsize',20)
+    ylabel('Neuron index','fontsize',20)
+    set(gca,'fontsize',20);
+    set(gca,'YDir','normal')
     
     end
