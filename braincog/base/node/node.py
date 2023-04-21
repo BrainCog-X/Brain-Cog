@@ -1117,7 +1117,103 @@ class adth(BaseNode):
 
     def calc_spike(self):
         pass
+    
+    
+class HHNode(BaseNode):
+    """
+    用于脑模拟的HH模型
+    :param threshold: 神经元发放脉冲需要达到的阈值
+    :param v_reset: 静息电位
+    :param dt: 时间步长
+    :param step: 仿真步
+    :param tau: 膜电位时间常数, 用于控制膜电位衰减
+    :param act_fun: 使用surrogate gradient 对梯度进行近似, 默认为 ``surrogate.AtanGrad``
+    :param args: 其他的参数
+    :param kwargs: 其他的参数
+    """
 
+    def __init__(self, p, neuron_num, W, type_index, act_fun=AtanGrad, *args, **kwargs):
+        super().__init__(threshold=p[7], *args, **kwargs)
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        '''
+        I = Cm dV/dt + g_k*n^4*(V_m-V_k) + g_Na*m^3*h*(V_m-V_Na) + g_l*(V_m - V_L)
+        '''
+        self.neuron_num = neuron_num
+        self.type_index = type_index
+        self.act_fun = act_fun(alpha=2., requires_grad=False)
+        self.tau_I = 1
+        self.g_Na = torch.tensor(p[0])
+        self.g_K = torch.tensor(p[1])
+        self.g_l = torch.tensor(p[2])
+        self.V_Na = torch.tensor(p[3])
+        self.V_K = torch.tensor(p[4])
+        self.V_l = torch.tensor(p[5])
+        self.C = torch.tensor(p[6])
+        self.m = torch.zeros(neuron_num)
+        self.n = torch.zeros(neuron_num)
+        self.h = torch.zeros(neuron_num)
+        self.v_reset = 0
+        self.W = W
+        self.if_IN = p[8]
+        self.dt_over_tau = self.dt / self.tau_I
+        self.sqrt_coeff = 1
+        if self.if_IN:
+            self.mu = -3
+        else:
+            self.mu = 3
+        self.sig = 12
+        self.Gama_c = 1/9
+        self.mem = self.threshold * torch.rand((1, neuron_num)).squeeze(0)
+        # self.mem = torch.zeros(neuron_num)
+        self.spike = torch.zeros(neuron_num)
+        self.dt = 0.1
+        self.Iback = torch.zeros(neuron_num)
+        self.Ieff = torch.zeros(neuron_num)
+        self.Ichem = torch.zeros(neuron_num)
+        if self.if_IN:
+            self.Igap = torch.zeros(neuron_num)
+
+    def integral(self, inputs):
+        self.I_Na = torch.pow(self.m, 3) * self.g_Na * self.h * (self.mem - self.V_Na)
+        self.I_K = torch.pow(self.n, 4) * self.g_K * (self.mem - self.V_K)
+        self.I_L = self.g_l * (self.mem - self.V_l)
+        # print(self.I_Na)
+        self.mem = self.mem + self.dt * (inputs - self.I_Na - self.I_K - self.I_L) / self.C
+
+        self.alpha_n = 0.01 * (self.mem + 10.0) / (1 - torch.exp(-(self.mem + 10.0) / 10))
+        self.beta_n = 0.125 * torch.exp(-(self.mem) / 80)
+
+        self.alpha_m = 0.1 * (self.mem + 25) / (1 - torch.exp(-(self.mem + 25) / 10))
+        self.beta_m = 4 * torch.exp(-(self.mem) / 18)
+
+        self.alpha_h = 0.07 * torch.exp(-(self.mem) / 20)
+        self.beta_h = 1 / (1 + torch.exp(-(self.mem + 30) / 10))
+
+        self.n = self.n + self.dt * (self.alpha_n * (1 - self.n) - self.beta_n * self.n) / 10
+        self.m = self.m + self.dt * (self.alpha_m * (1 - self.m) - self.beta_m * self.m) / 10
+        self.h = self.h + self.dt * (self.alpha_h * (1 - self.h) - self.beta_h * self.h) / 10
+
+    def calc_spike(self):
+        self.spike = (self.mem > self.threshold).float()
+        self.mem = self.mem * (1 - self.spike.detach())
+        # print(self.mem[0])
+
+    def forward(self, inputs):
+        self.integral(inputs)
+        self.calc_spike()
+        return self.spike, self.mem
+
+    def n_reset(self):
+        self.mem = 0.
+        self.spike = 0.
+        self.m, self.n, self.h = torch.tensor(0), torch.tensor(0), torch.tensor(0)
+
+    def requires_activation(self):
+        return False
+
+    
+    
 class aEIF(BaseNode):
     """
         The adaptive Exponential Integrate-and-Fire model (aEIF)
