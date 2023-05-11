@@ -1322,3 +1322,40 @@ class LIAFNode(BaseNode):
         self.spike = self.spike_act(self.mem - self.threshold)
         self.mem = self.mem * (1 - self.spike)
         self.spike = spike_tmp
+
+
+
+class OnlineLIFNode(BaseNode):
+    """
+    Online-update Leaky Integrate and Fire
+    与LIF模型相同，但是时序信息在反传时从计算图剥离，因此可以实现在线的更新；模型占用显存固定，不随仿真步step线性提升。
+    使用此神经元需要修改:  1. 将模型中t次forward从model_zoo写到main.py中
+                       2. 在Conv层与OnelineLIFNode层中加入Replace函数，即时序前传都是detach的，但仍计算该层空间梯度信息。
+                       3. 网络结构不适用BN层，使用weight standardization
+    注意该神经元不同于OTTT，而是将时序信息全部扔弃。对应这篇文章：https://arxiv.org/abs/2302.14311
+    若需保留时序，需要对self.rate_tracking进行计算。实现可参考https://github.com/pkuxmq/OTTT-SNN
+    """
+
+    def __init__(self, threshold=0.5, tau=2., act_fun=QGateGrad, init=False, *args, **kwargs):
+        super().__init__(threshold, *args, **kwargs)
+        self.tau = tau
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        self.act_fun = act_fun(alpha=2., requires_grad=False)
+        self.rate_tracking = None
+        self.init = True
+
+
+    def integral(self, inputs):
+        if self.init is True:
+            self.mem = torch.zeros_like(inputs)
+            self.init = False
+        self.mem = self.mem.detach() + (inputs - self.mem.detach()) / self.tau
+
+    def calc_spike(self):
+        self.spike = self.act_fun(self.mem - self.threshold)
+        self.mem = self.mem * (1 - self.spike.detach())
+        with torch.no_grad():
+            if self.rate_tracking == None:
+                self.rate_tracking = self.spike.clone().detach()
+        self.spike = torch.cat((self.spike, self.rate_tracking), dim=0)
