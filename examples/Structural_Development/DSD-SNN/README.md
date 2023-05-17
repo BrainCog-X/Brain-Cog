@@ -12,7 +12,7 @@ Dynamic Structure Development of Spiking Neural Networks (DSD-SNN) for efficient
 
 grow new neurons and prune redundant neurons, increasing memory capacity and reducing computational overhead.  
 
-verlap shared structure to leverage acquired knowledge to new tasks, empowering a single network capable of supporting multiple incremental tasks.   
+verlap shared structure to leverage acquired knowledge to new tasks, empowering a single network to support multiple incremental tasks.   
 
 We validate the effectiveness of the DSD-SNN multiple TIL and CIL benchmarks.
 
