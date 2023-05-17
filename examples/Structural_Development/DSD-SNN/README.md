@@ -14,9 +14,9 @@ the DSD-SNN verlap shared structure to leverage acquired knowledge to new tasks,
 We validate the effectiveness of the DSD-SNN multiple class incremental learning and task incremental learning benchmarks.
 
 ## Run ##
-cd ./cifar100
-```CUDA_VISIBLE_DEVICES=0 python main_simplified.py```
-cd ./mnist
-```CUDA_VISIBLE_DEVICES=0 python main_simplified.py```
+cd ./cifar100 \\
+```CUDA_VISIBLE_DEVICES=0 python main_simplified.py``` \\
+cd ./mnist \\
+```CUDA_VISIBLE_DEVICES=0 python main_simplified.py```\\
 
 Enjoy!
