@@ -1,4 +1,4 @@
-# Developmental Plasticity-inspired Adaptive Pruning for Deep Spiking and Artificial Neural Networks #
+# Enhancing Efficient Continual Learning with Dynamic Structure Development of Spiking Neural Networks #
 
 ## Requirments ##
 * numpy
