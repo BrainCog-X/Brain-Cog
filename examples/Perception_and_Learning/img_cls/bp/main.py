@@ -52,8 +52,8 @@ parser.add_argument('-c', '--config', default='', type=str, metavar='FILE',
 parser = argparse.ArgumentParser(description='SNN Training and Evaluating')
 
 # Model parameters
-parser.add_argument('--dataset', default='cifar10', type=str)
-parser.add_argument('--model', default='cifar_convnet', type=str, metavar='MODEL',
+parser.add_argument('--dataset', default='mnist', type=str)
+parser.add_argument('--model', default='mnist_convnet', type=str, metavar='MODEL',
                     help='Name of model to train (default: "countception"')
 parser.add_argument('--pretrained', action='store_true', default=False,
                     help='Start with pretrained version of specified network (if avail)')
@@ -122,7 +122,7 @@ parser.add_argument('--warmup-lr', type=float, default=1e-6, metavar='LR',
                     help='warmup learning rate (default: 0.0001)')
 parser.add_argument('--min-lr', type=float, default=1e-5, metavar='LR',
                     help='lower lr bound for cyclic schedulers that hit 0 (1e-5)')
-parser.add_argument('--epochs', type=int, default=600, metavar='N',
+parser.add_argument('--epochs', type=int, default=200, metavar='N',
                     help='number of epochs to train (default: 2)')
 parser.add_argument('--start-epoch', default=None, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -507,10 +507,7 @@ def main():
         if args.channels_last:
             model = model.to(memory_format=torch.channels_last)
 
-    if args.opt not in ['NGD']:
-        optimizer = create_optimizer(args, model)
-    else:
-        optimizer = NGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = create_optimizer(args, model)
 
     _logger.info('[OPTIMIZER]\n{}'.format(optimizer))
 
@@ -913,16 +910,6 @@ def validate(epoch, model, loader, loss_fn, args, amp_autocast=suppress,
     last_idx = len(loader) - 1
     iters_per_epoch = len(loader)
     with torch.no_grad():
-
-        if args.adaptation_info:
-            bias_x, weight, bias_y = unpack_adaption_info(model)
-            save_adaptation_info(
-                os.path.join(args.output_dir, 'adaptation_info.csv'),
-                epoch=epoch,
-                bias_x=bias_x,
-                weight=weight,
-                bias_y=bias_y
-            )
 
         for batch_idx, (inputs, target) in enumerate(loader):
             # inputs = inputs.type(torch.float64)

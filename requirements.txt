@@ -1,7 +1,7 @@
 numpy
 scipy
 h5py
-torch
+# torch
 torchvision
 torchaudio
 timm

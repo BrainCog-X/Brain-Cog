@@ -375,59 +375,6 @@ class BiasReLUNode(BaseNode):
         pass
 
 
-class BinaryNode(BaseNode):
-    """
-    用于相同连接的Binary-NN的测试
-    """
-
-    def __init__(self,
-                 *args,
-                 **kwargs):
-        super().__init__(requires_fp=False, *args, **kwargs)
-        self.act_fun = BinaryActivation()
-
-    def forward(self, x):
-        """
-        参考```BaseNode```
-        :param x:
-        :return:
-        """
-        self.spike = self.act_fun(x)
-        if self.requires_fp is True:
-            self.feature_map.append(self.spike)
-        if self.requires_mem is True:
-                self.mem_collect.append(self.mem)
-        return self.spike
-
-    def calc_spike(self):
-        pass
-
-
-class IRNode(BaseNode):
-    def __init__(self,
-                 *args,
-                 **kwargs):
-        super().__init__(requires_fp=False, *args, **kwargs)
-        self.k = torch.tensor([10]).float().cuda()
-        self.t = torch.tensor([0.1]).float().cuda()
-
-    def forward(self, x):
-        """
-        参考```BaseNode```
-        :param x:
-        :return:
-        """
-        # x = (x - x.mean()) / x.std()
-        self.spike = BinaryQuantize().apply(x, self.k, self.t)
-        if self.requires_fp is True:
-            self.feature_map.append(self.spike)
-        if self.requires_mem is True:
-                self.mem_collect.append(self.mem)
-        return self.spike
-
-    def calc_spike(self):
-        pass
-
 # ============================================================================
 # 用于SNN的node
 class IFNode(BaseNode):
@@ -501,6 +448,17 @@ class LIFNode(BaseNode):
     def calc_spike(self):
         self.spike = self.act_fun(self.mem - self.threshold)
         self.mem = self.mem * (1 - self.spike.detach())
+
+
+class BurstLIFNode(LIFNode):
+    def __init__(self, threshold=.5, tau=2., act_fun=RoundGrad, *args, **kwargs):
+        super().__init__(threshold=threshold, tau=tau, act_fun=act_fun, *args, **kwargs)
+        self.burst_factor = 1.5
+
+    def calc_spike(self):
+        LIFNode.calc_spike(self)
+        self.spike = torch.where(self.spike > 1., self.burst_factor * self.spike, self.spike)
+
 
 
 class BackEINode(BaseNode):
