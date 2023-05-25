@@ -247,6 +247,14 @@ class relu_like(torch.autograd.Function):
             grad_alpha = (grad_output * F.relu(x)).sum()
         return grad_x, grad_alpha
 
+class RoundGrad(nn.Module):
+    def __init__(self, **kwargs):
+        super(RoundGrad, self).__init__()
+        self.act = nn.Hardtanh(-.5, 4.5)
+
+    def forward(self, x):
+        x = self.act(x)
+        return x.ceil() + x - x.detach()
 
 class ReLUGrad(SurrogateFunctionBase):
     """
