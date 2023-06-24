@@ -21,7 +21,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     name='braincog',
-    version='0.2.7.18',
+    version='0.2.7.19',
     author='braincog',
     python_requires='>=3.6'
 )
