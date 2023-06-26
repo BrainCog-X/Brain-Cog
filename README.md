@@ -6,11 +6,11 @@ The current version of BrainCog contains at least 18 functional spiking neural n
 
 BrainCog is a community based effort for spiking neural network based artificial intelligence, and we welcome any forms of contributions, from contributing to the development of core components, to contributing for applications.
 
-<img src="https://www.brain-cog.network/static/image/github_readme/logo.jpg" alt="./figures/logo.jpg" width="70%" />
+<img src="http://braincog.ai/static_index/image/github_readme/logo.jpg" alt="./figures/logo.jpg" width="70%" />
 
 BrainCog provides essential and fundamental components to model biological and artificial intelligence.
 
-![image](https://www.brain-cog.network/static/image/github_readme/braincog.png)
+![image]( http://braincog.ai/static_index/image/github_readme/braincog.png)
 
 If you use BrainCog in your research, the following paper can be cited as the source for BrainCog.
 
