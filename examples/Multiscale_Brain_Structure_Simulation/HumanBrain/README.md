@@ -32,11 +32,11 @@ https://docs.google.com/spreadsheets/d/1C8r6T76gogUPYg4HjqlSAV4zJlE5KN1u/edit?us
 
 ```shell 
 cd ~/examples/Multi-scale Brain Structure Simulation/HumanBrain/
-python brainSimHum.py
+python human_brain.py
 ```
 
 ## Parameters:
-To simulate the models (both human and macaque brain), the parameters of the neuron number in each region and the connectome power between regions can be set flexibly in the main function (nsz and asz) of the .py files.
+The parameters are similar to mouse brain simulation 
 
 ## Citations:
 If you find this package helpful, please consider citing the following papers:
