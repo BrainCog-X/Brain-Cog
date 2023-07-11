@@ -1021,6 +1021,192 @@ def get_esimnet_data(batch_size, step,root=DATA_DIR, **kwargs):
     return train_loader, test_loader, mixup_active, None
 
 
+def get_nmnist_data(batch_size, step, **kwargs):
+    """
+    获取N-MNIST数据
+    http://journal.frontiersin.org/Article/10.3389/fnins.2015.00437/abstract
+    :param batch_size: batch size
+    :param step: 仿真步长
+    :param kwargs:
+    :return: (train loader, test loader, mixup_active, mixup_fn)
+    """
+    sensor_size = tonic.datasets.NMNIST.sensor_size
+    size = kwargs['size'] if 'size' in kwargs else 34
+
+    train_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        # tonic.transforms.DropEvent(p=0.1),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+    ])
+    test_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+    ])
+
+    train_dataset = tonic.datasets.NMNIST(os.path.join(DATA_DIR, 'DVS/N-MNIST'),
+                                              transform=train_transform, train=True)
+    test_dataset = tonic.datasets.NMNIST(os.path.join(DATA_DIR, 'DVS/N-MNIST'),
+                                             transform=test_transform, train=False)
+
+    train_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+        lambda x: dvs_channel_check_expend(x),
+        # transforms.RandomCrop(size, padding=size // 12),
+        # transforms.RandomHorizontalFlip(),
+        # transforms.RandomRotation(15)
+    ])
+    test_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+        lambda x: dvs_channel_check_expend(x),
+    ])
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
+
+    # if 'temporal_flatten' in kwargs.keys():
+    #     if kwargs['temporal_flatten'] is True:
+    #         train_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+    #         test_transform.transforms.insert(-1, lambda x: temporal_flatten(x))
+
+    train_dataset = DiskCachedDataset(train_dataset,
+                                      cache_path=os.path.join(DATA_DIR, 'DVS/N-MNIST/train_cache_{}'.format(step)),
+                                      transform=train_transform, num_copies=3)
+    test_dataset = DiskCachedDataset(test_dataset,
+                                     cache_path=os.path.join(DATA_DIR, 'DVS/N-MNIST/test_cache_{}'.format(step)),
+                                     transform=test_transform, num_copies=3)
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              noise=noise)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=True, num_workers=8,
+        shuffle=True,
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=2,
+        shuffle=False,
+    )
+
+    return train_loader, test_loader, mixup_active, None
+
+
+def get_ntidigits_data(batch_size, step, **kwargs):
+    """
+    获取N-TIDIGITS数据 (tonic 新版本中的下载链接可能挂了，可以参考0.4.0的版本)
+    https://www.frontiersin.org/articles/10.3389/fnins.2018.00023/full
+    :param batch_size: batch size
+    :param step: 仿真步长
+    :param kwargs:
+    :return: (train loader, test loader, mixup_active, mixup_fn)
+    :format: (b,t,c,len) 不同于vision, audio中c为1, 并且没有h,w; 只有len=64
+    """
+    sensor_size = tonic.datasets.NTIDIGITS.sensor_size
+    train_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        # tonic.transforms.DropEvent(p=0.1),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+    ])
+    test_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+    ])
+
+    train_dataset = tonic.datasets.NTIDIGITS(os.path.join(DATA_DIR, 'DVS/NTIDIGITS'),
+                                              transform=train_transform, train=True)
+
+    test_dataset = tonic.datasets.NTIDIGITS(os.path.join(DATA_DIR, 'DVS/NTIDIGITS'),
+                                             transform=test_transform, train=False)
+
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=True, num_workers=8,
+        shuffle=True,
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=2,
+        shuffle=False,
+    )
+
+    return train_loader, test_loader, None, None
+
+
+def get_shd_data(batch_size, step, **kwargs):
+    """
+    获取SHD数据
+    https://ieeexplore.ieee.org/abstract/document/9311226
+    :param batch_size: batch size
+    :param step: 仿真步长
+    :param kwargs:
+    :return: (train loader, test loader, mixup_active, mixup_fn)
+    :format: (b,t,c,len) 不同于vision, audio中c为1, 并且没有h,w; 只有len=700
+    """
+    sensor_size = tonic.datasets.SHD.sensor_size
+    train_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        # tonic.transforms.DropEvent(p=0.1),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+    ])
+    test_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+    ])
+
+    train_dataset = tonic.datasets.SHD(os.path.join(DATA_DIR, 'DVS/SHD'),
+                                              transform=train_transform, train=True)
+
+    test_dataset = tonic.datasets.SHD(os.path.join(DATA_DIR, 'DVS/SHD'),
+                                             transform=test_transform, train=False)
+
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=True, num_workers=8,
+        shuffle=True,
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=batch_size,
+        pin_memory=True, drop_last=False, num_workers=2,
+        shuffle=False,
+    )
+
+    return train_loader, test_loader, None, None
+
+
 def get_CUB2002011_data(batch_size, num_workers=8, same_da=False,root=DATA_DIR, *args, **kwargs):
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
