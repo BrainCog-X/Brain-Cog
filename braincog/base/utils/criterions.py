@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-
+import torch.nn.functional as F
 
 class UnilateralMse(torch.nn.Module):
     """
@@ -46,3 +46,17 @@ class TetLoss(torch.nn.Module):
 
         return loss / x.shape[0]
 
+
+class OnehotMse(torch.nn.Module):
+    """
+    将类别转换为onehot进行mse损失计算, 用于带vote的SNN中
+    """
+    def __init__(self, num_class):
+        super(OnehotMse, self).__init__()
+        self.num_class = num_class
+        self.loss_fn = torch.nn.MSELoss()
+
+    def forward(self, x, target):
+        target = F.one_hot(target.to(torch.int64), self.num_class).float()
+        loss = self.loss_fn(x, target)
+        return loss

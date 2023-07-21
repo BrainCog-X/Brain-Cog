@@ -17,6 +17,7 @@ from braincog.datasets.datasets import *
 from braincog.model_zoo.resnet import *
 from braincog.model_zoo.convnet import *
 from braincog.model_zoo.vgg_snn import VGG_SNN, SNN5
+from braincog.model_zoo.fc_snn import SHD_SNN
 from braincog.model_zoo.resnet19_snn import resnet19
 from braincog.model_zoo.sew_resnet import sew_resnet18, sew_resnet34, sew_resnet50
 from braincog.utils import save_feature_map, setup_seed
@@ -245,7 +246,7 @@ parser.add_argument('--pin-mem', action='store_true', default=False,
                     help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
 parser.add_argument('--no-prefetcher', action='store_true', default=False,
                     help='disable fast prefetcher')
-parser.add_argument('--output', default='/data/floyed/BrainCog', type=str, metavar='PATH',
+parser.add_argument('--output', default='/home/hexiang/BrainCog', type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
 parser.add_argument('--tensorboard-dir', default='./runs', type=str)
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',
@@ -632,7 +633,9 @@ def main():
     if args.loss_fn == 'mse':
         train_loss_fn = UnilateralMse(1.)
         validate_loss_fn = UnilateralMse(1.)
-
+    elif args.loss_fn == 'onehot-mse':
+        train_loss_fn = OnehotMse(args.num_classes)
+        validate_loss_fn = OnehotMse(args.num_classes)
     else:
         if args.jsd:
             assert num_aug_splits > 1  # JSD only valid with aug splits set
@@ -679,7 +682,7 @@ def main():
         decreasing = True if eval_metric == 'loss' else False
         saver = CheckpointSaver(
             model=model, optimizer=optimizer, args=args, model_ema=model_ema, amp_scaler=loss_scaler,
-            checkpoint_dir=output_dir, recovery_dir=output_dir, decreasing=decreasing)
+            checkpoint_dir=output_dir, recovery_dir=output_dir, decreasing=decreasing, max_history=3)
         with open(os.path.join(output_dir, 'args.yaml'), 'w') as f:
             f.write(args_text)
 

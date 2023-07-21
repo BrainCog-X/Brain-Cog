@@ -105,7 +105,14 @@ This provides an open, fair platform for comparison of subsequent SNNs on classi
 | 1   | NCALTECH101 | LIF+QGateGrad  | -/mix  |  resnet18   |    128     | 66.22/70.84 | ```python main.py --num-classes 100 --model resnet18 --node-type LIFNode --dataset NCALTECH101 --step 10 --batch-size 128 --act-fun QGateGradGrad --device 0```     |
 | 1   | NCALTECH101 | PLIF+QGateGrad | -/mix  |  resnet18   |    128     | 69.62/69.87 | ```python main.py --num-classes 100 --model resnet18 --node-type PLIFNode --dataset NCALTECH101 --step 10 --batch-size 128 --act-fun QGateGradGrad --device 0```    |
 
+### SHD
+
+| ID   | Dataset |   Node-type   | Config |  Model  | Batch Size | Accuracy | Script                                                       |
+| :--- | :-----: | :-----------: | :----: | :-----: | :--------: | :------: | :----------------------------------------------------------- |
+| 1    |   SHD   | LIF+QGateGrad |   -    | shd_snn |    256     |  88.47   | ```python main.py --model SHD_SNN --node-type LIFNode --dataset shd --step 15 --batch-size 256 --act-fun QGateGrad --device 1 --tau 10. --threshold 0.3 --lr 5e-3 --min-lr 1e-4 --loss-fn onehot-mse --num-classes 20 --amp --weight-decay 0.01 ``` |
+
 Note: 
+
 1. resnet18 is used here by adding a maximum pooling after the initial convolution layer.
 However, in the final version of braincog, we remove this pooling layer.
 2. mix refers to the use of EventMix as a data augmentation method.

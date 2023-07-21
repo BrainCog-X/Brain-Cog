@@ -1133,13 +1133,14 @@ def get_ntidigits_data(batch_size, step, **kwargs):
     """
     sensor_size = tonic.datasets.NTIDIGITS.sensor_size
     train_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
-        # tonic.transforms.DropEvent(p=0.1),
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: x.squeeze(1)
     ])
     test_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
         tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: x.squeeze(1)
     ])
 
     train_dataset = tonic.datasets.NTIDIGITS(os.path.join(DATA_DIR, 'DVS/NTIDIGITS'),
@@ -1172,17 +1173,14 @@ def get_shd_data(batch_size, step, **kwargs):
     :param step: 仿真步长
     :param kwargs:
     :return: (train loader, test loader, mixup_active, mixup_fn)
-    :format: (b,t,c,len) 不同于vision, audio中c为1, 并且没有h,w; 只有len=700
+    :format: (b,t,c,len) 不同于vision, audio中c为1, 并且没有h,w; 只有len=700. Transform后变为(b, t, len)
     """
     sensor_size = tonic.datasets.SHD.sensor_size
     train_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
-        # tonic.transforms.DropEvent(p=0.1),
-        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step)
     ])
     test_transform = transforms.Compose([
-        # tonic.transforms.Denoise(filter_time=10000),
-        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step)
     ])
 
     train_dataset = tonic.datasets.SHD(os.path.join(DATA_DIR, 'DVS/SHD'),
@@ -1191,10 +1189,26 @@ def get_shd_data(batch_size, step, **kwargs):
     test_dataset = tonic.datasets.SHD(os.path.join(DATA_DIR, 'DVS/SHD'),
                                              transform=test_transform, train=False)
 
+    train_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: x.squeeze(1)
+    ])
+
+    test_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: x.squeeze(1)
+    ])
+
+    train_dataset = DiskCachedDataset(train_dataset,
+                                      cache_path=os.path.join(DATA_DIR, 'DVS/SHD/train_cache_{}'.format(step)),
+                                      transform=train_transform, num_copies=3)
+    test_dataset = DiskCachedDataset(test_dataset,
+                                     cache_path=os.path.join(DATA_DIR, 'DVS/SHD/test_cache_{}'.format(step)),
+                                     transform=test_transform, num_copies=3)
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=batch_size,
-        pin_memory=True, drop_last=True, num_workers=8,
+        pin_memory=True, drop_last=False, num_workers=8,
         shuffle=True,
     )
 

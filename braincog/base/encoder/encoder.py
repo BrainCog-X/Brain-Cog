@@ -68,7 +68,8 @@ class Encoder(nn.Module):
     def forward(self, inputs, deletion_prob=None, shift_var=None):
         if len(inputs.shape) == 5:  # DVS data
             outputs = inputs.permute(1, 0, 2, 3, 4).contiguous()  # t, b, c, w, h
-
+        elif len(inputs.shape) == 3:  # DAS data
+            outputs = inputs.permute(1, 0, 2).contiguous()  # t, b, c
         else:
             if self.encode_type == 'auto':
                 if self.fun.device != inputs.device:
@@ -85,7 +86,10 @@ class Encoder(nn.Module):
         elif self.groups != 1:
             outputs = rearrange(outputs, 't b c w h -> b (c t) w h')
         elif self.layer_by_layer:
-            outputs = rearrange(outputs, 't b c w h -> (t b) c w h')
+            if len(inputs.shape) == 3:
+                outputs = rearrange(outputs, 't b c-> (t b) c')
+            else:
+                outputs = rearrange(outputs, 't b c w h -> (t b) c w h')
 
         return outputs
 
