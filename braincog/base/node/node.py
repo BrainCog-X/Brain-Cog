@@ -443,7 +443,7 @@ class LIFNode(BaseNode):
         # print(tau)
 
     def integral(self, inputs):
-        self.mem = self.mem + (0 - self.mem) / self.tau + inputs
+        self.mem = self.mem + (inputs - self.mem) / self.tau
 
     def calc_spike(self):
         self.spike = self.act_fun(self.mem - self.threshold)
