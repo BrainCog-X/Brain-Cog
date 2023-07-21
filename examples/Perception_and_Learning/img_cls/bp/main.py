@@ -246,7 +246,7 @@ parser.add_argument('--pin-mem', action='store_true', default=False,
                     help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
 parser.add_argument('--no-prefetcher', action='store_true', default=False,
                     help='disable fast prefetcher')
-parser.add_argument('--output', default='/home/hexiang/BrainCog', type=str, metavar='PATH',
+parser.add_argument('--output', default='/data/floyed/BrainCog', type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
 parser.add_argument('--tensorboard-dir', default='./runs', type=str)
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',
