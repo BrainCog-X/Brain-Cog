@@ -13,7 +13,6 @@ class STSC_Attention(nn.Module):
     def __init__(self, n_channel: int, dimension: int = 2, time_rf: int = 4, reduction: int = 2):
 
         super().__init__()
-        self.step_mode = 'm'  # used in activation_based SpikingJelly
         assert dimension == 4 or dimension == 2, 'dimension must be 4 or 2'
 
         self.dimension = dimension
@@ -60,7 +59,6 @@ class STSC_Temporal_Conv(nn.Module):
     def __init__(self, channels: int, dimension: int = 2, time_rf: int = 2):
 
         super().__init__()
-        self.step_mode = 'm'  # used in activation_based SpikingJelly
         assert dimension == 4 or dimension == 2, 'dimension must be 4 or 2'
         self.dimension = dimension
 
@@ -97,7 +95,6 @@ class STSC(nn.Module):
                  use_filter=True, reduction: int = 1):
 
         super().__init__()
-        self.step_mode = 'm'  # used in activation_based SpikingJelly
 
         assert dimension == 4 or dimension == 2, 'dimension must be 4 or 2'
         self.dimension = dimension
