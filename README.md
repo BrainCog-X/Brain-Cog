@@ -12,10 +12,20 @@ BrainCog provides essential and fundamental components to model biological and a
 
 ![image]( http://braincog.ai/static_index/image/github_readme/braincog.png)
 
-If you use BrainCog in your research, the following paper can be cited as the source for BrainCog.
-
-Yi Zeng, Dongcheng Zhao, Feifei Zhao, Guobin Shen, Yiting Dong, Enmeng Lu, Qian Zhang, Yinqian Sun, Qian Liang, Yuxuan Zhao, Zhuoya Zhao, Hongjian Fang, Yuwei Wang, Yang Li, Xin Liu, Chengcheng Du, Qingqun Kong, Zizhe Ruan, Weida Bi. BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation. arXiv:2207.08533, 2022.
-https://arxiv.org/abs/2207.08533
+Our paper has been accepted by [Patterns](https://www.cell.com/patterns/fulltext/S2666-3899(23)00144-7?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2666389923001447%3Fshowall%3Dtrue) recently. If you use BrainCog in your research, the following paper can be cited as the source for BrainCog.
+```bib
+@article{Zeng2023,
+  doi = {10.1016/j.patter.2023.100789},
+  url = {https://doi.org/10.1016/j.patter.2023.100789},
+  year = {2023},
+  month = jul,
+  publisher = {Elsevier {BV}},
+  pages = {100789},
+  author = {Yi Zeng and Dongcheng Zhao and Feifei Zhao and Guobin Shen and Yiting Dong and Enmeng Lu and Qian Zhang and Yinqian Sun and Qian Liang and Yuxuan Zhao and Zhuoya Zhao and Hongjian Fang and Yuwei Wang and Yang Li and Xin Liu and Chengcheng Du and Qingqun Kong and Zizhe Ruan and Weida Bi},
+  title = {{BrainCog}: A spiking neural network based,  brain-inspired cognitive intelligence engine for brain-inspired {AI} and brain simulation},
+  journal = {Patterns}
+}
+```
 
 ## Brain-Inspired AI
 BrainCog currently provides cognitive functions components that can be classified 
