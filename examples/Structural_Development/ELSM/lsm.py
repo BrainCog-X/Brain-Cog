@@ -91,9 +91,7 @@ elif ls == 'umse':
     criterion = UnilateralMse(.5)
 
 optimizer = torch.optim.AdamW(snn.fc.parameters(),lr=0.001, weight_decay=1e-4)
-# optimizer = torch.optim.Adam(snn.fc.parameters(),lr=learning_rate)
 
-optimizer.load_state_dict(torch.load(load_path)['optmiz'])
 l=[]
 best_acc=0
 for epoch in range(num_epochs):
