@@ -14,6 +14,7 @@ import logging
 from timm.utils import *
 from timm.loss import LabelSmoothingCrossEntropy
 from braincog.base.utils import UnilateralMse, MixLoss
+from braincog.base.learningrule.STDP import *
 
 device='cuda:7'
 
