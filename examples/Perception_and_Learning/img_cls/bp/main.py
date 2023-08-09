@@ -17,6 +17,7 @@ from braincog.datasets.datasets import *
 from braincog.model_zoo.resnet import *
 from braincog.model_zoo.convnet import *
 from braincog.model_zoo.vgg_snn import VGG_SNN, SNN5
+from braincog.model_zoo.fc_snn import SHD_SNN
 from braincog.model_zoo.resnet19_snn import resnet19
 from braincog.model_zoo.sew_resnet import sew_resnet18, sew_resnet34, sew_resnet50
 from braincog.utils import save_feature_map, setup_seed
@@ -632,7 +633,9 @@ def main():
     if args.loss_fn == 'mse':
         train_loss_fn = UnilateralMse(1.)
         validate_loss_fn = UnilateralMse(1.)
-
+    elif args.loss_fn == 'onehot-mse':
+        train_loss_fn = OnehotMse(args.num_classes)
+        validate_loss_fn = OnehotMse(args.num_classes)
     else:
         if args.jsd:
             assert num_aug_splits > 1  # JSD only valid with aug splits set
@@ -679,7 +682,7 @@ def main():
         decreasing = True if eval_metric == 'loss' else False
         saver = CheckpointSaver(
             model=model, optimizer=optimizer, args=args, model_ema=model_ema, amp_scaler=loss_scaler,
-            checkpoint_dir=output_dir, recovery_dir=output_dir, decreasing=decreasing)
+            checkpoint_dir=output_dir, recovery_dir=output_dir, decreasing=decreasing, max_history=3)
         with open(os.path.join(output_dir, 'args.yaml'), 'w') as f:
             f.write(args_text)
 

@@ -23,6 +23,9 @@ dvs_data = [
     'dvsg',
     'ucf101dvs',
     'hmdbdvs',
+    'shd',
+    'ntidigits',
+    'nmnist'
 ]
 
 
