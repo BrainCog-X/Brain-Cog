@@ -19,7 +19,7 @@ Our paper has been accepted by [Patterns](https://www.cell.com/patterns/fulltext
   url = {https://doi.org/10.1016/j.patter.2023.100789},
   year = {2023},
   month = jul,
-  publisher = {Elsevier {BV}},
+  publisher = {Cell Press},
   pages = {100789},
   author = {Yi Zeng and Dongcheng Zhao and Feifei Zhao and Guobin Shen and Yiting Dong and Enmeng Lu and Qian Zhang and Yinqian Sun and Qian Liang and Yuxuan Zhao and Zhuoya Zhao and Hongjian Fang and Yuwei Wang and Yang Li and Xin Liu and Chengcheng Du and Qingqun Kong and Zizhe Ruan and Weida Bi},
   title = {{BrainCog}: A spiking neural network based,  brain-inspired cognitive intelligence engine for brain-inspired {AI} and brain simulation},
