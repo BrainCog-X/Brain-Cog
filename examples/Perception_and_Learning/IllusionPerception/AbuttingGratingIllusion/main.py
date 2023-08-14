@@ -1,4 +1,4 @@
-from braincog.base.safety.distortion import ag_distort_28, ag_distort_224, ag_distort_silhouette, save_image, get_silhouette_data
+from distortion import ag_distort_28, ag_distort_224, ag_distort_silhouette, save_image, get_silhouette_data
 from braincog.datasets import get_mnist_data
 
 # An example of Abutting Grating Distortion applied on MNIST
