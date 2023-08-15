@@ -1,4 +1,7 @@
 # BrainCog
+
+---
+
 BrainCog is an open source spiking neural network based brain-inspired 
 cognitive intelligence engine for Brain-inspired Artificial Intelligence and brain simulation. More information on BrainCog can be found on its homepage http://www.brain-cog.network/
 
@@ -51,7 +54,11 @@ BrainCog currently include two parts for brain simulation:
 The anatomical and imaging data is used to support our simulation from various aspects. 
 
 ## Resources
-### [Lectures](https://github.com/BrainCog-X/Brain-Cog/tree/main/documents/Lectures.md)    [Tutorial](https://github.com/BrainCog-X/Brain-Cog/tree/main/documents/Tutorial.md)
+### [[Lectures]](https://github.com/BrainCog-X/Brain-Cog/blob/main/documents/Lectures.md)  |   [[Tutorial]](https://github.com/BrainCog-X/Brain-Cog/blob/main/documents/Tutorial.md)
+
+
+## Publications Using BrainCog 
+### [[Brain Inspired AI]](https://github.com/BrainCog-X/Brain-Cog/blob/main/documents/Pub_brain_inspired_AI.md) | [[Brain Simulation]](https://github.com/BrainCog-X/Brain-Cog/blob/main/documents/Pub_brain_simulation.md)
 
 
 ## BrainCog Data Engine
@@ -160,87 +167,3 @@ Other BrainCog features and tutorials can be found at http://www.brain-cog.netwo
 Please add our BrainCog Assitant via wechat and we will invite you to our wechat developer group.
 ![image](https://github.com/Brain-Cog-Lab/Brain-Cog/blob/main/figures/wechat_ass.jpg)
 
-# Publications Using BrainCog 
-## Brain Inspired AI
-### Perception and Leanring
-| Papers                                                                                                                                                                                 | Codes                                                                                                              | Publisher                              |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|----------------------------------------|
-| [Quantum superposition inspired spiking neural network](https://www.cell.com/iscience/fulltext/S2589-0042(21)00848-8)                                                                  | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Perception_and_Learning/QSNN                            | Cell iScience                          |
-| [Backpropagation with biologically plausible spatiotemporal adjustment for training deep spiking neural networks](https://www.cell.com/patterns/pdf/S2666-3899(22)00119-2.pdf)         | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Perception_and_Learning/img_cls/bp                      | Cell Patterns                          |
-| [N-Omniglot, a large-scale neuromorphic dataset for spatio-temporal sparse few-shot learning](https://www.nature.com/articles/s41597-022-01851-z)                                      | https://github.com/BrainCog-X/Brain-Cog/tree/main/braincog/datasets/NOmniglot                                      | Scientific Data                        |
-| [Efficient and Accurate Conversion of Spiking Neural Network with Burst Spikes](https://www.ijcai.org/proceedings/2022/0345.pdf)                                                       | https://github.com/BrainCog-X/Brain-Cog/blob/main/examples/Perception_and_Learning/Conversion/converted_CIFAR10.py | IJCAI 2022                             |
-| [BackEISNN: A deep spiking neural network with adaptive self-feedback and balanced excitatory–inhibitory neurons](https://www.sciencedirect.com/science/article/pii/S0893608022002520) | https://github.com/BrainCog-X/Brain-Cog/blob/main/examples/Perception_and_Learning/img_cls/bp/main_backei.py       | Neural Networks                        |
-| [Spiking CapsNet: A spiking neural network with a biologically plausible routing rule between capsules](https://www.sciencedirect.com/science/article/pii/S002002552200843X)           | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Perception_and_Learning/img_cls/spiking_capsnet         | Information Sciences                   |
-| [Multisensory Concept Learning Framework Based on Spiking Neural Networks](https://www.frontiersin.org/articles/10.3389/fnsys.2022.845177/full)                                        | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Perception_and_Learning/MultisensoryIntegration         | Frontiers in Systems Neuroscience      |
-| [GLSNN: A Multi-Layer Spiking Neural Network Based on Global Feedback Alignment and Local STDP Plasticity](https://www.frontiersin.org/articles/10.3389/fncom.2020.576841/full)        | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Perception_and_Learning/img_cls/glsnn                   | Fontiers in Computational Neuroscience |
-| [EventMix: An Efficient Augmentation Strategy for Event-Based Data](https://arxiv.org/abs/2205.12054)                                                                                  | https://github.com/BrainCog-X/Brain-Cog/blob/main/braincog/datasets/cut_mix.py                                     | Arxiv                                  |
-| [Spike Calibration: Fast and Accurate Conversion of Spiking Neural Network for Object Detection and Segmentation](https://arxiv.org/abs/2207.02702)                                    | https://github.com/BrainCog-X/Brain-Cog/blob/main/examples/Perception_and_Learning/Conversion/converted_CIFAR10.py | Arxiv                                  |
-| [An Unsupervised Spiking Neural Network Inspired By Biologically Plausible Learning Rules and Connections](https://arxiv.org/abs/2207.02727)                                           | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Perception_and_Learning/UnsupervisedSTDP                | Arxiv                                  |
-
-### Social Cognition
-| Papers                                                                                                                                                                    | Codes                                                                                                  | Publisher                               |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|-----------------------------------------|
-| [Toward Robot Self-Consciousness (II): Brain-Inspired Robot Bodily Self Model for Self-Recognition](https://link.springer.com/article/10.1007/s12559-017-9505-1 )         | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Social_Cognition/mirror_test                | Cognitive Computation                   |
-| [A brain-inspired intention prediction model and its applications to humanoid robot](https://www.frontiersin.org/articles/10.3389/fnins.2022.1009237/full)                | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Social_Cognition/Intention_Prediction       | Frontiers in Neuroscience               |
-| [A Brain-Inspired Theory of Mind Spiking Neural Network for Reducing Safety Risks of Other Agents](https://www.frontiersin.org/articles/10.3389/fnins.2022.753900/full)   | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Social_Cognition/ToM	                       | Frontiers in Neuroscience               |
-| [Brain-Inspired Affective Empathy Computational Model and Its Application on Altruistic Rescue Task](https://www.frontiersin.org/articles/10.3389/fncom.2022.784967/full) | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Social_Cognition/affective_empathy/BAE-SNN  | Frontiers in Computational Neuroscience |
-| [A brain-inspired robot pain model based on a spiking neural network](https://www.frontiersin.org/articles/10.3389/fnbot.2022.1025338/full)                               | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Social_Cognition/affective_empathy/BRP-SNN	 | Frontiers in Neurorobotics              |
-| [Brain-Inspired Theory of Mind Spiking Neural Network Elevates Multi-Agent Cooperation and Competition](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4271099)      | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Social_Cognition/MAToM-SNN                  | SSRN                                    |
-
-### Knowledge Representation and Reasoning
-| Papers                                                                                                                                                                                | Codes                                                                                                          | Publisher                               |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------|
-| [A Brain-Inspired Causal Reasoning Model Based on Spiking Neural Networks](https://ieeexplore.ieee.org/abstract/document/9534102)                                                     | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Knowledge_Representation_and_Reasoning/CRSNN        | IJCNN2021                               |
-| [Brain Inspired Sequences Production by Spiking Neural Networks With Reward-Modulated STDP](https://www.frontiersin.org/articles/10.3389/fncom.2021.612041/full)                      | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Knowledge_Representation_and_Reasoning/SPSNN        | Frontiers in Computational Neuroscience |
-| [Temporal-Sequential Learning With a Brain-Inspired Spiking Neural Network and Its Application to Musical Memory](https://www.frontiersin.org/articles/10.3389/fncom.2020.00051/full) | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Knowledge_Representation_and_Reasoning/musicMemory  | Frontiers in Computational Neuroscience |
-| [Brain-Inspired Affective Empathy Computational Model and Its Application on Altruistic Rescue Task](https://www.frontiersin.org/articles/10.3389/fncom.2022.784967/full)             | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Knowledge_Representation_and_Reasoning/musicMemory  | Frontiers in System Neuroscience        |
-| [Stylistic Composition of Melodies Based on a Brain-Inspired Spiking Neural Network](https://www.frontiersin.org/articles/10.3389/fnsys.2021.639484/full)                             | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Social_Cognition/affective_empathy/BRP-SNN	         | Frontiers in Neurorobotics              |
-| [Brain-inspired Graph Spiking Neural Networks for Commonsense Knowledge Representation and Reasoning](https://arxiv.org/abs/2207.05561 )                                              | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Knowledge_Representation_and_Reasoning/CKRGSNN      | Arxiv                                   |
-
-### Decision Making
-| Papers                                                                                                                                                                                      | Codes                                                                                                          | Publisher                        |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------|
-| [Nature-inspired self-organizing collision avoidance for drone swarm based on reward-modulated spiking neural network](https://www.cell.com/patterns/fulltext/S2666-3899(22)00236-7)        | https://github.com/BrainCog-X/Brain-Cog/blob/main/examples/decision_making/swarm/Collision-Avoidance.py        | Cell Patterns                    |
-| [Solving the spike feature information vanishing problem in spiking deep Q network with potential based normalization](https://www.frontiersin.org/articles/10.3389/fnins.2022.953368/full) | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/decision_making/RL/sdqn                             | Frontiers in Neuroscience        |
-| [A Brain-Inspired Decision-Making Spiking Neural Network and Its Application in Unmanned Aerial Vehicle](https://www.frontiersin.org/articles/10.3389/fnbot.2018.00056/full )               | https://github.com/BrainCog-X/Brain-Cog/blob/main/examples/decision_making/BDM-SNN/BDM-SNN-hh.py	              | Frontiers in Neurorobotics       |
-| [Multi-compartment Neuron and Population Encoding improved Spiking Neural Network for Deep Distributional Reinforcement Learning](https://arxiv.org/abs/2301.07275)                         | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/decision_making/RL/mcs-fqf                          | Arxiv                            |
-
-### Motor Control
-| Papers | Codes                                                                                          | Publisher |
-|--------|------------------------------------------------------------------------------------------------|-----------|
-|        | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/MotorControl/experimental	          |           |
-
-
-### SNN Safety
-| Papers | Codes                                                                        | Publisher |
-|--------|------------------------------------------------------------------------------|-----------|
-| DPSNN  | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Snn_safety/DPSNN	 | Arxiv     |
-
-### Development and Evolution
-| Papers                                                                                                                                 | Codes                                                                                        | Publisher |
-|----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|-----------|
-| [Developmental Plasticity-inspired Adaptive Pruning for Deep Spiking and Artificial Neural Networks](https://arxiv.org/abs/2211.12714) | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Structural_Development/DPAP	      | Arxiv     |
-| [Adaptive Sparse Structure Development with Pruning and Regeneration for Spiking Neural Networks](https://arxiv.org/abs/2211.12219)    | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Structural_Development/SD-SNN     | Arxiv     |
-
-### Hardware Acceleration
-| Papers                                                                                                                                              | Codes                                                                                                         | Publisher |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-----------|
-| [FireFly: A High-Throughput and Reconfigurable Hardware Accelerator for Spiking Neural Networks](https://arxiv.org/abs/2301.01905)                  | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Hardware_acceleration	                             | Arxiv     |
-
-
-## Brain Simulation
-### Funtion
-
-| Papers                                                                                                                                                                                                       | Codes                                                                                                                     | Publisher |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------|
-| [A neural algorithm for Drosophila linear and nonlinear decision-making](https://www.nature.com/articles/s41598-020-75628-y)                                                                                 | https://github.com/BrainCog-X/Brain-Cog/blob/main/examples/Brain_Cognitive_Function_Simulation/drosophila/drosophila.py	  | Scientific Reports|
-| [Comparison Between Human and Rodent Neurons for Persistent Activity Performance: A Biologically Plausible Computational Investigation](https://www.frontiersin.org/articles/10.3389/fnsys.2021.628839/full) | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Multiscale_Brain_Structure_Simulation/Human_PFC_Model	         | Frontiers in System Neuroscience|
-
-### Structure
-
-| Papers | Codes                                                                                                                         | Publisher |
-|--------|-------------------------------------------------------------------------------------------------------------------------------|-----------|
-|   Corticothalamic minicolumn	     | 		https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Multiscale_Brain_Structure_Simulation/CorticothalamicColumn      | |
-|   Human Brain	     | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Multiscale_Brain_Structure_Simulation/HumanBrain		                 | |
-|    Macaque Brain    | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Multiscale_Brain_Structure_Simulation/MacaqueBrain	                | |
-|    Mouse Brain    | https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Multiscale_Brain_Structure_Simulation/Mouse_brain 	                | |
