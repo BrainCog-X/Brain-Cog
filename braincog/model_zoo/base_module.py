@@ -298,3 +298,56 @@ class BaseModule(nn.Module, abc.ABC):
     @staticmethod
     def forward(self, inputs):
         pass
+
+
+class DeformConvPack(nn.Module):
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 kernel_size,
+                 padding,
+                 stride,
+                 bias,
+                 *args,
+                 **kwargs):
+        super(DeformConvPack, self).__init__()
+        self.in_channels = in_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+
+        if isinstance(self.kernel_size, tuple) or isinstance(self.kernel_size, list):
+            self.receptive_field = self.kernel_size[0]
+        else:
+            self.receptive_field = self.kernel_size
+            self.kernel_size = (self.kernel_size, self.kernel_size)
+
+        self.receptive_field = 4 * (self.receptive_field // 2)
+
+        self.conv_offset = nn.Conv2d(
+            self.in_channels,
+            3 * self.kernel_size[0] * self.kernel_size[1],
+            kernel_size=self.kernel_size,
+            stride=self.stride,
+            padding=self.padding,
+            bias=True)
+        self.deform_conv = DeformConv2d(in_channels=in_channels,
+                                        out_channels=out_channels,
+                                        kernel_size=kernel_size,
+                                        padding=padding,
+                                        stride=stride,
+                                        bias=bias)
+        self.init_weights()
+
+    def init_weights(self):
+        if hasattr(self, 'conv_offset'):
+            self.conv_offset.weight.data.zero_()
+            self.conv_offset.bias.data.zero_()
+
+    def forward(self, x):
+        out = self.conv_offset(x)
+        o1, o2, mask = torch.chunk(out, 3, dim=1)
+        offset = torch.cat((o1, o2), dim=1)
+        offset = self.receptive_field * (torch.sigmoid(offset) - 0.5)
+        mask = torch.sigmoid(mask)
+        return self.deform_conv(x, offset, mask)
