@@ -56,25 +56,6 @@ snn.learning_rule.append(MutliInputSTDP(snn.node_lsm(), [snn.con[0], w2tmp]))  #
 snn.eval()
 snn.to(device)
 
-class LabelSmoothingBCEWithLogitsLoss(nn.Module):
-
-    def __init__(self, smoothing=0.1):
-        """
-        Constructor for the LabelSmoothing module.
-        :param smoothing: label smoothing factor
-        """
-        super(LabelSmoothingBCEWithLogitsLoss, self).__init__()
-        assert smoothing < 1.0
-        self.smoothing = smoothing
-        self.confidence = 1. - smoothing
-        self.BCELoss = nn.BCEWithLogitsLoss()
-
-    def forward(self, x, target):
-        target = torch.eye(x.shape[-1], device=x.device)[target]
-        nll = torch.ones_like(x) / x.shape[-1]
-        return self.BCELoss(x, target) * self.confidence + self.BCELoss(x, nll) * self.smoothing
-
-
 ls = 'mse'
 
 if ls == 'ce':
