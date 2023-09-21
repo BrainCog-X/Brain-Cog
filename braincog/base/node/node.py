@@ -100,6 +100,8 @@ class BaseNode(nn.Module, abc.ABC):
         elif self.layer_by_layer:
             if len(inputs.shape) == 4:
                 outputs = rearrange(inputs, '(t b) c w h -> t b c w h', t=self.step)
+            elif len(inputs.shape) == 3:
+                outputs = rearrange(inputs, '(t b) n c -> t b n c', t=self.step)
             elif len(inputs.shape) == 2:
                 outputs = rearrange(inputs, '(t b) c -> t b c', t=self.step)
             else:
@@ -122,6 +124,8 @@ class BaseNode(nn.Module, abc.ABC):
         elif self.layer_by_layer:
             if len(inputs.shape) == 5:
                 outputs = rearrange(inputs, 't b c w h -> (t b) c w h')
+            elif len(inputs.shape) == 4:
+                outputs = rearrange(inputs, ' t b n c -> (t b) n c')
             elif len(inputs.shape) == 3:
                 outputs = rearrange(inputs, ' t b c -> (t b) c')
             else:
