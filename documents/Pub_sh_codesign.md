@@ -1,5 +1,5 @@
 # Publications Using BrainCog 
-## Software-Hardware Codesign
+## Software-Hardware Co-design
 
 
 ### Hardware Acceleration
