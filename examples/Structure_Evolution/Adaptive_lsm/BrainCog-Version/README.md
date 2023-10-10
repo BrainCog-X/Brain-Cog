@@ -1,15 +1,21 @@
 
-# Adaptive structure evolution and biologically plausible synaptic plasticity for recurrent spiking neural networks #
+
+# Adaptive structure evolution and biologically plausible synaptic plasticity for recurrent spiking neural networks —— Based on BrainCog #
+
+
+**This is the BrainBog-based version of the paper. To run the original code, please go to [raw](https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Structure_Evolution/Adaptive_lsm/raw)**
 
 ## Requirments ##
 * numpy
 * pytorch >= 1.12.0
+* BrainCog
 
 ## Run ##
 
-```python BCM.py```
+```python main.py```
 
 ## Citation ##
+
 If you find the code and dataset useful in your research, please consider citing:
 ```
 
