@@ -4,7 +4,6 @@
 ## Requirments ##
 * numpy
 * pytorch >= 1.12.0
-* BrainCog
 
 ## Run ##
 
