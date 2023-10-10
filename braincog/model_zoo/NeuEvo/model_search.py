@@ -1,8 +1,8 @@
 from functools import partial
-from braincog.model_zoo.darts.operations import *
+from braincog.model_zoo.NeuEvo.operations import *
 from torch.autograd import Variable
-from braincog.model_zoo.darts.genotypes import PRIMITIVES
-from braincog.model_zoo.darts.genotypes import Genotype
+from braincog.model_zoo.NeuEvo.genotypes import PRIMITIVES
+from braincog.model_zoo.NeuEvo.genotypes import Genotype
 from . import parse
 
 from braincog.base.connection.layer import VotingLayer

@@ -1,8 +1,8 @@
 from functools import partial
 from typing import List, Type
 
-from braincog.model_zoo.darts.operations import *
-from braincog.model_zoo.darts.genotypes import Genotype
+from braincog.model_zoo.NeuEvo.operations import *
+from braincog.model_zoo.NeuEvo.genotypes import Genotype
 from braincog.base.utils import drop_path
 from timm.models import register_model
 from braincog.base.node.node import *
@@ -561,7 +561,7 @@ class NetworkImageNet(BaseModule):
 
 
 if __name__ == '__main__':
-    from braincog.model_zoo.darts.genotypes import mlp2
+    from braincog.model_zoo.NeuEvo.genotypes import mlp2
     cell = MlpCell(mlp2, C=128, input_dim=17, output_dim=-1)
     x = torch.rand(4, 17)
     out = cell(x)

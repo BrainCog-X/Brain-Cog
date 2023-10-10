@@ -1,6 +1,6 @@
 import json
 import matplotlib.pyplot as plt
-from braincog.model_zoo.darts.genotypes import Genotype, PRIMITIVES
+from braincog.model_zoo.NeuEvo.genotypes import Genotype, PRIMITIVES
 import os
 import numpy as np
 import torch
@@ -8,7 +8,7 @@ import shutil
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 from auto_augment import CIFAR10Policy
-from braincog.model_zoo.darts.genotypes import PRIMITIVES
+from braincog.model_zoo.NeuEvo.genotypes import PRIMITIVES
 
 forward_edge_num = sum(1 for i in range(3) for n in range(2 + i))
 backward_edge_num = sum(1 for i in range(3) for n in range(i))

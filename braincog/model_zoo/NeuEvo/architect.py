@@ -3,7 +3,7 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 import numpy as np
 from numpy.linalg import eigvals
-from braincog.model_zoo.darts.model_search import calc_weight, calc_loss
+from braincog.model_zoo.NeuEvo.model_search import calc_weight, calc_loss
 
 
 def normalize(x):

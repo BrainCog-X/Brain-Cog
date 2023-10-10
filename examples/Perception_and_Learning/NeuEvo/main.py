@@ -16,9 +16,9 @@ from braincog.datasets.datasets import *
 from braincog.model_zoo.resnet import *
 from braincog.model_zoo.convnet import *
 from braincog.utils import save_feature_map, setup_seed
-from braincog.model_zoo.darts import genotypes
-from braincog.model_zoo.darts.model import NetworkCIFAR
-from braincog.model_zoo.darts.others import *
+from braincog.model_zoo.NeuEvo import genotypes
+from braincog.model_zoo.NeuEvo.model import NetworkCIFAR
+from braincog.model_zoo.NeuEvo.others import *
 from braincog.base.utils.visualization import plot_tsne_3d, plot_tsne, plot_confusion_matrix
 
 import torch

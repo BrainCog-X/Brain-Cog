@@ -12,8 +12,8 @@ import torchvision.datasets as dset
 import torch.backends.cudnn as cudnn
 
 from torch.autograd import Variable
-from braincog.model_zoo.darts.model_search import Network, calc_weight, calc_loss
-from braincog.model_zoo.darts.architect import Architect
+from braincog.model_zoo.NeuEvo.model_search import Network, calc_weight, calc_loss
+from braincog.model_zoo.NeuEvo.architect import Architect
 from separate_loss import ConvSeparateLoss, TriSeparateLoss, MseSeparateLoss
 import utils
 

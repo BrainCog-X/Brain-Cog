@@ -8,8 +8,8 @@ import argparse
 import numpy as np
 import torch.utils
 import torch.nn as nn
-from braincog.model_zoo.darts import genotypes
-from braincog.model_zoo.darts.model import NetworkCIFAR as Network
+from braincog.model_zoo.NeuEvo import genotypes
+from braincog.model_zoo.NeuEvo.model import NetworkCIFAR as Network
 import torchvision.datasets as dset
 import torch.backends.cudnn as cudnn
 from thop import profile
