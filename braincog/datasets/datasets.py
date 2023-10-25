@@ -19,7 +19,8 @@ from braincog.datasets.ESimagenet.ES_imagenet import ESImagenet_Dataset
 from braincog.datasets.ESimagenet.reconstructed_ES_imagenet import ESImagenet2D_Dataset
 from braincog.datasets.CUB2002011 import CUB2002011
 from braincog.datasets.TinyImageNet import TinyImageNet
-from braincog.datasets.StanfordDogs import StanfordDogs 
+from braincog.datasets.StanfordDogs import StanfordDogs
+from braincog.datasets.bullying10k import BULLYINGDVS
 
 from .cut_mix import CutMix, EventMix, MixUp
 from .rand_aug import *
@@ -522,7 +523,113 @@ def get_dvsg_data(batch_size, step,root=DATA_DIR, **kwargs):
     return train_loader, test_loader, mixup_active, None
 
 
-def get_dvsc10_data(batch_size, step,root=DATA_DIR, **kwargs):
+def get_bullyingdvs_data(batch_size, step, root=DATA_DIR, **kwargs):
+    """
+    获取Bullying10K数据
+    NeurIPS 2023
+    :param batch_size: batch size
+    :param step: 仿真步长
+    :param kwargs:
+    :return:
+    """
+    size = kwargs['size'] if 'size' in kwargs else 48
+    sensor_size = BULLYINGDVS.sensor_size
+    train_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        # tonic.transforms.DropEvent(p=0.1),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
+    test_transform = transforms.Compose([
+        # tonic.transforms.Denoise(filter_time=10000),
+        tonic.transforms.ToFrame(sensor_size=sensor_size, n_time_bins=step), ])
+    train_dataset = BULLYINGDVS('/data/datasets/Bullying10k_processed', transform=train_transform)
+    # train_dataset = BULLYINGDVS(os.path.join(root, 'DVS/BULLYINGDVS'), transform=train_transform)
+    test_dataset = BULLYINGDVS(os.path.join(root, 'DVS/BULLYINGDVS'), transform=test_transform)
+
+    train_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+        transforms.RandomCrop(size, padding=size // 12),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(15)
+    ])
+    test_transform = transforms.Compose([
+        lambda x: torch.tensor(x, dtype=torch.float),
+        lambda x: F.interpolate(x, size=[size, size], mode='bilinear', align_corners=True),
+    ])
+
+    if 'rand_aug' in kwargs.keys():
+        if kwargs['rand_aug'] is True:
+            n = kwargs['randaug_n']
+            m = kwargs['randaug_m']
+            # print('randaug', m, n)
+            train_transform.transforms.insert(2, RandAugment(m=m, n=n))
+
+    train_dataset = DiskCachedDataset(train_dataset,
+                                      cache_path=os.path.join(root, 'DVS/BULLYINGDVS/train_cache_{}'.format(step)),
+                                      transform=train_transform)
+    test_dataset = DiskCachedDataset(test_dataset,
+                                     cache_path=os.path.join(root, 'DVS/BULLYINGDVS/test_cache_{}'.format(step)),
+                                     transform=test_transform)
+
+    num_train = len(train_dataset)
+    num_per_cls = num_train // 10
+    indices_train, indices_test = [], []
+    portion = kwargs['portion'] if 'portion' in kwargs else .9
+    for i in range(10):
+        indices_train.extend(
+            list(range(i * num_per_cls, round(i * num_per_cls + num_per_cls * portion))))
+        indices_test.extend(
+            list(range(round(i * num_per_cls + num_per_cls * portion), (i + 1) * num_per_cls)))
+
+    mix_up, cut_mix, event_mix, beta, prob, num, num_classes, noise, gaussian_n = unpack_mix_param(kwargs)
+    mixup_active = cut_mix | event_mix | mix_up
+
+    if cut_mix:
+        # print('cut_mix', beta, prob, num, num_classes)
+        train_dataset = CutMix(train_dataset,
+                               beta=beta,
+                               prob=prob,
+                               num_mix=num,
+                               num_class=num_classes,
+                               indices=indices_train,
+                               noise=noise)
+
+    if event_mix:
+        train_dataset = EventMix(train_dataset,
+                                 beta=beta,
+                                 prob=prob,
+                                 num_mix=num,
+                                 num_class=num_classes,
+                                 indices=indices_train,
+                                 noise=noise,
+                                 gaussian_n=gaussian_n)
+
+    if mix_up:
+        train_dataset = MixUp(train_dataset,
+                              beta=beta,
+                              prob=prob,
+                              num_mix=num,
+                              num_class=num_classes,
+                              indices=indices_train,
+                              noise=noise)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices_train),
+        pin_memory=True, drop_last=True, num_workers=8
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=batch_size,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices_test),
+        pin_memory=True, drop_last=False, num_workers=2
+    )
+
+    return train_loader, test_loader, mixup_active, None
+
+
+
+def get_dvsc10_data(batch_size, step, root=DATA_DIR, **kwargs):
     """
     获取DVS CIFAR10数据
     http://journal.frontiersin.org/article/10.3389/fnins.2017.00309/full
