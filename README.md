@@ -13,7 +13,7 @@ BrainCog is a community based effort for spiking neural network based artificial
 
 BrainCog provides essential and fundamental components to model biological and artificial intelligence.
 
-![image]( http://braincog.ai/static_index/image/github_readme//braincog.png)
+![image]( http://braincog.ai/static_index/image/github_readme/braincog.png)
 
 Our paper has been accepted by [Patterns](https://www.cell.com/patterns/fulltext/S2666-3899(23)00144-7?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2666389923001447%3Fshowall%3Dtrue) recently. If you use BrainCog in your research, the following paper can be cited as the source for BrainCog.
 ```bib
