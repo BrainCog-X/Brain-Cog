@@ -26,7 +26,7 @@ If you find the code and dataset useful in your research, please consider citing
 ```
 @article{han2022developmental,
   title={Enhancing Efficient Continual Learning with Dynamic Structure Development of Spiking Neural Networks},
-  author={Han, Bing and Zhao, Feifei and Zeng, Yi and Wenxuan Pan and Shen, Guobin},
+  author={Han, Bing and Zhao, Feifei and Zeng, Yi and Wenxuan, Pan and Shen, Guobin},
   booktitle = {Proceedings of the Thirty-First International Joint Conference on
                Artificial Intelligence, {IJCAI-23}},
   publisher = {International Joint Conferences on Artificial Intelligence Organization},
