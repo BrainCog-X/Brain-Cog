@@ -47,7 +47,7 @@ from available import AVAILABLE_DATASETS, AVAILABLE_TRANSFORMS, DATASET_CONFIGS
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data import ConcatDataset
 import copy
-from vgg_snn import SNN,Taskmodel
+from vgg_snn import SNN
 
 # torch.cuda.set_device(9)
 
@@ -299,10 +299,7 @@ def main():
     args.lr = linear_scaled_lr
 
     model = model.cuda()
-    taskmodel=Taskmodel(num_classes=args.num_classes,task_num=args.task_num,batch_size=args.batch_size)
-    taskmodel = taskmodel.cuda()
     optimizer = create_optimizer(args, model)
-    optimizer_re =torch.optim.Adam(taskmodel.parameters())
 
     # optionally resume from a checkpoint
     resume_epoch = None
@@ -336,7 +333,6 @@ def main():
     out_num=int(args.num_classes/args.task_num)
     labels_per_dataset_train = [list(np.array(range(out_num))+out_num*context_id) for context_id in range(args.task_num)]
     labels_per_dataset_test = [list(np.array(range(out_num))+out_num*context_id) for context_id in range(args.task_num)]
-    labels_dataset_test = [list(np.array(range(out_num*(context_id+1)))) for context_id in range(args.task_num)]
     train_datasets = []
     for labels in labels_per_dataset_train:
         target_transform = transforms.Lambda(lambda y, x=labels[0]: y-x)
@@ -345,18 +341,13 @@ def main():
     for labels in labels_per_dataset_test:
         target_transform = transforms.Lambda(lambda y, x=labels[0]: y-x) 
         test_datasets.append(SubDataset(testset, labels, target_transform=target_transform))
-    t_datasets = []
-    for labels in labels_dataset_test: 
-        t_datasets.append(SubDataset(testset, labels, target_transform=None))
+   
     train_data = []
     test_data = []
     t_data=[]
     for task in range(len(train_datasets)):
-        train_data.append(DataLoader(train_datasets[task], batch_size=batch_size, shuffle=True, drop_last=True, **({'num_workers': 0, 'pin_memory': True})))
-        test_data.append(DataLoader(test_datasets[task], batch_size=batch_size, shuffle=True, drop_last=True, **({'num_workers': 0, 'pin_memory': True})))
-        t_data.append(DataLoader(t_datasets[task], batch_size=batch_size, shuffle=False, drop_last=True, **({'num_workers': 0, 'pin_memory': True})))
-
-
+        train_data.append(DataLoader(train_datasets[task], batch_size=batch_size, shuffle=True, drop_last=True, **({'num_workers': 4, 'pin_memory': True})))
+        test_data.append(DataLoader(test_datasets[task], batch_size=batch_size, shuffle=True, drop_last=True, **({'num_workers': 4, 'pin_memory': True})))
     if args.loss_fn == 'mse':
         train_loss_fn = UnilateralMse(1.)
         validate_loss_fn = UnilateralMse(1.)
@@ -417,25 +408,11 @@ def main():
                     m.init_mask(task,epoch)
                     mat=m.do_mask(task)
                     model = m.model
-                # loader_eval= iter(DataLoader(test_datasets[task], batch_size=batch_size, shuffle=True, drop_last=True, **({'num_workers': 0, 'pin_memory': True}))) 
-                # validate(task, model, loader_eval, validate_loss_fn, args,mat)
+
                 ta_his=[i for i in range(task+1)]
                 for t in ta_his:
                     loader_his=iter(test_data[t])
                     validate(t, model, loader_his, validate_loss_fn, args,mat)
-                
-                reloader_his=iter(train_data[task])
-                retrain_epoch(epoch, t,task, model, taskmodel,reloader_his, optimizer_re, train_loss_fn, args,mat,task_ready,taskww=True,
-                        lr_scheduler=lr_scheduler, saver=saver, output_dir=output_dir,regularization_terms=regularization_terms)
-
-                # for t in ta_his:
-                reloader_his=iter(t_data[t])
-                retrain_epoch(epoch, t,task, model, taskmodel,reloader_his, optimizer_re, train_loss_fn, args,mat,task_ready,taskww=None,
-                        lr_scheduler=lr_scheduler, saver=saver, output_dir=output_dir,regularization_terms=regularization_terms)
-                        
-                for t in ta_his:
-                    loader_his=iter(test_data[t])
-                    revalidate(t, model, taskmodel,loader_his, validate_loss_fn, args,mat)
 
                 cc=m.if_zero()
                 _logger.info('*** epoch: {0}, task: {1}, pruning: {2}'.format(epoch,task, cc))
@@ -592,125 +569,6 @@ def validate(task, model, loader, loss_fn, args, mat,log_suffix='', visualize=Fa
     # metrics = OrderedDict([('loss', losses_m.avg), ('top1', top1_m.avg), ('top5', top5_m.avg)])
 
     # return metrics
-
-
-def retrain_epoch(
-        epoch, task,task2,model, taskmodel,loader, optimizer, loss_fn, args,mat,task_ready,taskww=None,
-        lr_scheduler=None, saver=None, output_dir='',regularization_terms={}):
-    print(task)
-    batch_time_m = AverageMeter()
-    data_time_m = AverageMeter()
-    losses_m = AverageMeter()
-    top1_m = AverageMeter()
-    top5_m = AverageMeter()
-
-    model.eval()
-    taskmodel.train()
-
-    end = time.time()
-    last_idx = len(loader) - 1
-    num_updates = epoch * len(loader)
-    if task==task2:
-        bstop=20*(task2+1)
-        log=19
-    else:
-        bstop=20*(task2+1)
-        log=19
-    if taskww==True:
-        bstop=len(loader)
-        log=100
-    for batch_idx, (inputs, target) in enumerate(loader):
-        if batch_idx>bstop:
-            break
-        last_batch = batch_idx == bstop
-        data_time_m.update(time.time() - end)
-        inputs = inputs.type(torch.FloatTensor).cuda()
-        targets=torch.tensor((target/args.task_num),dtype=torch.int64)
-        tar = torch.zeros(args.batch_size, int(args.num_classes/args.task_num)).scatter_(1, targets.view(-1, 1), 1).cuda()
-
-        output= model(inputs, mat)
-        tout=taskmodel(output.detach())
-        t_preds = tout.cuda()
-        loss = loss_fn(t_preds, tar)
-
-        acc1, acc5 = accuracy(t_preds, targets.cuda(), topk=(1, 5))
-
-        losses_m.update(loss.item(), inputs.size(0))
-        top1_m.update(acc1.item(), inputs.size(0))
-        top5_m.update(acc5.item(), inputs.size(0))
-
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        num_updates += 1
-
-        batch_time_m.update(time.time() - end)
-        if last_batch or (batch_idx+1) %log == 0:
-
-            _logger.info(
-                'Train: {} [{:>4d}/{} ({:>3.0f}%)]  ' 
-                'Loss: {loss.val:>9.6f} ({loss.avg:>6.4f})  '
-                'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})  '
-                'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})'
-                'Time: {batch_time.val:.3f}s, {rate:>7.2f}/s  '
-                '({batch_time.avg:.3f}s, {rate_avg:>7.2f}/s)  '
-                'Data: {data_time.val:.3f} ({data_time.avg:.3f})'.format(
-                    epoch,
-                    batch_idx, len(loader),
-                    100. * batch_idx / last_idx,
-                    loss=losses_m,
-                    top1=top1_m, top5=top5_m,
-                    batch_time=batch_time_m,
-                    rate=inputs.size(0) / batch_time_m.val,
-                    rate_avg=inputs.size(0)  / batch_time_m.avg,
-                    data_time=data_time_m))
-
-def revalidate(task, model,taskmodel, loader, loss_fn, args, mat,log_suffix='', visualize=False, spike_rate=False):
-    batch_time_m = AverageMeter()
-    losses_m = AverageMeter()
-    top1_m = AverageMeter()
-    top5_m = AverageMeter()
-    model.eval()
-    taskmodel.eval()
-    end = time.time()
-    with torch.no_grad():
-        last_idx = len(loader) - 1
-        for batch_idx, (inputs, target) in enumerate(loader):
-            last_batch = batch_idx == last_idx
-            inputs = inputs.type(torch.FloatTensor).cuda()
-            target = target.cuda()
-
-            output = model(inputs,mat)
-            tout=taskmodel(output)
-            t=torch.max(tout,dim=1)
-            t_preds=torch.zeros(args.batch_size,int(args.num_classes/args.task_num))
-            for i in range(args.batch_size):
-                t_preds[i]=output[t[1][i],i]
-            # t_preds = output[t[1]]
-            loss = loss_fn(t_preds.cuda(), target)
-            acc1, acc5 = accuracy(t_preds.cuda(), target, topk=(1, 5))
-
-            reduced_loss = loss.data
-
-            torch.cuda.synchronize()
-
-            losses_m.update(reduced_loss.item(), inputs.size(0))
-            top1_m.update(acc1.item(), output.size(0))
-            top5_m.update(acc5.item(), output.size(0))
-
-            batch_time_m.update(time.time() - end)
-            end = time.time()
-
-        log_name = 'Test'+str(task) + log_suffix
-        _logger.info(
-            '{0}: [{1:>4d}/{2}]  '
-            'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})  '
-            'Loss: {loss.val:>7.4f} ({loss.avg:>6.4f})  ' 
-            'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})  '
-            'Acc@5: {top5.val:>7.4f} ({top5.avg:>7.4f})'.format(
-                log_name, batch_idx, last_idx, batch_time=batch_time_m,
-                loss=losses_m, top1=top1_m, top5=top5_m))
-
+    
 if __name__ == '__main__':
     main()

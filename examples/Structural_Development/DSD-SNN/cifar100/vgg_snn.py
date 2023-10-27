@@ -110,26 +110,6 @@ class SNN(BaseModule):
 
         return out / step
 
-class Taskmodel(BaseModule):
-    def __init__(self,step=0,encode_type='direct',num_classes=10,task_num=10,
-                 batch_size=100,*args,**kwargs):
-        super().__init__(step, encode_type, *args, **kwargs)
-        self.out_num=int(num_classes/task_num)
-        self.flat=torch.zeros((batch_size,100),device='cuda')
-        self.fctask1=nn.Linear(100,500)
-        self.relu=nn.ReLU()
-        self.fctask2=nn.Linear(500,self.out_num)
-
-    def forward(self, out):
-
-        for i in range(len(out)):
-            self.flat[:,self.out_num*i:self.out_num*(i+1)]=out[i]
-
-        x=self.fctask1(self.flat)
-        x=self.relu(x)
-        predict_task=self.fctask2(x)
-
-        return predict_task
 
 
 # class MaskConvModule(nn.Module):
