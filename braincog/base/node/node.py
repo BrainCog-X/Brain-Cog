@@ -17,6 +17,8 @@ from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 from einops import rearrange, repeat
+
+from braincog.base.connection.layer import CustomLinear
 from braincog.base.strategy.surrogate import *
 
 
@@ -1280,3 +1282,96 @@ class OnlineLIFNode(BaseNode):
             if self.rate_tracking == None:
                 self.rate_tracking = self.spike.clone().detach()
         self.spike = torch.cat((self.spike, self.rate_tracking), dim=0)
+
+
+class AdaptiveNode(LIFNode):
+
+    def __init__(self, threshold=1., act_fun=QGateGrad, step=10, spike_output=True, *args, **kwargs):
+        super().__init__(threshold=threshold, step=step, **kwargs)
+        self.n_encode_type = kwargs['n_encode_type'] if 'n_encode_type' in kwargs else 'linear'
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        self.act_fun = act_fun(alpha=2., requires_grad=False)
+        # self.act_fun = BinaryActivation()
+        print(self.n_encode_type)
+        if self.n_encode_type == 'linear':
+            self.encoder = nn.Sequential(
+                CustomLinear(self.step, self.step)
+            )
+        elif self.n_encode_type == 'mlp':
+            # Direct
+            self.encoder = nn.Sequential(
+                CustomLinear(self.step, self.step),
+                nn.ReLU(),
+                CustomLinear(self.step, self.step),
+                nn.ReLU(),
+                CustomLinear(self.step, self.step),
+                nn.ReLU(),
+                CustomLinear(self.step, self.step),
+            )
+        elif self.n_encode_type == 'att':
+            # -> SE block
+            self.encoder = nn.Sequential(
+                nn.Linear(self.step, self.step),
+                nn.ReLU(),
+                nn.Linear(self.step, self.step),
+                nn.ReLU(),
+                nn.Linear(self.step, self.step),
+                nn.Sigmoid()
+            )
+        elif self.n_encode_type == 'conv':
+            self.encoder = nn.Sequential(
+                nn.Linear(self.step, self.step),
+                nn.ReLU(),
+                nn.Linear(self.step, self.step),
+            )
+            # self.init_weight()
+        else:
+            raise NotImplementedError('Unrecognizable categories {}.'.format(self.n_encode_type))
+
+        self.saved_mem = 0.
+
+    def init_weight(self):
+        for mod in self.encoder.modules():
+            if isinstance(mod, nn.Conv1d):
+                mod.weight.data[:, :, 4] = 1. / mod.weight.shape[0]
+                mod.weight.data[:, :, [0, 1, 2, 3, 5, 6, 7, 8]] = 0.
+                mod.bias.data[:] = 0.
+
+    def forward(self, inputs):  # (t b) c w h
+        if self.n_encode_type != 'conv':
+            x = rearrange(inputs, '(t b) ... -> b ... t', t=self.step)
+        else:
+            c, w, h = inputs.shape[1:]
+            x = rearrange(inputs, '(t b) c w h -> (b c w h) 1 t', t=self.step)
+
+        if self.n_encode_type != 'att':
+            x = self.encoder(x)  # Direct
+        else:
+            x = x * self.encoder(x)  # SE Block
+
+        if self.n_encode_type != 'conv':
+            x = rearrange(x, 'b ... t -> (t b) ...')
+        else:
+            x = rearrange(x, '(b c w h) 1 t -> (t b) c w h', c=c, w=w, h=h)
+
+        # self.spike = self.act_fun(x - 0.5)
+        # # print(self.spike.mean())
+        # # print(self.requires_fp)
+        # if self.requires_fp:
+        #     spike = rearrange(self.spike, '(t b) c w h -> t b c w h', t=self.step)
+        #     for t in range(self.step):
+        #         # print(t, float(spike[t].mean()), float(spike[t].std()))
+        #         self.feature_map.append(spike[t])
+        #     self.saved_mem = x
+        # return self.spike
+
+        return super().forward(x)
+
+    # def get_thres(self):
+    #     mem_relu = F.relu(self.mem.detach())
+    #     return mem_relu[mem_relu > 0.].median()
+
+    def n_reset(self):
+        super().n_reset()
+        self.saved_mem = 0.

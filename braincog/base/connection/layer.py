@@ -226,3 +226,30 @@ class LIPool(nn.Module):
 
     def reset(self):
         self.sumspike = 0
+
+
+class CustomLinear(nn.Module):
+
+    def __init__(self, in_channels, out_channels, bias=True):
+        super(CustomLinear, self).__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        # self.weight = Parameter(torch.tensor([
+        #     [1., .5, .25, .125],
+        #     [0., 1., .5, .25],
+        #     [0., 0., 1., .5],
+        #     [0., 0., 0., 1.]
+        # ]), requires_grad=True)
+        self.weight = Parameter(torch.diag(torch.ones(self.in_channels)), requires_grad=True)
+        # self.weight = Parameter(torch.randn(self.in_channels, self.in_channels))
+        mask = torch.tril(torch.ones(self.in_channels, self.in_channels), diagonal=0)
+        self.register_buffer('mask', mask)
+
+        if bias:
+            self.bias = Parameter(torch.zeros(out_channels), requires_grad=True)
+        else:
+            self.register_parameter('bias', None)
+
+    def forward(self, inputs):
+        weight = self.mask * self.weight
+        return F.linear(inputs, weight, self.bias)
