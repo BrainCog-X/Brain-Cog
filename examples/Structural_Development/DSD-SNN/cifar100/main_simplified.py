@@ -1,11 +1,4 @@
-# encoding: utf-8
-# Author    : Floyed<Floyed_Shen@outlook.com>
-# Datetime  : 2022/4/28 14:56
-# User      : Floyed
-# Product   : PyCharm
-# Project   : braincog
-# File      : main_simplified.py
-# explain   : Simplified training script. Remove support for DDP, IMAGENET, Augment, etc.
+
 
 import argparse
 import time
