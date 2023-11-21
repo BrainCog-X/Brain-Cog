@@ -22,11 +22,11 @@ Human Brain Simulation is a large scale brain modeling framework depending on br
 
 ## Input:
 
-The binary connectivity matrix can be obtained from the following link:
-https://drive.google.com/file/d/1f8fpXgR8X07HrJ7G9DwMAl8K0naPcxJC/view?usp=sharing
+The 88 regions' connectivity matrix can be obtained from the following link:
+[https://drive.google.com/file/d/1f8fpXgR8X07HrJ7G9DwMAl8K0naPcxJC/view?usp=sharing](https://drive.google.com/file/d/1tLHxCtm2kawKVvJ1BhAbkFKeyxcrJwnO/view?usp=sharing)
 
-The brain region's name corresponding to the label in the connectivity matrix can be obtained from the following link:
-https://docs.google.com/spreadsheets/d/1C8r6T76gogUPYg4HjqlSAV4zJlE5KN1u/edit?usp=share_link&ouid=110014718433166441807&rtpof=true&sd=true
+The source of this connectivity matrix is in the following link:
+https://www.nitrc.org/frs/?group_id=432
 
 ## Example:
 
@@ -38,29 +38,4 @@ python human_brain.py
 ## Parameters:
 The parameters are similar to mouse brain simulation 
 
-## Citations:
-If you find this package helpful, please consider citing the following papers:
 
-    @article{Liu2016,
-    author={Liu, Xin and Zeng, Yi and Zhang, Tielin and Xu, Bo},
-    title={Parallel Brain Simulator: A Multi-scale and Parallel Brain-Inspired Neural Network Modeling and Simulation Platform},
-    journal={Cognitive Computation},
-    year={2016},
-    month={Oct},
-    day={01},
-    volume={8},
-    number={5},
-    pages={967--981},
-    issn={1866-9964},
-    doi={10.1007/s12559-016-9411-y},
-    url={https://doi.org/10.1007/s12559-016-9411-y}
-    }
-
-    @misc{https://doi.org/10.48550/arxiv.2207.08533,
-      doi = {10.48550/ARXIV.2207.08533},
-      url = {https://arxiv.org/abs/2207.08533},
-      author = {Zeng, Yi and Zhao, Dongcheng and Zhao, Feifei and Shen, Guobin and Dong, Yiting and Lu, Enmeng and Zhang, Qian and Sun, Yinqian and Liang, Qian and Zhao, Yuxuan and Zhao, Zhuoya and Fang, Hongjian and Wang, Yuwei and Li, Yang and Liu, Xin and Du, Chengcheng and Kong, Qingqun and Ruan, Zizhe and Bi, Weida},
-      title = {BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation},
-      publisher = {arXiv},
-      year = {2022},
-    }
