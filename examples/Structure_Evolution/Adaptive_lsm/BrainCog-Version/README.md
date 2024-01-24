@@ -1,9 +1,8 @@
 
 
-# Adaptive structure evolution and biologically plausible synaptic plasticity for recurrent spiking neural networks —— Based on BrainCog #
+# Emergence of Brain-inspired Small-world Spiking Neural Network through Neuroevolution —— Based on BrainCog #
 
 
-**This is the BrainBog-based version of the paper. To run the original code, please go to [raw](https://github.com/BrainCog-X/Brain-Cog/tree/main/examples/Structure_Evolution/Adaptive_lsm/raw)**
 
 ## Requirments ##
 * numpy
@@ -19,16 +18,12 @@
 If you find the code and dataset useful in your research, please consider citing:
 ```
 
-@article{pan2023adaptive,
-	title = {Adaptive structure evolution and biologically plausible synaptic plasticity for recurrent spiking neural networks},
-	author = {Pan, Wenxuan and Zhao, Feifei and Zeng, Yi and Han, Bing},
-	journal = {Scientific Reports},
-	volume = {13},
-	number = {1},
-	pages = {16924},
-	year = {2023},
-	url = {https://doi.org/10.1038/s41598-023-43488-x},
-	doi = {10.1038/s41598-023-43488-x},
+@article{pan2024emergence,
+  title={Emergence of Brain-inspired Small-world Spiking Neural Network through Neuroevolution},
+  author={Pan, Wenxuan and Zhao, Feifei and Han, Bing and Dong, Yiting and Zeng, Yi},
+  journal={iScience},
+  year={2024},
+  publisher={Elsevier}
 }
 
 @article{zeng2023braincog,
