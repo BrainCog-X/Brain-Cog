@@ -9,7 +9,7 @@ To run the PL-SDQN model, please install 'tianshou' framework first https://gith
 * scipy
 * pytorch >= 1.7.0
 * torchvision
-* gym
+* gymnasium[atari, accept-rom-license]
 * atari-py
 * opencv-python
 * tianshou
@@ -17,9 +17,14 @@ To run the PL-SDQN model, please install 'tianshou' framework first https://gith
 ## Train
 
 ```shell  
-python ./sdqn/main.py
+python ./main_sdqn.py
 ```
 
+or
+
+```shell
+python ./main_mcs_fqf.py
+```
 
 
 ## Citation

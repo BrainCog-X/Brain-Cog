@@ -16,8 +16,8 @@ from tianshou.trainer import offpolicy_trainer
 from tianshou.utils import TensorboardLogger, WandbLogger
 import random 
 
-from network import SpikingDQN
-from ..atari.atari_wrapper import wrap_deepmind
+from sdqn.network import SpikingDQN
+from atari.atari_wrapper import wrap_deepmind
 from torch.utils.tensorboard import SummaryWriter
 
 
