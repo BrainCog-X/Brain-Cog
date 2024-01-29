@@ -3,7 +3,7 @@ import numpy as  np
 import torch.nn as nn
 from model import Motion
 import tqdm
-import argparse
+import argparse, os
 from torch.nn import functional as F
 
 parser = argparse.ArgumentParser(description='Motor Parameters')
@@ -91,6 +91,7 @@ def main():
     T = 100
     batch_size = 32
     EPOCHS = 200
+    os.makedirs(os.path.dirname(args.log_path), exist_ok=True)
     with open(args.log_path, 'a+') as f:
         argsDict = args.__dict__
         f.writelines('------------------ start ------------------' + '\n')

@@ -12,6 +12,16 @@ This repository contains code from our paper [**Quantum superposition inspired s
 
 ## Train
 
+
+Edit the path of the dataset in `main.py`:
+
+```python
+# change root parameter to your own dataset path
+train_loader, test_loader, _, _ = get_mnist_data(batch_size=1, skip_norm=True, root="./data")
+```
+
+Run the following command to train the QSNN model:
+
 ```shell  
 python ./main.py
 ```

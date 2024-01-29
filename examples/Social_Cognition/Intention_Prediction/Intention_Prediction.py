@@ -13,14 +13,14 @@ from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-from BrainCog.base.strategy.surrogate import *
+from braincog.base.strategy.surrogate import *
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import random
 
-from BrainCog.base.node.node import *
-from BrainCog.base.learningrule.STDP import MutliInputSTDP
+from braincog.base.node.node import *
+from braincog.base.learningrule.STDP import MutliInputSTDP
 
 class CustomLinear(nn.Module):
     def __init__(self, weight,mask=None):
