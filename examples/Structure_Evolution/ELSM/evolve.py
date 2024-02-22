@@ -4,7 +4,6 @@ from threading import Thread
 import os
 import networkx as nx
 import numpy as np
-from population import *
 import nsganet as engine
 from pymop.problem import Problem
 from pymoo.optimize import minimize
@@ -13,7 +12,6 @@ from pymoo.operators.mutation.bitflip_mutation import BinaryBitflipMutation
 import logging
 from model import *
 from spikes import calc_f2
-from mul import mul_f1
 
 _logger = logging.getLogger('')
 config_parser = parser = argparse.ArgumentParser(description='Evolution Config', add_help=False)
@@ -39,7 +37,39 @@ def _parse_args():
     args = parser.parse_args(remaining)
     return args
 
+from multiprocessing import Process,Pool
+import networkx as nx
+from datetime import datetime
+import time
+from spikes import calc_f2
+import os
 
+def calc_f1(dirs):
+    ci=[]
+    G=nx.read_gpickle(dirs)
+    largest_component = max(nx.connected_components(G), key=len)
+    G = G.subgraph(largest_component)
+    for u in G.nodes:
+        ci.append(nx.clustering(G,u))
+    a=sum(ci)
+    print("start")
+    print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+    path=nx.average_shortest_path_length(G)
+    print("end")
+    print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+    return a,path
+
+def mul_f1(pop,steps,rootdir):
+    result=[]
+    for i in range(0,pop,steps):
+        p = Pool(steps)
+        dirs=[os.path.join(rootdir,str(i)+'.pkl') for i in range(i,i+steps)]
+        ret = p.map(calc_f1,dirs)
+        result.extend(ret)
+        print(ret)
+        p.close()
+        p.join()
+    return result
 
 class Evolve(Problem):
     # first define the NAS problem (inherit from pymop)
