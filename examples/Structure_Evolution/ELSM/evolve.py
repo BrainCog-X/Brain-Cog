@@ -4,6 +4,7 @@ from threading import Thread
 import os
 import networkx as nx
 import numpy as np
+from population import *
 import nsganet as engine
 from pymop.problem import Problem
 from pymoo.optimize import minimize
@@ -12,22 +13,26 @@ from pymoo.operators.mutation.bitflip_mutation import BinaryBitflipMutation
 import logging
 from model import *
 from spikes import calc_f2
+from multiprocessing import Process,Pool
+from datetime import datetime
+import time
+
 
 _logger = logging.getLogger('')
 config_parser = parser = argparse.ArgumentParser(description='Evolution Config', add_help=False)
 
-parser = argparse.ArgumentParser(description='ELSM')
+parser = argparse.ArgumentParser(description='SNN Evoving')
 parser.add_argument('--device', type=int, default=2)
 parser.add_argument('--seed', type=int, default=68, metavar='S')
-parser.add_argument('--datapath', default='', type=str, metavar='PATH')
-parser.add_argument('--output', default='', type=str, metavar='PATH')
+parser.add_argument('--datapath', default='/data/', type=str, metavar='PATH')
+parser.add_argument('--output', default='/data/LSM/Eresult/new', type=str, metavar='PATH')
 parser.add_argument('--liquid-size', type=int, default=8000)
-parser.add_argument('--pop-size', type=int, default=80)
+parser.add_argument('--pop-size', type=int, default=20)
 parser.add_argument('--up', type=int, default=32000000)
 parser.add_argument('--low', type=int, default=320000)
 
-parser.add_argument('--n_offspring', type=int, default=100)
-parser.add_argument('--n_gens', type=int, default=10000)
+parser.add_argument('--n_offspring', type=int, default=200)
+parser.add_argument('--n_gens', type=int, default=2000)
 parser.add_argument('--arand', type=float, default=285)
 parser.add_argument('--brand', type=float, default=1.8)
 
@@ -36,13 +41,6 @@ def _parse_args():
     args_config, remaining = config_parser.parse_known_args()
     args = parser.parse_args(remaining)
     return args
-
-from multiprocessing import Process,Pool
-import networkx as nx
-from datetime import datetime
-import time
-from spikes import calc_f2
-import os
 
 def calc_f1(dirs):
     ci=[]
@@ -159,8 +157,8 @@ def do_every_generations(algorithm):
                 'c'+str(float('%.4f' % pop_obj[best_cid, 1])),
             ])
         
-        np.save(os.path.join('',best_sname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 0])])
-        np.save(os.path.join('',best_cname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 1])])
+        np.save(os.path.join('/data/save/genome',best_sname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 0])])
+        np.save(os.path.join('/data/save/genome',best_cname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 1])])
 
 if __name__ == '__main__':
     args = _parse_args()
