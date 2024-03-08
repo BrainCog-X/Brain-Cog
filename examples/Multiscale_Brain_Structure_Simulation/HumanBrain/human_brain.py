@@ -101,8 +101,8 @@ def syn_cross_region(weight_matrix, region):
 
 size = 500
 neuron_model = 'HH'
-weight_matrix = torch.tensor(genfromtxt("./human.csv", delimiter=',', skip_header=False)) * 100
-weight_matrix = weight_matrix.int()
+weight_matrix = np.load('./IIT_connectivity_matrix.npy')
+weight_matrix = torch.from_numpy(weight_matrix)
 
 NR = len(weight_matrix)
 data = size * np.ones(NR)
