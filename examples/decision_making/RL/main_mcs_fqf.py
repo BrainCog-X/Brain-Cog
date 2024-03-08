@@ -3,16 +3,16 @@ import os
 import pprint
 import numpy as np
 import torch
-from network import SpikingDQN
-from ..atari.atari_wrapper import wrap_deepmind
+from mcs_fqf.network import SpikingDQN
+from atari.atari_wrapper import wrap_deepmind
 from torch.utils.tensorboard import SummaryWriter
 
 from tianshou.data import Collector, VectorReplayBuffer
 from tianshou.env import ShmemVectorEnv
 from tianshou.trainer import offpolicy_trainer
-from tianshou.utils import TensorboardLogger, SequenceLogger
-from discrete import SpikeFractionProposalNetwork, SpikeFullQuantileFunction
-from policy import FQFPolicy
+from tianshou.utils import TensorboardLogger
+from mcs_fqf.discrete import SpikeFractionProposalNetwork, SpikeFullQuantileFunction
+from mcs_fqf.policy import FQFPolicy
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -144,11 +144,10 @@ def main(args=get_args()):
     if not os.path.exists(model_log_path):
         os.makedirs(model_log_path)
     print('log_path: ', log_path)
-   
+
     writer = SummaryWriter(log_path)
     writer.add_text("args", str(args))
     logger = TensorboardLogger(writer, save_interval=args.save_interval)
-    result_logger = SequenceLogger(log_path)
 
     def save_checkpoint_fn(epoch, env_step, gradient_step, epoch_round=True):
         # see also: https://pytorch.org/tutorials/beginner/saving_loading_models.html
@@ -249,13 +248,12 @@ def main(args=get_args()):
         train_fn=train_fn,
         test_fn=test_fn,
         stop_fn=stop_fn,
-        save_fn=save_fn,
+        save_best_fn=save_fn,
         logger=logger,
         update_per_step=args.update_per_step,
         test_in_train=False,
         resume_from_log=args.resume_id is not None,
         save_checkpoint_fn=save_checkpoint_fn,
-        result_logger=result_logger
     )
 
     pprint.pprint(result)

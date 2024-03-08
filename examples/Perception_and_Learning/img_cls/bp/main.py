@@ -29,7 +29,8 @@ import torchvision.utils
 from torch.nn.parallel import DistributedDataParallel as NativeDDP
 
 from timm.data import ImageDataset, create_loader, resolve_data_config, Mixup, FastCollateMixup, AugMixDataset
-from timm.models import load_checkpoint, create_model, resume_checkpoint, convert_splitbn_model, register_model
+from timm.models import load_checkpoint, create_model, resume_checkpoint, register_model
+from timm.models.layers import convert_splitbn_model
 from timm.utils import *
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy, JsdCrossEntropy
 from timm.optim import create_optimizer
@@ -246,7 +247,7 @@ parser.add_argument('--pin-mem', action='store_true', default=False,
                     help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
 parser.add_argument('--no-prefetcher', action='store_true', default=False,
                     help='disable fast prefetcher')
-parser.add_argument('--output', default='/data/floyed/BrainCog', type=str, metavar='PATH',
+parser.add_argument('--output', default=None, type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
 parser.add_argument('--tensorboard-dir', default='./runs', type=str)
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',

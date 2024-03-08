@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 from tianshou.data import Batch, ReplayBuffer, to_numpy
 from tianshou.policy import DQNPolicy, QRDQNPolicy
-from discrete import SpikeFractionProposalNetwork, SpikeFullQuantileFunction
+from .discrete import SpikeFractionProposalNetwork, SpikeFullQuantileFunction
 
 
 class FQFPolicy(QRDQNPolicy):

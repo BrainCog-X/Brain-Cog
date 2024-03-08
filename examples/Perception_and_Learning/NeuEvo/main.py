@@ -27,7 +27,8 @@ import torchvision.utils
 from torch.nn.parallel import DistributedDataParallel as NativeDDP
 
 from timm.data import create_loader, resolve_data_config, Mixup, FastCollateMixup, AugMixDataset
-from timm.models import load_checkpoint, create_model, resume_checkpoint, convert_splitbn_model
+from timm.models import load_checkpoint, create_model, resume_checkpoint
+from timm.models.layers import convert_splitbn_model
 from timm.utils import *
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy, JsdCrossEntropy
 from timm.optim import create_optimizer
@@ -242,7 +243,7 @@ parser.add_argument('--pin-mem', action='store_true', default=False,
                     help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
 parser.add_argument('--no-prefetcher', action='store_true', default=False,
                     help='disable fast prefetcher')
-parser.add_argument('--output', default='/data/floyed/BrainCog/darts', type=str, metavar='PATH',
+parser.add_argument('--output', default=None, type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',
                     help='Best metric (default: "top1"')
@@ -316,7 +317,7 @@ parser.add_argument('--conf-mat', action='store_true')
 parser.add_argument('--init-channels', type=int, default=36)
 parser.add_argument('--layers', type=int, default=16)
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
-parser.add_argument('--arch', default='', type=str)
+parser.add_argument('--arch', default='mlp1', type=str)
 parser.add_argument('--parse_method', default='darts', type=str)
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
 parser.add_argument('--back-connection', action='store_true')

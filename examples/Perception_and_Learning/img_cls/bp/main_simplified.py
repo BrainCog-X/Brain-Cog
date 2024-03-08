@@ -31,7 +31,8 @@ import torch.nn as nn
 import torchvision.utils
 
 from timm.data import ImageDataset, create_loader, resolve_data_config, Mixup, FastCollateMixup, AugMixDataset
-from timm.models import load_checkpoint, create_model, resume_checkpoint, convert_splitbn_model
+from timm.models import load_checkpoint, create_model, resume_checkpoint
+from timm.models.layers import convert_splitbn_model
 from timm.utils import *
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy, JsdCrossEntropy
 from timm.optim import create_optimizer
@@ -125,7 +126,7 @@ parser.add_argument('--recovery-interval', type=int, default=0, metavar='N',
 parser.add_argument('-j', '--workers', type=int, default=8, metavar='N',
                     help='how many training processes to use (default: 1)')
 parser.add_argument('--device', type=int, default=0)
-parser.add_argument('--output', default='/data/floyed/braincog', type=str, metavar='PATH',
+parser.add_argument('--output', default=None, type=str, metavar='PATH',
                     help='path to output folder (default: none, current dir)')
 parser.add_argument('--eval-metric', default='top1', type=str, metavar='EVAL_METRIC',
                     help='Best metric (default: "top1"')

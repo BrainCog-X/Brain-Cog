@@ -5,7 +5,7 @@ import torch
 from torch import nn
 
 from braincog.base.node.node import LIFNode
-from ..utils.normalization import PopNorm
+from utils.normalization import PopNorm
 
 
 class SpikingDQN(nn.Module):

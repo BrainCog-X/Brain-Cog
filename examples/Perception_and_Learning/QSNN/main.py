@@ -29,9 +29,7 @@ TEST_THETA = [0, 1 / 16, 2 / 16, 3 / 16, 4 / 16, 5 / 16, 6 / 16, 7 / 16, 8 / 16]
 NOISE_RATES = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
 
-mnist_data = get_mnist_data(batch_size=1, skip_norm=True)
-
-train_loader, test_loader = mnist_data.get_data_loaders()
+train_loader, test_loader, _, _ = get_mnist_data(batch_size=1, skip_norm=True)
 
 NET_SIZE = [28 * 28, 500, 10]
 

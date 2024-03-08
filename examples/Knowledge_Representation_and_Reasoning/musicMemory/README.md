@@ -19,8 +19,19 @@ The dataset used here can be referred to the website http://www.piano-midi.de/.
 
 ## Run
 * Run the script *task/musicMemory.py* to memorize and recall the musical melodies, the result will be recorded in a midi file.
+
+```shell
+cd ./task
+python ./musicMemory.py
+```
+
 * Run the script *task/musicGeneration.py* to learn and generate melodies with different styles, the result will be recorded in a midi file.
 The API and details can be found in these scripts. 
+
+```shell
+cd ./task
+python ./musicGeneration.py
+```
 
 ## Citation
 If you find this package helpful, please consider citing the following papers:

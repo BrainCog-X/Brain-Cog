@@ -1,10 +1,10 @@
 # Spiking capsnet: A spiking neural network with a biologically plausible routing rule between capsules
 
 ## Run
-```shell
-python main.py
-```
 
+```shell
+python spikingcaps.py
+```
 
 ## Citation
 

@@ -47,10 +47,10 @@ class QSEncoder:
         elif self._shift:
             signals = self.shift_trans(image, image_delta, image_ori, image_ori_delta)
         else:
-            signals = np.zeros((self.steps, image.shape[0]))
+            signals = np.zeros((self._steps, image.shape[0]))
             signal_possion = np.random.poisson(image, (self._sig_len, image.shape[0]))
             signals[:self._sig_len] = signal_possion[:]
-        return signal.T
+        return signals.T
 
 
     def shift_trans(self, image, image_delta, image_ori, image_ori_delta):
