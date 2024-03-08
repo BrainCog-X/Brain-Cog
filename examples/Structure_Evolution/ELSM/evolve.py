@@ -13,23 +13,26 @@ from pymoo.operators.mutation.bitflip_mutation import BinaryBitflipMutation
 import logging
 from model import *
 from spikes import calc_f2
-from mul import mul_f1
+from multiprocessing import Process,Pool
+from datetime import datetime
+import time
+
 
 _logger = logging.getLogger('')
 config_parser = parser = argparse.ArgumentParser(description='Evolution Config', add_help=False)
 
-parser = argparse.ArgumentParser(description='ELSM')
+parser = argparse.ArgumentParser(description='SNN Evoving')
 parser.add_argument('--device', type=int, default=2)
 parser.add_argument('--seed', type=int, default=68, metavar='S')
-parser.add_argument('--datapath', default='', type=str, metavar='PATH')
-parser.add_argument('--output', default='', type=str, metavar='PATH')
+parser.add_argument('--datapath', default='/data/', type=str, metavar='PATH')
+parser.add_argument('--output', default='/data/LSM/Eresult/new', type=str, metavar='PATH')
 parser.add_argument('--liquid-size', type=int, default=8000)
-parser.add_argument('--pop-size', type=int, default=80)
+parser.add_argument('--pop-size', type=int, default=20)
 parser.add_argument('--up', type=int, default=32000000)
 parser.add_argument('--low', type=int, default=320000)
 
-parser.add_argument('--n_offspring', type=int, default=100)
-parser.add_argument('--n_gens', type=int, default=10000)
+parser.add_argument('--n_offspring', type=int, default=200)
+parser.add_argument('--n_gens', type=int, default=2000)
 parser.add_argument('--arand', type=float, default=285)
 parser.add_argument('--brand', type=float, default=1.8)
 
@@ -39,7 +42,32 @@ def _parse_args():
     args = parser.parse_args(remaining)
     return args
 
+def calc_f1(dirs):
+    ci=[]
+    G=nx.read_gpickle(dirs)
+    largest_component = max(nx.connected_components(G), key=len)
+    G = G.subgraph(largest_component)
+    for u in G.nodes:
+        ci.append(nx.clustering(G,u))
+    a=sum(ci)
+    print("start")
+    print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+    path=nx.average_shortest_path_length(G)
+    print("end")
+    print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+    return a,path
 
+def mul_f1(pop,steps,rootdir):
+    result=[]
+    for i in range(0,pop,steps):
+        p = Pool(steps)
+        dirs=[os.path.join(rootdir,str(i)+'.pkl') for i in range(i,i+steps)]
+        ret = p.map(calc_f1,dirs)
+        result.extend(ret)
+        print(ret)
+        p.close()
+        p.join()
+    return result
 
 class Evolve(Problem):
     # first define the NAS problem (inherit from pymop)
@@ -129,8 +157,8 @@ def do_every_generations(algorithm):
                 'c'+str(float('%.4f' % pop_obj[best_cid, 1])),
             ])
         
-        np.save(os.path.join('',best_sname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 0])])
-        np.save(os.path.join('',best_cname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 1])])
+        np.save(os.path.join('/data/save/genome',best_sname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 0])])
+        np.save(os.path.join('/data/save/genome',best_cname+datetime.now().strftime("%Y%m%d-%H%M%S")),pop_var[np.argmin(pop_obj[:, 1])])
 
 if __name__ == '__main__':
     args = _parse_args()
