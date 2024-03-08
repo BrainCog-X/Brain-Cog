@@ -1,0 +1,6 @@
+numpy~=1.18.5
+torch~=1.7.0
+ray~=1.13.0
+git+https://github.com/oxwhirl/smac.git
+wandb~=0.13.11
+argparse~=1.4.0
