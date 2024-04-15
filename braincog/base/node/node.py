@@ -146,7 +146,23 @@ class BaseNode(nn.Module, abc.ABC):
         :return: 输出的脉冲
         """
 
-        if self.layer_by_layer or self.groups != 1:
+        if hasattr(self, 'parallel') and self.parallel is True:
+            inputs = self.rearrange2node(inputs)
+            if self.mem_detach and hasattr(self.mem, 'detach'):
+                self.mem = self.mem.detach()
+                self.spike = self.spike.detach()
+            self.integral(inputs)
+
+            self.calc_spike()
+
+            if self.requires_fp is True:
+                self.feature_map.append(self.spike)
+            if self.requires_mem is True:
+                self.mem_collect.append(self.mem)
+
+            return self.rearrange2op(self.spike)
+
+        elif self.layer_by_layer or self.groups != 1:
             inputs = self.rearrange2node(inputs)
 
             outputs = []
@@ -667,6 +683,115 @@ class PLIFNode(BaseNode):
     def calc_spike(self):
         self.spike = self.act_fun(self.mem - self.get_thres())
         self.mem = self.mem * (1 - self.spike.detach())
+
+
+class PSU(BaseNode):
+    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
+        super().__init__(threshold, *args, **kwargs)
+        init_w = -math.log(tau - 1.)
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        self.parallel = True
+        self.act_fun = act_fun(alpha=2., requires_grad=True)
+
+        T = self.step
+        m1, m2 = generate_matrix(T, tau)
+        self.register_buffer('m1', m1)
+        self.register_buffer('m2', m2)
+        self.m2 *= self.threshold
+
+    def integral(self, inputs):
+        d1 = self.m1 @ inputs.flatten(1)
+        self.mem = (d1 + self.m2 @ d1.sigmoid()).view(inputs.shape)
+
+    def calc_spike(self):
+        self.spike = self.act_fun(self.mem - self.threshold)
+
+
+class IPSU(BaseNode):
+    def masked_weight(self):
+        return self.fc.weight * self.mask0
+
+    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
+        super().__init__(threshold, *args, **kwargs)
+        init_w = -math.log(tau - 1.)
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        self.parallel = True
+        self.act_fun = act_fun(alpha=2., requires_grad=True)
+
+        T = self.step
+        matrix, matrix2 = generate_matrix(T, tau)
+        self.register_buffer('m1', matrix)
+        self.register_buffer('m2', matrix2)
+        # self.m2 *= self.threshold
+
+        self.fc = nn.Linear(T, T)
+        nn.init.constant_(self.fc.bias, 0.)
+        nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='relu')
+
+        mask0 = torch.tril(torch.ones([T, T]))
+        self.register_buffer('mask0', mask0)
+
+    def integral(self, inputs):
+        d1 = torch.addmm(self.fc.bias.unsqueeze(1), self.masked_weight(), inputs.flatten((1)))
+        self.mem = (d1 + self.m2 @ inputs.flatten(1)).view(inputs.shape)
+
+    def calc_spike(self):
+        self.spike = self.act_fun(self.mem - self.threshold)
+
+
+class RPSU(BaseNode):
+    def masked_weight(self):
+        return self.fc.weight * self.mask0
+
+    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
+        super().__init__(threshold, *args, **kwargs)
+        init_w = -math.log(tau - 1.)
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        self.parallel = True
+        self.act_fun = act_fun(alpha=2., requires_grad=True)
+
+        T = self.step
+        matrix, matrix2 = generate_matrix(T, tau)
+        self.register_buffer('m1', matrix)
+        self.register_buffer('m2', matrix2)
+        # self.m2 *= self.threshold
+
+        self.fc = nn.Linear(T, T)
+        nn.init.constant_(self.fc.bias, 0.)
+        nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='relu')
+
+        mask0 = torch.tril(torch.ones([T, T]))
+        self.register_buffer('mask0', mask0)
+
+    def integral(self, inputs):
+        d1 = self.m1 @ inputs.flatten(1)
+        d2 = torch.addmm(self.fc.bias.unsqueeze(1), self.masked_weight(), inputs.flatten((1)))
+        self.mem = (d1 + self.m2 @ d2.sigmoid()).view(inputs.shape)
+
+    def calc_spike(self):
+        self.spike = self.act_fun(self.mem - self.threshold)
+
+
+class SPSN(BaseNode):
+    def __init__(self, threshold=1., tau=2., act_fun=AtanGrad, *args, **kwargs):
+        super().__init__(threshold, *args, **kwargs)
+        init_w = -math.log(tau - 1.)
+        if isinstance(act_fun, str):
+            act_fun = eval(act_fun)
+        self.parallel = True
+        self.act_fun = act_fun(alpha=2., requires_grad=True)
+
+        m1, m2 = generate_matrix(self.step, tau)
+        self.register_buffer('m1', m1)
+
+    def integral(self, inputs):
+        self.mem = (self.m1 @ inputs.flatten(1)).sigmoid().view(inputs.shape)
+
+    def calc_spike(self):
+        self.spike = torch.bernoulli(self.mem)
 
 
 class NoisePLIFNode(PLIFNode):
