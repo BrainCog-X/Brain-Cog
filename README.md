@@ -140,10 +140,17 @@ python main.py --model cifar_convnet --dataset cifar10 --node-type LIFNode --ste
 cd ./examples/Perception_and_Learning/img_cls/bp 
 python main.py --model dvs_convnet --node-type LIFNode --dataset dvsc10 --step 10 --batch-size 128 --act-fun QGateGrad --device 0 
 ```
-
+      
 Other BrainCog features and tutorials can be found at http://www.brain-cog.network/docs/
 
 ## BrainCog Assistant 
 Please add our BrainCog Assitant via wechat and we will invite you to our wechat developer group.
 ![image](https://github.com/Brain-Cog-Lab/Brain-Cog/blob/main/figures/wechat_ass.jpg)
 
+
+## Maintenance
+This project is led by 
+
+**1.Brain-inspired Cognitive Intelligence Lab, Institute of Automation, Chinese Academy of Sciences http://www.braincog.ai/**
+
+**2.Center for Long-term Artificial Intelligence (CLAI) http://long-term-ai.center/**
