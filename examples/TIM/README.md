@@ -64,7 +64,6 @@ python main.py --model spikformer_dvs --dataset NCARS --epoch 500 --batch-size 1
 python main.py --model spikformer_dvs --dataset UCF101DVS --epoch 500 --batch-size 16 --event-size 64  --num_classes 101
 ```
 ### Training on HMDB51DVS
-```num_classes``` should be set to 101,```if_UCF``` should be set to ```True``` 
 ```
 python main.py --model spikformer_dvs --dataset HMDBDVS --epoch 500 --batch-size 16 --event-size 64  --num_classes 51
 ```
