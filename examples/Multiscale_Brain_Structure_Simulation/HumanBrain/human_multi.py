@@ -18,13 +18,13 @@ device = 'cuda:0'
 
 class MultiCompartmentaEIF(BaseNode):
     """
-    三房室神经元模型
+    双房室神经元模型
     :param threshold: 神经元发放脉冲需要达到的阈值
     :param v_reset: 静息电位
     :param tau: 胞体膜电位时间常数, 用于控制胞体膜电位衰减
     :param tau_basal: 基底树突膜电位时间常数, 用于控制基地树突胞体膜电位衰减
     :param tau_apical: 远端树突膜电位时间常数, 用于控制远端树突胞体膜电位衰减
-    :param comps: 神经元不同房室, 例如["apical", "basal", "soma"]
+    :param comps: 神经元不同房室, 例如["apical", "soma"]
     :param act_fun: 脉冲梯度代理函数
     """
     def __init__(self,
@@ -337,7 +337,7 @@ def syn_cross_region(weight_matrix, region):
 size = 100
 neuron_model = 'MultiCompartmentaEIF'
 
-weight_matrix = torch.from_numpy(np.load("/home/duchengcheng/brain/human/IIT_connectivity_matrix.npy")[0:84,0:84])
+weight_matrix = torch.from_numpy(np.load("IIT_connectivity_matrix.npy")[0:84,0:84])
 weight_matrix = weight_matrix.int() * 10
 # weight_matrix = np.load('./IIT_connectivity_matrix.npy')
 # weight_matrix = torch.from_numpy(weight_matrix)
