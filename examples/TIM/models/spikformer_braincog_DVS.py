@@ -91,17 +91,17 @@ class SSA(BaseModule):
 
         q_conv_out = self.q_conv(x_for_qkv)  
         q_conv_out = self.q_bn(q_conv_out).reshape(T, B, C, N).contiguous()
-        q_conv_out = self.q_lif(q_conv_out.flatten(0,1)).reshape(T, B, C ,N) 
+        q_conv_out = self.q_lif(q_conv_out.flatten(0,1)).reshape(T, B, C ,N).transpose(-2,-1)
         q = q_conv_out.reshape(T, B, N, self.num_heads, C//self.num_heads).permute(0, 1, 3, 2, 4).contiguous()
 
         k_conv_out = self.k_conv(x_for_qkv)
         k_conv_out = self.k_bn(k_conv_out).reshape(T, B, C, N).contiguous()
-        k_conv_out= self.k_lif(k_conv_out.flatten(0,1)).reshape(T, B, C ,N)
+        k_conv_out= self.k_lif(k_conv_out.flatten(0,1)).reshape(T, B, C ,N).transpose(-2,-1)
         k = k_conv_out.reshape(T, B, N, self.num_heads, C//self.num_heads).permute(0, 1, 3, 2, 4).contiguous()
 
         v_conv_out = self.v_conv(x_for_qkv)
         v_conv_out = self.v_bn(v_conv_out).reshape(T, B, C, N).contiguous()
-        v_conv_out = self.v_lif(v_conv_out.flatten(0,1)).reshape(T, B, C ,N)
+        v_conv_out = self.v_lif(v_conv_out.flatten(0,1)).reshape(T, B, C ,N).transpose(-2,-1)
         v = v_conv_out.reshape(T, B, N, self.num_heads, C//self.num_heads).permute(0, 1, 3, 2, 4).contiguous()
 
         #TIM on Q
