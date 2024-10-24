@@ -1,18 +1,21 @@
-numpy
-scipy
-h5py
-torch
-torchvision
-torchaudio
-timm
+scipy == 1.8.0
+h5py == 3.6.0
+torch >= 1.10
+torchvision >= 0.12.0
+torchaudio >= 0.11.0
+timm == 0.5.4
+matplotlib == 3.5.1
+einops == 0.4.1
+thop >= 0.0.31
+pyyaml == 6.0
+loris == 0.5.3
+pandas == 1.4.2
+xlrd == 1.2.0
+tonic
 scikit-learn
-einops
-thop
-pyyaml
 matplotlib
 seaborn
 pygame
 dv
 tensorboard
-tonic
-
+numpy
