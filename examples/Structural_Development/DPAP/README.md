@@ -30,7 +30,6 @@ If you find the code and dataset useful in your research, please consider citing
   number={8},
   year={2023},
   publisher={Elsevier},
-  doi={10.1016/j.patter.2023.100789}
 }
 ```
 
