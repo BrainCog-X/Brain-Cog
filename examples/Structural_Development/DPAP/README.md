@@ -14,18 +14,23 @@
 ## Citation ##
 If you find the code and dataset useful in your research, please consider citing:
 ```
-@article{han2022developmental,
+@article{han2024developmental,
   title={Developmental Plasticity-inspired Adaptive Pruning for Deep Spiking and Artificial Neural Networks},
   author={Han, Bing and Zhao, Feifei and Zeng, Yi and Shen, Guobin},
-  journal={arXiv preprint arXiv:2211.12714},
-  year={2022}
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  doi={10.1109/TPAMI.2024.3467268},
+  year={2024}
   }
   
-@article{zeng2022braincog,
-  title={BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation},
+@article{zeng2023braincog,
+  title={Braincog: A spiking neural network based, brain-inspired cognitive intelligence engine for brain-inspired ai and brain simulation},
   author={Zeng, Yi and Zhao, Dongcheng and Zhao, Feifei and Shen, Guobin and Dong, Yiting and Lu, Enmeng and Zhang, Qian and Sun, Yinqian and Liang, Qian and Zhao, Yuxuan and others},
-  journal={arXiv preprint arXiv:2207.08533},
-  year={2022}
+  journal={Patterns},
+  volume={4},
+  number={8},
+  year={2023},
+  publisher={Elsevier},
+  doi={10.1016/j.patter.2023.100789}
 }
 ```
 
