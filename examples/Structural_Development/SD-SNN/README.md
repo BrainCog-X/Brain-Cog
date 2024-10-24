@@ -14,18 +14,24 @@
 ## Citation ##
 If you find the code and dataset useful in your research, please consider citing:
 ```
-@article{han2022adaptive,
-  title={Adaptive Sparse Structure Development with Pruning and Regeneration for Spiking Neural Networks},
-  author={Han, Bing and Zhao, Feifei and Zeng, Yi and Pan, Wenxuan},
-  journal={arXiv preprint arXiv:2211.12219},
-  year={2022}
+@article{han2025adaptive,
+  title={Adaptive sparse structure development with pruning and regeneration for spiking neural networks},
+  author={Han, Bing and Zhao, Feifei and Pan, Wenxuan and Zeng, Yi},
+  journal={Information Sciences},
+  volume={689},
+  pages={121481},
+  year={2025},
+  publisher={Elsevier}
 }
   
-@article{zeng2022braincog,
-  title={BrainCog: A Spiking Neural Network based Brain-inspired Cognitive Intelligence Engine for Brain-inspired AI and Brain Simulation},
+@article{zeng2023braincog,
+  title={Braincog: A spiking neural network based, brain-inspired cognitive intelligence engine for brain-inspired ai and brain simulation},
   author={Zeng, Yi and Zhao, Dongcheng and Zhao, Feifei and Shen, Guobin and Dong, Yiting and Lu, Enmeng and Zhang, Qian and Sun, Yinqian and Liang, Qian and Zhao, Yuxuan and others},
-  journal={arXiv preprint arXiv:2207.08533},
-  year={2022}
+  journal={Patterns},
+  volume={4},
+  number={8},
+  year={2023},
+  publisher={Elsevier},
 }
 ```
 
