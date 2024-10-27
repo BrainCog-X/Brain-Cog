@@ -1,0 +1,104 @@
+exp:
+  name: "CIFAR100_B0_10S_TCIL"
+  savedir: "./logs"
+  tensorboard_dir: "./tensorboard"
+  debug: False
+
+
+#Model Cfg
+model: "incmodel"
+convnet: 'resnet18' 
+train_head: 'softmax'
+infer_head: 'softmax'
+channel: 64
+use_bias: False
+last_relu: False
+
+dea: True
+use_div_cls: False
+div_type: "n+1" # n+t, 1+1
+distillation: False
+disttype: "KL"
+temperature: 2
+distlamb: 1
+feature_type: "ffm" # se
+attention_use_residual: True
+ignore_new: True
+
+prune: False
+
+attention:
+  add_kl: True
+  kd_warm_up: 50
+  kd_loss_weight: 0.5
+  kl_loss_weight: 0.5
+
+reuse_oldfc: False
+weight_normalization: False
+val_per_n_epoch: -1 # Validation Per N epoch. -1 means the function is off.
+save_ckpt: True
+save_mem: True
+load_mem: False
+
+#Optimization;Training related
+task_max: 10
+lr_min: 0.00005
+lr: 0.1
+weight_decay: 0.0005
+dynamic_weight_decay: False
+scheduler: 'multistep'
+scheduling:
+  - 100
+  - 120
+lr_decay: 0.1
+optimizer: "sgd"
+epochs: 170
+resampling: False
+warmup: True
+warmup_epochs: 10
+
+postprocessor:
+  enable: True
+  type: 'bic'
+  epochs: 1
+  batch_size: 128
+  lr: 0.1
+  scheduling:
+    - 60
+    - 90
+    - 120
+  lr_decay_factor: 0.1
+  weight_decay: 0.0005
+
+pretrain:
+  epochs: 200
+  lr: 0.1
+  scheduling:
+    - 60
+    - 120
+    - 160
+  lr_decay: 0.1
+  weight_decay: 0.0005
+
+
+# Dataset Cfg
+dataset: "cifar100" #'imagenet100', 'cifar100'
+trial: 2
+increment: 10
+batch_size: 50
+workers: 1
+validation: 0 # Validation split (0. <= x <= 1.)
+random_classes: False #Randomize classes order of increment
+start_class: 0 # number of tasks for the first step, start from 0.
+start_task: 0
+max_task: # Cap the number of task
+
+#Memory
+coreset_strategy: "iCaRL"  # iCaRL, random
+mem_size_mode: "uniform_fixed_total_mem" #uniform_fixed_per_cls, uniform_fixed_total_mem
+memory_size: 2000 # Max number of storable examplars
+fixed_memory_per_cls: 20 # the fixed number of exemplars per cls
+
+# Misc
+device: 0 #GPU index to use, for cpu use -1
+seed: 1993
