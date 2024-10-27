@@ -19,8 +19,7 @@
 
 ## Run ##
 
-``` CUDA_VISIBLE_DEVICES=0 python3 -m main train with "./SCA-SNN/configs/train.yaml" exp.name="cifar_b0_10s" exp.savedir="./log/" exp.saveckpt="./ckpts_cifar_b0_10s/" exp.ckptdir="./log/" exp.tensorboard_dir="./tensorboard/" exp.debug=False --name="cifar_b0_10s" -D --force
-```
+``` CUDA_VISIBLE_DEVICES=0 python3 -m main train with "./SCA-SNN/configs/train.yaml" exp.name="cifar_b0_10s" exp.savedir="./log/" exp.saveckpt="./ckpts_cifar_b0_10s/" exp.ckptdir="./log/" exp.tensorboard_dir="./tensorboard/" exp.debug=False --name="cifar_b0_10s" -D --force```
 
 ## Citation ##
 If you find the code and dataset useful in your research, please consider citing:
