@@ -114,7 +114,11 @@ class BasicNet(nn.Module):
         
         if mask is not None:
             mat=mask.mat
-            for index, item in enumerate(self.convnets[task].parameters()):
+            if self.torc:
+                ttc=task
+            else:
+                ttc=-1
+            for index, item in enumerate(self.convnets[ttc].parameters()):
                 if len(item.size()) > 1 and item.size()[-1]!=1:
                     ww=item.data
                     item.data=ww*mat[index].cuda()

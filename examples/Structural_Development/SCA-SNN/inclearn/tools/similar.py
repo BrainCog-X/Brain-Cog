@@ -8,11 +8,12 @@ import torch.nn.functional as F
 
 class Appr(object):
     """ Class implementing the TALL """
-    def __init__(self, pretrained_feat_extractor, num_task, device='cuda', args=None):
+    def __init__(self, pretrained_feat_extractor, num_task, torc,device='cuda', args=None):
 
         self.task2expert = []
         self.expert2task = []
-        
+        self.torc=torc
+        self.num_task=num_task
         self.task2mean = {}
         self.task2cov = {}
         for i in range(num_task):
@@ -34,9 +35,13 @@ class Appr(object):
         # self.model.requires_grad_(False)
         # self.model.eval()
         # self.model.set_current_task(t)
-        steps=10
-        class_num = steps*taski
-        labels = torch.arange(class_num,class_num+steps).view(-1, 1).to(device)
+        if self.torc:
+            steps=int(100/self.num_task)
+            class_num = steps*taski
+            labels = torch.arange(class_num,class_num+steps).view(-1, 1).to(device)
+        else:
+            steps = int(100/self.num_task)
+            labels = torch.arange(steps).view(-1, 1).to(device)
         all_task_feats={}
         for t in range(taski):
             all_task_feats[t]=[[] for _ in range(steps)]
@@ -80,9 +85,13 @@ class Appr(object):
         # self.model.requires_grad_(False)
         # self.model.eval()
         # self.model.set_current_task(t)
-        steps=10
-        class_num = steps*taski
-        labels = torch.arange(class_num,class_num+steps).view(-1, 1).to(device)
+        if self.torc:
+            steps=int(100/self.num_task)
+            class_num = steps*taski
+            labels = torch.arange(class_num,class_num+steps).view(-1, 1).to(device)
+        else:
+            steps = int(100/self.num_task)
+            labels = torch.arange(steps).view(-1, 1).to(device)
         all_task_feats=[[] for _ in range(steps)]
         self.feat_extractor.eval()
         with torch.no_grad():

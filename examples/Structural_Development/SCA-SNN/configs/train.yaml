@@ -1,5 +1,5 @@
 exp:
-  name: "CIFAR100_B0_10S_TCIL"
+  name: "CIFAR_B0_10S"
   savedir: "./logs"
   tensorboard_dir: "./tensorboard"
   debug: False
@@ -17,7 +17,7 @@ last_relu: False
 dea: True
 use_div_cls: False
 div_type: "n+1" # n+t, 1+1
-distillation: False
+distillation: False #True --CIL; False --TIL
 disttype: "KL"
 temperature: 2
 distlamb: 1

@@ -548,7 +548,7 @@ class IncModel(IncrementalLearner):
                                                      mode="train",
                                                      resample='disalign_resample')
             else:
-                xdata, ydata = inc_dataset._select(inc_dataset.data_train,
+                xdata, ydata = inc_dataset._select(taski,inc_dataset.data_train,
                                                    inc_dataset.targets_train,
                                                    low_range=0,
                                                    high_range=self._n_classes)

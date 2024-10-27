@@ -85,7 +85,7 @@ def _train(cfg, _run, ex, tensorboard):
         _save_dir = cfg["exp"]["ckptdir"]
 
     results = results_utils.get_template_results(cfg)
-    appr=Appr(model._network,10)
+    appr=Appr(model._network,10,torc)
     for task_i in range(inc_dataset.n_tasks):
         task_info, train_loader, val_loader, test_loader = inc_dataset.new_task(task_i)
 
