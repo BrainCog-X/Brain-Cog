@@ -4,7 +4,7 @@ h5py
 torch
 torchvision
 torchaudio
-timm
+timm == 0.6.13
 scikit-learn
 einops
 thop
@@ -15,4 +15,3 @@ pygame
 dv
 tensorboard
 tonic
-
