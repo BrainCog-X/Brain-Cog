@@ -12,7 +12,7 @@
 
 ## Run ##
 
-``` CUDA_VISIBLE_DEVICES=0 python main.py```
+``` CUDA_VISIBLE_DEVICES=0 python prun_ main.py```
 
 ## Citation ##
 If you find the code and dataset useful in your research, please consider citing:
