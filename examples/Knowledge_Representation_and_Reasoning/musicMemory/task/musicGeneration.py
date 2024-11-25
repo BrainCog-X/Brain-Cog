@@ -1,4 +1,5 @@
 import sys
+sys.path.append("../../../../")
 sys.path.append("../")
 from api.music_engine_api import EngineAPI
 import os

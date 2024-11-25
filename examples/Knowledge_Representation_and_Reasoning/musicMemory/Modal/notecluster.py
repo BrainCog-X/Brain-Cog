@@ -1,6 +1,6 @@
 from .cluster import Cluster
 from .notelifneuron import NoteLIFNeuron
-
+from Modal.izhikevichneuron import *
 
 class NoteCluster(Cluster):
     '''
@@ -17,6 +17,13 @@ class NoteCluster(Cluster):
         for i in range(0, self.neunum):
             if (self.neutype == 'LIF'):
                 node = NoteLIFNeuron()
+                node.index = i + 1
+                node.areaName = 'NMSM'
+                node.setPreference()
+                self.neurons.append(node)
+
+            if (self.neutype == 'Izhikevich'):
+                node = NoteIzhikevichNeuron()
                 node.index = i + 1
                 node.areaName = 'NMSM'
                 node.setPreference()

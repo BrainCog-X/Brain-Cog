@@ -2,7 +2,6 @@ import torch
 import random
 from braincog.base.node import node
 import numpy as np
-import pylab as pl
 class LIFNeuron(node.LIFNode):
 
     def __init__(self, tau_ref = 0, vthresh = 5, Rm = 2, Cm = 0.2,dt = 0.1,*args, **kwargs):

@@ -23,7 +23,7 @@ class Synapse():
             pass
         elif (self.type == 1):  # pre and post neurons are in the same layer but different groups
             for st in self.pre.spiketime:
-                s = t - st
+                s = t - st - (self.delay-1)*self.post.timeWindow
                 temp = 0
                 if (self.post.groupIndex - self.pre.groupIndex == self.delay):  # compute weight according to time delay
                     # using STDP rules
@@ -39,12 +39,26 @@ class Synapse():
         elif (self.type == 2):  # pre and post neurons are in the different layers
             pass
             # computing the STDP to update the weight within the time window
+        elif (self.type == 3):
+            # pass #fixed weight
+            for st in self.pre.spiketime:
+                s = t - st - (self.delay - 1) * self.post.timeWindow
+                temp = 0
+                # using STDP rules
+                if (s >= 0):
+                    temp = 5 * math.exp(-s / 5)
+                else:
+                    #                         print(self.pre.groupIndex)
+                    #                         print(self.post.groupIndex)
+                    temp = -5 * math.exp(s / 5)
+                self.weight += temp
 
     def computeShortTermFacilitation(self, t):
         if (self.type == 1):
             for st in self.pre.spiketime[::-1]:
                 at = st + self.delay
-                if (at <= t and at >= t - self.post.tau_ref):  # between current time and time minus refractory period
+                # if (at <= t and at >= t - self.post.tau_ref):  # between current time and time minus refractory period
+                if (at <= t and at >= t):
                     temp = (self.strength + 1) * 0.2
                     self.strength += temp
 
@@ -61,6 +75,23 @@ class Synapse():
             if (self.excitability == 0):
                 for st in self.pre.spiketime:
                     self.strength += (self.strength + 1) * 0.8
+
+    def computeShortTermFacilitation2(self, t):
+        if (self.type == 1):
+            for st in self.pre.spiketime[::-1]:
+                at = st + self.delay
+                # if ( at <= t and at >= t - self.post.tau_ref):
+                if (at <= t):  # between current time and time minus refractory period
+                    self.strength = 1
+
+        elif (self.type >= 2):
+            #             print(self.pre.areaName)
+            #             print(self.pre.index)
+            #             print(self.pre.groupIndex)
+            for st in self.pre.spiketime:
+                # if (st <= t and st >= t - self.post.tau_ref):
+                if (st <= t):
+                    self.strength = 1
 
     def computeShortTermReduction(self, t):
         if (self.type == 2):

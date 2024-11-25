@@ -1,5 +1,6 @@
 import sys
 sys.path.append("../")
+sys.path.append("../../../../")
 from api.music_engine_api import EngineAPI
 import os
 
@@ -22,6 +23,6 @@ if __name__=="__main__":
                 musicEngine.memorizing(musicName, composerName, 20, fileName)
 
     # recall the music based on the name of a music
-    musicEngine.recallMusic("mz_331_3.mid")
+    musicEngine.recallMusic("Sonate C Major.Mid")
 
 

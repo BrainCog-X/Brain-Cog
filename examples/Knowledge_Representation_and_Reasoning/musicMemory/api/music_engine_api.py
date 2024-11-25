@@ -5,6 +5,7 @@ from Areas.cortex import Cortex
 import pretty_midi
 import math
 import json
+import music21 as m21
 
 
 class EngineAPI():
@@ -21,6 +22,9 @@ class EngineAPI():
 
     def cortexInit(self):
         self.cortex.musicSequenceMemroyInit()
+        self.cortex.pfc.addNewKey()
+        self.cortex.pfc.addNewMode()
+        self.cortex.pfc.addNewChord()
 
     def rememberMusic(self, muiscName, composerName="None"):
         '''
@@ -34,7 +38,7 @@ class EngineAPI():
         self.cortex.msm.setTestStates()
         self.cortex.addSubGoalToPFC(muiscName)
         self.cortex.addComposerToPFC(composerName)
-        genreName = configs.GenreMap.get(composerName)
+        genreName = str(configs.GenreMap.get(composerName))
         self.cortex.addGenreToPFC(genreName)
         self.cortex.pfc.innerLearning(muiscName, composerName, genreName)
 
@@ -51,6 +55,41 @@ class EngineAPI():
 
         return goaldic, composerdic
 
+    def learnFourPartMusic(self,xmldata, musicName, composerName="None"):
+        musicName = musicName.title()
+        composerName = composerName.title()
+        genreName = "None"
+        toneName = configs.keyIndexMap.get(str(xmldata.analyze('key')))
+
+        print(musicName + " learning...")
+
+        emo = "None"
+        for i, part in enumerate(xmldata.parts):
+            if (self.cortex.msm.sequenceLayers.get(i + 1) == None):
+                self.cortex.msm.createActionSequenceMem(i + 1, self.cortex.neutype)
+            self.rememberPartNotes(musicName, composerName, genreName, emo, toneName, i + 1, part)
+
+
+    def rememberPartNotes(self,musicName, composerName, genreName, emo, keyName, partIndex, part):
+        print("Learning the part "+str(partIndex))
+        for i,note in enumerate(part.flat.notes[:20]):
+            p = 0
+            dur = 0
+            if note.isChord:
+                dur = note.duration.quarterLength
+                for chord_note in note:
+                    p = m21.pitch.Pitch(chord_note.pitch).midi
+
+            else:
+                dur = note.duration.quarterLength
+                p = m21.pitch.Pitch(note.pitch).midi
+            if dur == 0.0:
+                dur = 0.125
+            if keyName == 'None':
+                self.cortex.rememberANoteandTempo(musicName, composerName, genreName, emo, partIndex, p, i+1, dur)
+            else:
+                self.cortex.rememberANoteWithKnowledge(musicName, composerName, genreName, emo, keyName, partIndex, p, dur, i+1, part)
+
     def rememberMIDIMusic(self, musicName, composerName, noteLength, fileName):
         '''
         :param musicName: the name of the piece of music
@@ -62,7 +101,7 @@ class EngineAPI():
         composerName = composerName.title()
         print(musicName + " processing...")
         pm = pretty_midi.PrettyMIDI(fileName)
-        genreName = configs.GenreMap.get(composerName)
+        genreName = str(configs.GenreMap.get(composerName))
         for i, ins in enumerate(pm.instruments):
             if (i >= 1): break;
             if (self.cortex.msm.sequenceLayers.get(i + 1) == None):
@@ -256,6 +295,11 @@ class EngineAPI():
 
     def generate2TrackMusic(self, firstNotes, durations, lengths):
         result = self.cortex.generate2TrackMusic(firstNotes, durations, lengths)
+        return result
+
+    def generateMelodyWithKey(self,tone, firstNotes,durations = None,length = 8):
+
+        result = self.cortex.generateMelodyWithKey(tone, firstNotes,durations,length)
         return result
 
 

@@ -1,5 +1,7 @@
 from .synapse import Synapse
-
+from Modal.sequencelayer import SequenceLayer
+import numpy as np
+from Modal.synapse import Synapse
 
 class SequenceMemory():
     '''
