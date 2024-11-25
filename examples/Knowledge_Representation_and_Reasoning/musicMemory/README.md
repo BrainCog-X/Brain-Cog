@@ -49,4 +49,14 @@ If you find this package helpful, please consider citing the following papers:
     publisher = {Frontiers}
 }
 
+@misc{liang2024modeconditionedmusiclearningcomposition,
+      title={Mode-conditioned music learning and composition: a spiking neural network inspired by neuroscience and psychology}, 
+      author={Qian Liang and Yi Zeng and Menghaoran Tang},
+      year={2024},
+      eprint={2411.14773},
+      archivePrefix={arXiv},
+      primaryClass={cs.SD},
+      url={https://arxiv.org/abs/2411.14773}, 
+}
+
 ```
