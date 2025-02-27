@@ -3,6 +3,7 @@
 This repository contains code from our paper:
 - [**Temporal-Sequential Learning With a Brain-Inspired Spiking Neural Network and Its Application to Musical Memory**](https://www.cell.com/patterns/fulltext/S2666-3899(22)00119-2) published in Frontiers in Computational Neuroscience. **https://www.cell.com/patterns/fulltext/S2666-3899(22)00119-2**,
 - [**Stylistic composition of melodies based on a brain-inspired spiking neural network**](https://www.frontiersin.org/articles/10.3389/fnsys.2021.639484/full) published in  Frontiers in Systems Neuroscience **https://www.frontiersin.org/articles/10.3389/fnsys.2021.639484/full**.
+- [**Mode-conditioned music learning and composition: a spiking neural network inspired by neuroscience and psychology**](https://arxiv.org/pdf/2411.14773) preprint in arXiv **https://arxiv.org/pdf/2411.14773**.
 
 ## Requirments
 
@@ -15,7 +16,8 @@ This repository contains code from our paper:
 
 ## Data preparation
 
-The dataset used here can be referred to the website http://www.piano-midi.de/. 
+The dataset used here can be referred to the website http://www.piano-midi.de/.
+The dataset used in mode-conditioned music learning can be referred to the website https://github.com/lqnankai/Music-Dataset. 
 
 
 ## Run
