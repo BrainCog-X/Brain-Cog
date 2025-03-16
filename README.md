@@ -74,6 +74,7 @@ The following papers are most recent advancement of BrainCog Embot:
 
 * Qianhao Wang, Yinqian Sun, Enmeng Lu, Qian Zhang, Yi Zeng. Brain-Inspired Action Generation with Spiking Transformer Diffusion Policy Model. Advances in Brain Inspired Cognitive Systems (BICS), 2024.(https://link.springer.com/chapter/10.1007/978-981-96-2882-7_23)
 * Yinqian Sun, Feifei Zhao, Mingyang Lv, Yi Zeng. Implementing Spiking World Model with Multi-Compartment Neurons for Model-based Reinforcement Learning, 2025. (https://arxiv.org/abs/2503.00713)
+* Qianhao Wang, Yinqian Sun, Enmeng Lu, Qian Zhang, Yi Zeng. MTDP: Modulated Transformer Diffusion Policy Model, 2025. (https://arxiv.org/abs/2502.09029)
 
 ## Resources
 ### [[Lectures]](https://github.com/BrainCog-X/Brain-Cog/blob/main/documents/Lectures.md)  |   [[Tutorial]](https://github.com/BrainCog-X/Brain-Cog/blob/main/documents/Tutorial.md)
