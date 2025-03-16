@@ -68,8 +68,10 @@ The following papers are most recent advancement of BrainCog Firefly series for 
 ## Embodied AI and Robotics (BrainCog Embot)
 
 <img src="https://arxiv.org/html/2411.09953v1/x3.png" alt="bh10s" width="55%" />
+
 BrainCog Embot is an Embodied AI platform under the Brain-inspired Cognitive Intelligence Engine (BrainCog) framework, which is an open-source Brain-inspired AI platform based on Spiking Neural Network.
 The following papers are most recent advancement of BrainCog Embot:
+
 * Qianhao Wang, Yinqian Sun, Enmeng Lu, Qian Zhang, Yi Zeng. Brain-Inspired Action Generation with Spiking Transformer Diffusion Policy Model. Advances in Brain Inspired Cognitive Systems (BICS), 2024.(https://link.springer.com/chapter/10.1007/978-981-96-2882-7_23)
 * Yinqian Sun, Feifei Zhao, Mingyang Lv, Yi Zeng. Implementing Spiking World Model with Multi-Compartment Neurons for Model-based Reinforcement Learning, 2025. (https://arxiv.org/abs/2503.00713)
 
