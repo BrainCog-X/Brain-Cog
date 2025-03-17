@@ -66,8 +66,7 @@ The following papers are most recent advancement of BrainCog Firefly series for 
 * Jindong Li, Guobin Shen, Dongcheng Zhao, Qian Zhang, Yi Zeng. FireFly: A High-Throughput Hardware Accelerator for Spiking Neural Networks With Efficient DSP and Memory Optimization. IEEE Transactions on Very Large Scale Integration (VLSI) Systems, 2023. (https://ieeexplore.ieee.org/document/10143752)
 
 ## Embodied AI and Robotics (BrainCog Embot)
-
-<img src="https://arxiv.org/html/2411.09953v1/x3.png" alt="bh10s" width="55%" />
+<img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/PushT.gif" alt="bm10s" width="10%" /><img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/Can.gif" alt="bh10s" width="10%" /> <img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/左数第三个.gif" alt="bh10s" width="10%" /> <img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/Square.gif" alt="bm10s" width="10%" /><img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/ToolHang.gif" alt="bh10s" width="10%" /> <img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/左数第六个.gif" alt="bh10s" width="10%" /> 
 
 BrainCog Embot is an Embodied AI platform under the Brain-inspired Cognitive Intelligence Engine (BrainCog) framework, which is an open-source Brain-inspired AI platform based on Spiking Neural Network.
 The following papers are most recent advancement of BrainCog Embot:
