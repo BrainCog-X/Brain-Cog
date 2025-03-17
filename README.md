@@ -56,6 +56,8 @@ BrainCog currently include two parts for brain simulation:
 The anatomical and imaging data is used to support our simulation from various aspects. 
 
 ## Software-Hardware Codesign (BrainCog Firefly)
+<img src="http://www.brain-cog.network/static/image/github_readme/firefly_logo.jpg" alt="bh10s" width="25%" />
+
 BrainCog currently provides `hardware acceleration` for spiking neural network based brain-inspired AI.
 
 <img src="http://braincog.ai/static_index/image/github_readme/firefly.jpg" alt="bh10s" width="55%" />
@@ -66,6 +68,8 @@ The following papers are most recent advancement of BrainCog Firefly series for 
 * Jindong Li, Guobin Shen, Dongcheng Zhao, Qian Zhang, Yi Zeng. FireFly: A High-Throughput Hardware Accelerator for Spiking Neural Networks With Efficient DSP and Memory Optimization. IEEE Transactions on Very Large Scale Integration (VLSI) Systems, 2023. (https://ieeexplore.ieee.org/document/10143752)
 
 ## Embodied AI and Robotics (BrainCog Embot)
+<img src="http://www.brain-cog.network/static/image/github_readme/Embot_logo/%E5%B8%A6%E4%B8%8A%E6%A0%87%E9%A2%98-Embot%20logo%20%E9%80%8F%E6%98%8E%E8%83%8C%E6%99%AF.png" alt="bh10s" width="25%" />
+
 <img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/PushT.gif" alt="bm10s" width="10%" /><img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/Can.gif" alt="bh10s" width="10%" /> <img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/左数第三个.gif" alt="bh10s" width="10%" /> <img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/Square.gif" alt="bm10s" width="10%" /><img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/ToolHang.gif" alt="bh10s" width="10%" /> <img src="https://raw.githubusercontent.com/Brain-Cog-Lab/Brain-Cog/main/figures/左数第六个.gif" alt="bh10s" width="10%" /> 
 
 BrainCog Embot is an Embodied AI platform under the Brain-inspired Cognitive Intelligence Engine (BrainCog) framework, which is an open-source Brain-inspired AI platform based on Spiking Neural Network.
