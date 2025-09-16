@@ -146,7 +146,7 @@ if __name__ == "__main__":
         I_stimu[Index_R[List_R.index(Rela)], 15 + i * trail_time: 15 + I_t + i * trail_time] = certainty * I_P + I_P * np.random.rand(Cr, I_t)
         I_stimu[Index_E[List_E.index(Tail)], 20 + i * trail_time: 20 + I_t + i * trail_time] = certainty * I_P + I_P * np.random.rand(Ce, I_t)
 
-    CKRGSNN = CRKNet(S, E)
+    CKRGSNN = CKRNet(S, E)
 
     for t in range(runtime):
 
